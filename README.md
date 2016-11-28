@@ -1,8 +1,8 @@
 # Operation-Firewatch
 Aerospace human factors research test bed development at Indiana University. 
 
-Primary Investigator: LT Eric S. Vorm, Aerospace Experimental Psychologist, United States Navy.
-Chief Developer: Zenophone
+Primary Investigator: LT Eric S. Vorm
+Chief Developer: Zenophon
 Assurance Number: 
 Assurance Date:
 
