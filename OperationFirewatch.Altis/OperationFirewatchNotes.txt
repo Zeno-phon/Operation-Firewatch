@@ -1,0 +1,181 @@
+////////////////////////////////////////////////
+// Drones
+////////////////////////////////////////////////
+
+Drone_Array = [
+    [
+        String, a unique identifier
+        Object, the in-game object
+        Scalar, sensor health
+        Scalar, fuel remaining
+        Script handle, the current drone order thread
+        Array of strings, zones known to the drone
+    ]
+];
+
+// Zen_FF_InvokeDrone
+// Zen_FF_GetDroneData
+// Zen_FF_UpdateDrone
+
+F_OrderDroneRTB = {
+    // cancel user plan
+    // log current health and fuel
+    // get nearest refuel/repair point
+    // plan route to point
+    // execute route
+    // wait for route completion
+    // set health/fuel max
+    // return control to user
+};
+
+F_PlanDroneRoute = {
+    // get end point from user
+    // apply Dijkstra's algorithm (https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
+    // use dynamic graph generated in X/Y steps with weighted mult on the distance for ABC zones
+    // define a tolerance and keep multiple solutions
+};
+
+F_OrderDroneExecuteRoute = {
+    // simple move orders to a list of points given by F_PlanDroneRoute
+};
+
+F_FindFire = {
+    // use fire object geometry to evaluate probability of detection
+};
+
+F_ManageDrones = {
+    // scan for fires
+    // deplete fuel (as function of velocity/acceleration)
+    // deplete sensor health (as function of usage)
+    // detect current zone
+        // count out->in event as 1 violation
+        // count in->in event as 1 timescale
+        // count out->in and in-> event as 0.5 timescale
+    // if bingo fuel or health critical, force RTB
+};
+
+////////////////////////////////////////////////
+// Refuel/Repair points
+////////////////////////////////////////////////
+[
+    String, id
+    Array, position
+    Scalar, current occupancy
+    Scalar, maximum occupancy
+]
+
+F_InvokeRepairRefuel = {
+    // check for appropriate terrain
+    // create and init repair/refuel point
+};
+
+F_GetRepairRefuelPosition = {};
+F_GetRemianingSlots = {};
+F_GetMaxSlots = {};
+F_SetUsedSlots = {};
+F_SetMaxSlots = {};
+
+////////////////////////////////////////////////
+// Fires
+////////////////////////////////////////////////
+[
+    string, id
+    array of markers, fire coverage
+    array of arrays
+        Scalar, X coordinate
+        Scalar, Y coordinate
+        Scalar, fire temp
+        Scalar, burn fraction
+]
+
+F_InvokeFire = {
+    // create a new fire area
+};
+
+F_EvolveFire = {
+    // fire increases its area (creates more coverage markers)
+    // fire burns within its current area based upon temp and terrain
+};
+
+F_FindDistToFire = {
+    // generate array of distance to the fire across angles in a sector
+};
+
+F_Find2DFireCrossSection = {
+    // Compute the angular sector occupied by the fire in a circular sweep from a point
+};
+
+F_ManageFire = {
+    // evolve each fire along timescale
+};
+
+////////////////////////////////////////////////
+// Airspace Zone
+////////////////////////////////////////////////
+[
+    string, id
+    string, type
+    array of markers, coverage area
+    string, AAA cache id
+]
+
+// Zen_FF_InvokeZone = {};
+// Zen_FF_GetZoneData = {};
+// Zen_FF_IsInZone = {};
+// Zen_FF_UpdateZone = {};
+// Zen_FF_SpawnZoneAAA = {};
+// Zen_FF_DeleteZoneAAA = {};
+
+////////////////////////////////////////////////
+// Drone GUI
+////////////////////////////////////////////////
+
+List of drones the player controls
+    // create and refresh list
+    includes timer until auto-confirm for group #2
+// Sensor health bar
+// Fuel bar
+show drone button
+    // opens map and marks drone
+    and its current route (if there is one)
+// refresh button
+// stop button
+// close button
+// order move button
+    // display map and have user click
+    starts auto-confirm timer for group #2
+approve route button
+recalc route button (no effect once already approved, must use stop and then order move first)
+RTB button
+
+////////////////////////////////////////////////
+// Permission GUI
+////////////////////////////////////////////////
+
+list of all drones
+list of all A zones
+refresh button
+close button
+show drone button
+    same as drone GUI
+show zone button
+    opens map and highlights the selected zone
+request permission button
+    update permissions for selected drone
+
+////////////////////////////////////////////////
+// Global functions
+////////////////////////////////////////////////
+
+F_ShowDrones = {
+    // display the drone GUI
+    // route map displays the solutions in order of least total cost
+};
+
+F_ShowPermission = {
+    // show permissions GUI
+};
+
+F_GenerateFire = {
+    // thread for the random starting of fires
+};

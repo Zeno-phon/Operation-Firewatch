@@ -1,0 +1,37 @@
+Drones System
+
+Currently in the Alpha phase...
+
+Zen_OF_InvokeDrone
+
+Creates a new drone of type (2) at (1).  Must be run local to the client
+that will manage this drone.
+Usage : Call
+Params: 1. Array, group, object, string, the spawn position
+        2. String, drone classname
+Return: String, drone identifier
+
+Zen_OF_GetDroneData
+
+Returns all data of (1).  Must be run local to the client
+that manages this drone.
+Usage : Call
+Params: 1. String, drone identifier
+Return: Array
+            1. String, drone identifier
+            2. Object, drone
+            3. Scalar, sensor health, 0 to 1
+            4. Scalar, fuel, 0 to 1
+            5. Script handle, drone orders thread
+            6. Array of strings, known zones
+
+Zen_OF_UpdateDrone
+
+Sets the data of (1) to (2,4).  Must be run local to the client
+that will manage this drone.  Use '' to skip (3).
+Usage : Call
+Params: 1. String, drone identifier
+        2. Scalar, sensor health
+ (opt.) 3. Scalar, fuel, (default: '')
+ (opt.) 4. Array of strings, known zones, (default: '')
+Return: Void
