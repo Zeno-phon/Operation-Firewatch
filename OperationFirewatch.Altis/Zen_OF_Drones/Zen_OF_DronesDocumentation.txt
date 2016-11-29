@@ -27,11 +27,12 @@ Return: Array
 
 Zen_OF_UpdateDrone
 
-Sets the data of (1) to (2,4).  Must be run local to the client
-that will manage this drone.  Use '' to skip (3).
+Sets the data of (1) to (2,5).  Must be run local to the client
+that will manage this drone.  Use '' to skip (3,4).
 Usage : Call
 Params: 1. String, drone identifier
         2. Scalar, sensor health
  (opt.) 3. Scalar, fuel, (default: '')
- (opt.) 4. Array of strings, known zones, (default: '')
+ (opt.) 4. Script handle, the drone's order thread, (default: '')
+ (opt.) 5. Array of strings, known zones, (default: '')
 Return: Void

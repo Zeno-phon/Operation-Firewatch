@@ -28,7 +28,6 @@ Zen_OF_DroneGUIInvoke= {
 };
 
 Zen_OF_DroneGUIListSelect = {
-    // player commandChat str _this;
     _droneID = _this select 1;
     _droneData = [_droneID] call Zen_OF_GetDroneData;
 
@@ -94,7 +93,7 @@ Zen_OF_DroneGUIShow = {
     player commandChat str "This function is in an incomplete debug state.";
     openMap [true, false];
     0 = [_droneData select 1, _drone] call Zen_SpawnMarker;
-    ZEN_FMW_MP_REServerOnly("A3log", ["User has plotted the position of " + _drone + " on the map."], call)
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has plotted the position of " + _drone + " at " + str (getPosATL (_droneData select 1)) + " on the map."], call)
 };
 
 Zen_OF_DroneGUIMove = {
@@ -106,7 +105,7 @@ Zen_OF_DroneGUIMove = {
 
     call Zen_CloseDialog;
     player commandChat str "This function is not working as intended due to missing dependencies.";
-    player commandChat str "Click on the map to order the drone to Move.";
+    player sideChat str "Click on the map to order the drone to Move.";
 
     0 = ["Zen_OF_", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;
     Zen_OF_DroneMovePos = 0;
@@ -115,16 +114,74 @@ Zen_OF_DroneGUIMove = {
         (typeName Zen_OF_DroneMovePos == "ARRAY")
     };
 
-     0 = [Zen_OF_DroneMovePos, "Destination of " + _drone] call Zen_SpawnMarker;
-    ZEN_FMW_MP_REServerOnly("A3log", ["User has ordered " + _drone + " to move to " + str Zen_OF_DroneMovePos + "."], call)
-    (_droneData select 1) move Zen_OF_DroneMovePos;
+    _localMovePos =+ Zen_OF_DroneMovePos;
+     0 = [_localMovePos, "Destination of " + _drone] call Zen_SpawnMarker;
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + _drone + " at " + str (getPosATL (_droneData select 1)) + " to move to " + str _localMovePos + "."], call)
+
+    terminate (_droneData select 4);
+    (_droneData select 1) move _localMovePos;
+
+    _h_move = [_drone, _localMovePos] spawn {
+        _drone = _this select 0;
+        _localMovePos = _this select 1;
+        waitUntil {
+            sleep 5;
+            (unitReady _drone) || ((_drone distance2D _localMovePos) < 25);
+        };
+
+        ZEN_FMW_MP_REServerOnly("A3log", ["Move order for " + _drone + " compete."], call)
+        player sideChat (_drone + " move order complete.");
+    };
+
+    0 = [_drone, "", "", _h_move] call Zen_OF_UpdateDrone;
 };
 
 Zen_OF_DroneGUIRTB = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
 
-    player commandChat str "This function is non-functional due to missing dependencies.";
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + _drone + " at " + str (getPosATL (_droneData select 1)) + " with health " + str (_droneData select 2) + " and fuel " + str (_droneData select 3) + " to RTB."], call)
+    _nearest = [Zen_OF_RepairRefuel_Global, compile format["
+        _pos = _this select 1;
+        _dronePos = %1;
+
+        (if ((_this select 3) == (_this select 2)) then {
+            (1)
+        } else {
+            -1 * (_dronePos distance2D _pos)
+        })
+    ", getPosATL (_droneData select 1)]] call Zen_ArrayFindExtremum;
+
+    if ((_nearest select 3) == (_nearest select 2)) then {
+        player sideChat "No space available at any repair or refuel points.";
+        ZEN_FMW_MP_REServerOnly("A3log", ["RTB order for " + _drone + " has no solution."], call)
+    } else {
+        ZEN_FMW_MP_REServerOnly("A3log", ["RTB order for " + _drone + " in progress to " + (_nearest select 0) + " at " + str (_nearest select 1) + "."], call)
+        player sideChat (_drone + " will RTB at marked point.");
+        0 = [(_nearest select 1), (_nearest select 0)] call Zen_SpawnMarker;
+
+        terminate (_droneData select 4);
+        (_droneData select 1) move (_nearest select 1);
+    };
+
+    _h_move = [_drone, _droneData, _nearest] spawn {
+        _drone = _this select 0;
+        _droneData = _this select 1;
+        _nearest = _this select 2;
+        waitUntil {
+            sleep 5;
+            (unitReady (_droneData select 1)) || (((_droneData select 1) distance2D (_nearest select 1)) < 25);
+        };
+
+        ZEN_FMW_MP_REServerOnly("A3log", ["RTB order for " + _drone + " compete; standby repair/refuel"], call)
+        0 = [_nearest select 0, "", (([_nearest select 0] call Zen_OF_GetRepairRefuelData) select 3) + 1] call Zen_OF_UpdateRepairRefuel;
+        sleep 5;
+        0 = [_drone, 1, 1] call Zen_OF_UpdateDrone;
+        player sideChat (_drone + " repair and refueling complete.");
+        0 = [_nearest select 0, "", (([_nearest select 0] call Zen_OF_GetRepairRefuelData) select 3) - 1] call Zen_OF_UpdateRepairRefuel;
+    };
+
+    0 = [_drone, "", "", _h_move] call Zen_OF_UpdateDrone;
 };
 
 Zen_OF_DroneGUIApprove = {
@@ -149,8 +206,8 @@ Zen_OF_DroneGUIStop = {
     terminate (_droneData select 4);
     (_droneData select 1) move getPosATL (_droneData select 1);
 
-    player commandChat "Drone stopping.";
-    ZEN_FMW_MP_REServerOnly("A3log", ["User has ordered " + _drone + " to stop."], call)
+    player sideChat (_drone + " stopping.");
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + _drone + " at " + str (getPosATL (_droneData select 1)) + " to stop."], call)
 };
 
 _buttonShow = ["Button",

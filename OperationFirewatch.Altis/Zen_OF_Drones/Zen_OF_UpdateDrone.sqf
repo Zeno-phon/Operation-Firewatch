@@ -4,9 +4,9 @@
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
 _Zen_stack_Trace = ["Zen_OF_UpdateDrone", _this] call Zen_StackAdd;
-private ["_nameString", "_health", "_fuel", "_dataArray", "_zones"];
+private ["_nameString", "_health", "_fuel", "_dataArray", "_zones", "_script"];
 
-if !([_this, [["STRING"], ["STRING", "SCALAR"], ["STRING", "SCALAR"], ["ARRAY", "STRING"]], [[], [], [], ["STRING"]], 2] call Zen_CheckArguments) exitWith {
+if !([_this, [["STRING"], ["STRING", "SCALAR"], ["STRING", "SCALAR"], ["SCRIPT", "STRING"], ["ARRAY", "STRING"]], [[], [], [], ["STRING"]], 2] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
 };
 
@@ -14,7 +14,8 @@ _nameString = _this select 0;
 _health = _this select 1;
 
 ZEN_STD_Parse_GetArgumentDefault(_fuel, 2, "")
-ZEN_STD_Parse_GetArgumentDefault(_zones, 3, "")
+ZEN_STD_Parse_GetArgumentDefault(_script, 3, "");
+ZEN_STD_Parse_GetArgumentDefault(_zones, 4, "")
 
 _dataArray = [];
 
@@ -25,7 +26,7 @@ _dataArray = [];
 } forEach Zen_OF_Drones_Local;
 
 if (count _dataArray == 0) exitWith {
-    0 = ["Zen_OF_UpdateDrone", "Given zone does not exist", _this] call Zen_PrintError;
+    0 = ["Zen_OF_UpdateDrone", "Given drone does not exist", _this] call Zen_PrintError;
     call Zen_StackPrint;
 };
 
@@ -35,6 +36,10 @@ if (typeName _health == "SCALAR") then {
 
 if (typeName _fuel == "SCALAR") then {
     _dataArray set [3, _fuel];
+};
+
+if (typeName _script == "SCRIPT") then {
+    _dataArray set [4, _script];
 };
 
 if (typeName _zones == "ARRAY") then {

@@ -17,16 +17,8 @@ Drone_Array = [
 // Zen_FF_GetDroneData
 // Zen_FF_UpdateDrone
 
-F_OrderDroneRTB = {
-    // cancel user plan
-    // log current health and fuel
-    // get nearest refuel/repair point
-    // plan route to point
-    // execute route
-    // wait for route completion
-    // set health/fuel max
-    // return control to user
-};
+// Zen_OF_DroneGUIRTB
+    plan route to point
 
 F_PlanDroneRoute = {
     // get end point from user
@@ -64,16 +56,9 @@ F_ManageDrones = {
     Scalar, maximum occupancy
 ]
 
-F_InvokeRepairRefuel = {
-    // check for appropriate terrain
-    // create and init repair/refuel point
-};
-
-F_GetRepairRefuelPosition = {};
-F_GetRemianingSlots = {};
-F_GetMaxSlots = {};
-F_SetUsedSlots = {};
-F_SetMaxSlots = {};
+// Zen_OF_InvokeRepairRefuel
+// Zen_OF_GetRepairRefuelData
+// Zen_OF_UpdateRepairRefuel
 
 ////////////////////////////////////////////////
 // Fires
@@ -130,14 +115,15 @@ F_ManageFire = {
 // Drone GUI
 ////////////////////////////////////////////////
 
-List of drones the player controls
+// List of drones the player controls
     // create and refresh list
-    includes timer until auto-confirm for group #2
 // Sensor health bar
+timer until auto-confirm for group #2
 // Fuel bar
 show drone button
     // opens map and marks drone
     and its current route (if there is one)
+    clean old markers
 // refresh button
 // stop button
 // close button
@@ -146,7 +132,7 @@ show drone button
     starts auto-confirm timer for group #2
 approve route button
 recalc route button (no effect once already approved, must use stop and then order move first)
-RTB button
+// RTB button
 
 ////////////////////////////////////////////////
 // Permission GUI
