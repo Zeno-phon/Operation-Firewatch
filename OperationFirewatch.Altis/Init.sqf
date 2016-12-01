@@ -65,5 +65,7 @@ player sideChat str ([_rr] call Zen_OF_GetRepairRefuelData);
 0 = [_rr, 2, 1] call Zen_OF_UpdateRepairRefuel;
 player sideChat str ([_rr] call Zen_OF_GetRepairRefuelData);
 
-player sideChat "Repair/Refuelling point Test Complete";
+0 = ["mkRTB", _rr] call Zen_SpawnMarker;
+
+player sideChat "Repair/Refueling point Test Complete";
 

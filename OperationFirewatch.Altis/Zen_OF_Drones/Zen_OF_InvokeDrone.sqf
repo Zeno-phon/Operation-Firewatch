@@ -18,7 +18,7 @@ _obj = [_pos, _class, 100] call Zen_SpawnAircraft;
 
 _nameString = format ["Zen_OF_Drone_%1",([10] call Zen_StringGenerateRandom)];
 
-Zen_OF_Drones_Local pushBack [_nameString, _obj, 1, 1, scriptNull, []];
+Zen_OF_Drones_Local pushBack [_nameString, _obj, 1, 1, scriptNull, [], "", [], [], 0, []];
 publicVariable "Zen_OF_Drones_Local";
 
 call Zen_StackRemove;

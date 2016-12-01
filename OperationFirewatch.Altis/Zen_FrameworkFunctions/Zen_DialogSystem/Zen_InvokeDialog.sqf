@@ -35,7 +35,7 @@ if !(_doRefresh) then {
     closeDialog 0;
 
     _display = (findDisplay 46) createDisplay "Zen_Dialog";
-    createDialog "Zen_Dialog";
+    // createDialog "Zen_Dialog";
 } else {
     _display = (findDisplay 76);
 };

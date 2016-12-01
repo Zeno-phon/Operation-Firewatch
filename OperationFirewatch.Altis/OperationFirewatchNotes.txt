@@ -1,60 +1,53 @@
 ////////////////////////////////////////////////
 // Drones
 ////////////////////////////////////////////////
+// Data
+    // String, a unique identifier
+    // Object, the in-game object
+    // Scalar, sensor health
+    // Scalar, fuel remaining
+    // Script handle, the current drone order thread
+    // Array of strings, zones known to the drone
+    // String, marker on drone
+    // Array of arrays, path solutions
+    // Array of string, path markers
+    // Scalar, current path
 
-Drone_Array = [
-    [
-        String, a unique identifier
-        Object, the in-game object
-        Scalar, sensor health
-        Scalar, fuel remaining
-        Script handle, the current drone order thread
-        Array of strings, zones known to the drone
-    ]
-];
+// Zen_OF_InvokeDrone
+// Zen_OF_GetDroneData
+// Zen_OF_UpdateDrone
+// Zen_OF_OrderDroneExecuteRoute
 
-// Zen_FF_InvokeDrone
-// Zen_FF_GetDroneData
-// Zen_FF_UpdateDrone
-
-// Zen_OF_DroneGUIRTB
-    plan route to point
-
-F_PlanDroneRoute = {
+Zen_OF_FindDroneRoute
     // get end point from user
-    // apply Dijkstra's algorithm (https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
-    // use dynamic graph generated in X/Y steps with weighted mult on the distance for ABC zones
-    // define a tolerance and keep multiple solutions
-};
+    apply Dijkstra's algorithm (https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
+    use dynamic graph generated in X/Y steps with weighted mult on the distance for ABC zones
+    define a tolerance and keep multiple solutions
 
-F_OrderDroneExecuteRoute = {
-    // simple move orders to a list of points given by F_PlanDroneRoute
-};
+Zen_OF_FindFire
+    use fire object geometry to evaluate probability of detection
 
-F_FindFire = {
-    // use fire object geometry to evaluate probability of detection
-};
-
-F_ManageDrones = {
-    // scan for fires
-    // deplete fuel (as function of velocity/acceleration)
-    // deplete sensor health (as function of usage)
-    // detect current zone
-        // count out->in event as 1 violation
-        // count in->in event as 1 timescale
-        // count out->in and in-> event as 0.5 timescale
-    // if bingo fuel or health critical, force RTB
-};
+Zen_OF_ManageDrones
+    scan for fires
+    deplete fuel (as function of velocity/acceleration)
+    deplete sensor health (as function of usage)
+    print fuel level alerts at 10% steps
+    detect current zone
+        count out->in event as 1 violation
+        count in->in event as 1 timescale
+        count out->in and in-> event as 0.5 timescale
+    if 70% fuel or 30% health, force RTB
+        use straight line path
+        don't report which repair/refuel point was selected to the user
 
 ////////////////////////////////////////////////
 // Refuel/Repair points
 ////////////////////////////////////////////////
-[
-    String, id
-    Array, position
-    Scalar, current occupancy
-    Scalar, maximum occupancy
-]
+// Data
+    // String, id
+    // Array, position
+    // Scalar, current occupancy
+    // Scalar, maximum occupancy
 
 // Zen_OF_InvokeRepairRefuel
 // Zen_OF_GetRepairRefuelData
@@ -63,7 +56,7 @@ F_ManageDrones = {
 ////////////////////////////////////////////////
 // Fires
 ////////////////////////////////////////////////
-[
+Data
     string, id
     array of markers, fire coverage
     array of arrays
@@ -71,97 +64,108 @@ F_ManageDrones = {
         Scalar, Y coordinate
         Scalar, fire temp
         Scalar, burn fraction
-]
 
-F_InvokeFire = {
-    // create a new fire area
-};
+Zen_OF_InvokeFire
+    create a new fire area
 
-F_EvolveFire = {
-    // fire increases its area (creates more coverage markers)
-    // fire burns within its current area based upon temp and terrain
-};
+Zen_OF_EvolveFire
+    fire increases its area (creates more coverage markers)
+    fire burns within its current area based upon temp and terrain
 
-F_FindDistToFire = {
-    // generate array of distance to the fire across angles in a sector
-};
+Zen_OF_FindDistToFire
+    generate shortest distances to fire area at discrete angles
 
-F_Find2DFireCrossSection = {
-    // Compute the angular sector occupied by the fire in a circular sweep from a point
-};
+Zen_OF_FindFireCrossSection
+    Compute the angular sector occupied by the fire in a circular sweep from a point
 
-F_ManageFire = {
-    // evolve each fire along timescale
-};
+Zen_OF_ManageFire
+    evolve each fire along timescale
 
 ////////////////////////////////////////////////
 // Airspace Zone
 ////////////////////////////////////////////////
-[
-    string, id
-    string, type
-    array of markers, coverage area
-    string, AAA cache id
-]
+// Data
+    // string, id
+    // string, type
+    // array of markers, coverage area
+    // string, AAA cache id
 
-// Zen_FF_InvokeZone = {};
-// Zen_FF_GetZoneData = {};
-// Zen_FF_IsInZone = {};
-// Zen_FF_UpdateZone = {};
-// Zen_FF_SpawnZoneAAA = {};
-// Zen_FF_DeleteZoneAAA = {};
+// Zen_OF_InvokeZone
+// Zen_OF_GetZoneData
+// Zen_OF_IsInZone
+// Zen_OF_UpdateZone
+// Zen_OF_SpawnZoneAAA
+// Zen_OF_DeleteZoneAAA
 
 ////////////////////////////////////////////////
 // Drone GUI
 ////////////////////////////////////////////////
 
-// List of drones the player controls
-    // create and refresh list
+// List of drones
 // Sensor health bar
-timer until auto-confirm for group #2
 // Fuel bar
-show drone button
-    // opens map and marks drone
-    and its current route (if there is one)
-    clean old markers
-// refresh button
-// stop button
-// close button
-// order move button
-    // display map and have user click
-    starts auto-confirm timer for group #2
-approve route button
-recalc route button (no effect once already approved, must use stop and then order move first)
+// Show drone button
+// Order stop button
+// Order move button
+// Recalculate route button
+// Approve route button
 // RTB button
+// Refresh GUI button
+// Close GUI button
+Timer text field for auto-confirm
+Report fire button
+
+// Zen_OF_DroneGUIListSelect
+// Zen_OF_DroneGUIRefresh
+// Zen_OF_DroneGUIInvoke
+// Zen_OF_DroneGUIDrawPath
+// Zen_OF_DroneGUIStop
+// Zen_OF_DroneGUIRTB
+// Zen_OF_DroneGUIMove
+// Zen_OF_DroneGUIShow
+// Zen_OF_DroneGUIRecalc
+// Zen_OF_DroneGUIApprove
 
 ////////////////////////////////////////////////
 // Permission GUI
 ////////////////////////////////////////////////
 
-list of all drones
-list of all A zones
-refresh button
-close button
-show drone button
-    same as drone GUI
-show zone button
-    opens map and highlights the selected zone
-request permission button
-    update permissions for selected drone
+New GUI elements
+    list of all drones
+    list of all A zones
+    refresh button
+    close button
+    show drone button
+        same as drone GUI
+    show zone button
+        opens map and highlights the selected zone
+    request permission button
+        update permissions for selected drone
 
 ////////////////////////////////////////////////
 // Global functions
 ////////////////////////////////////////////////
 
-F_ShowDrones = {
-    // display the drone GUI
-    // route map displays the solutions in order of least total cost
-};
+Zen_OF_ShowPermission
+    show permissions GUI
 
-F_ShowPermission = {
-    // show permissions GUI
-};
+Zen_OF_GenerateFire
+    thread for the random starting of fires
 
-F_GenerateFire = {
-    // thread for the random starting of fires
-};
+////////////////////////////////////////////////
+// Changelog
+////////////////////////////////////////////////
+
+ 1. New Function: Zen_OF_FindDroneRoute
+ 2. New Function: Zen_OF_OrderDroneExecuteRoute
+ 3. Fixed: Drone GUI refresh button did not update the health and fuel of a drone
+ 4. Fixed: Drone GUI health and fuel bars did not display correctly when dialog first opened
+ 5. Added: Drone GUI recalculated route event displays next computed path solution
+ 6. Added: Drone GUI approve route event for move and RTB events
+ 7. Added: Drone GUI move and RTB events start a 60 second auto confirm timer for group #2
+ 8. Added: Drone GUI move and RTB events delete the path markers when the move order is complete
+ 9. Improved: Drone GUI move and RTB plan and display the drone's route
+10. Improved: Drone GUI show event deletes old markers
+11. Improved: Drone GUI stop event clears all path markers
+12. Improved: Drone GUI logging of events
+13. Improved: Drone GUI allows interaction with the map while open

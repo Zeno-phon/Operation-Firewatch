@@ -2,14 +2,17 @@ Drones System
 
 Currently in the Alpha phase...
 
-Zen_OF_InvokeDrone
+Zen_OF_FindDroneRoute
 
-Creates a new drone of type (2) at (1).  Must be run local to the client
-that will manage this drone.
+Computes a set of paths from (1) to (2), sorted by cost.
+NOTE - Actual pathfinding algorithm not implemented
+The current code is a placeholder.
 Usage : Call
-Params: 1. Array, group, object, string, the spawn position
-        2. String, drone classname
-Return: String, drone identifier
+Params: 1. Array, group, object, string, the start
+        2. Array, group, object, string, the end
+Return: Array
+            1. Array of Arrays, a list of positions
+            N. ...
 
 Zen_OF_GetDroneData
 
@@ -24,15 +27,45 @@ Return: Array
             4. Scalar, fuel, 0 to 1
             5. Script handle, drone orders thread
             6. Array of strings, known zones
+            7. String, drone's map marker
+            8. Array of arrays, pathfinding solutions
+            9. Array of markers, current path markers
+            10. Scalar, current path index
+            11. Array, RTB arguments for Zen_OF_OrderDroneExecuteRoute
+
+Zen_OF_InvokeDrone
+
+Creates a new drone of type (2) at (1).  Must be run local to the client
+that will manage this drone.
+Usage : Call
+Params: 1. Array, group, object, string, the spawn position
+        2. String, drone classname
+Return: String, drone identifier
+
+Zen_OF_OrderDroneExecuteRoute
+
+Orders (1) to move through all (2) in order.  If (3), makes (1) repair and
+refuel at (4), assuming (4) is at the end of (2).
+Usage : Spawn
+Parmas: 1. String, drone id
+        2. Array of positions, waypoints
+ (opt.) 3. Boolean, true if this is an RTB order, (default: false)
+ (opt.) 4. String, repair and refuel identifier, (default: '')
+Return: Void
 
 Zen_OF_UpdateDrone
 
 Sets the data of (1) to (2,5).  Must be run local to the client
-that will manage this drone.  Use '' to skip (3,4).
+that will manage this drone.  Use '' to skip (2,5) and (7,10), and 0 to skip (6).
 Usage : Call
 Params: 1. String, drone identifier
         2. Scalar, sensor health
  (opt.) 3. Scalar, fuel, (default: '')
  (opt.) 4. Script handle, the drone's order thread, (default: '')
  (opt.) 5. Array of strings, known zones, (default: '')
+ (opt.) 6. String, the drone's map marker, (default: 0)
+ (opt.) 7. Array of arrays, pathfinding solutions, (default: '')
+ (opt.) 8. Array of markers, current path markers, (default: '')
+ (opt.) 9. Scalar, current path index, (default: '')
+ (opt.) 10. Array, RTB arguments for Zen_OF_OrderDroneExecuteRoute, (default: '')
 Return: Void
