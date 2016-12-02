@@ -19,7 +19,10 @@ _markers = _this select 1;
 _nameString = format ["Zen_OF_Zone_%1",([10] call Zen_StringGenerateRandom)];
 
 // ignore the fourth element for now, Zen_OF_SpawnZoneAAA and Zen_OF_DeleteZoneAAA will deal with that
-Zen_OF_Zones_Global pushBack [_nameString, _type, _markers, ""];
+Zen_OF_Zones_Global pushBack [_nameString, _type, _markers, "", [], 0, false];
+
+// this function is only used internally to approximate the zone's coverage everytime it changes
+0 = [_nameString] call Zen_OF_GenerateZoneHeuristic;
 
 // the zone system is designed to be managed from the server and propagated to all the clients
 // The zones will be the same on all clients and they will have access to all its data and functions

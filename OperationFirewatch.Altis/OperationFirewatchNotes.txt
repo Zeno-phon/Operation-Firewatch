@@ -28,17 +28,18 @@ Zen_OF_FindFire
     use fire object geometry to evaluate probability of detection
 
 Zen_OF_ManageDrones
+    // deplete fuel (as function of velocity/acceleration)
+    // print fuel level alerts at 10% steps
+    // if 30% fuel or 70% health, force RTB
+        // use straight line path
+        // don't report which repair/refuel point was selected to the user
+    // detect current zone
+        // count out->in event as 1 violation
+        // count in->in event as 1 timescale
+        // count out->in and in->out event as 0.5 timescale
+        // Spawn AAA in C zone
     scan for fires
-    deplete fuel (as function of velocity/acceleration)
     deplete sensor health (as function of usage)
-    print fuel level alerts at 10% steps
-    detect current zone
-        count out->in event as 1 violation
-        count in->in event as 1 timescale
-        count out->in and in-> event as 0.5 timescale
-    if 70% fuel or 30% health, force RTB
-        use straight line path
-        don't report which repair/refuel point was selected to the user
 
 ////////////////////////////////////////////////
 // Refuel/Repair points
@@ -156,16 +157,13 @@ Zen_OF_GenerateFire
 // Changelog
 ////////////////////////////////////////////////
 
- 1. New Function: Zen_OF_FindDroneRoute
- 2. New Function: Zen_OF_OrderDroneExecuteRoute
- 3. Fixed: Drone GUI refresh button did not update the health and fuel of a drone
- 4. Fixed: Drone GUI health and fuel bars did not display correctly when dialog first opened
- 5. Added: Drone GUI recalculated route event displays next computed path solution
- 6. Added: Drone GUI approve route event for move and RTB events
- 7. Added: Drone GUI move and RTB events start a 60 second auto confirm timer for group #2
- 8. Added: Drone GUI move and RTB events delete the path markers when the move order is complete
- 9. Improved: Drone GUI move and RTB plan and display the drone's route
-10. Improved: Drone GUI show event deletes old markers
-11. Improved: Drone GUI stop event clears all path markers
-12. Improved: Drone GUI logging of events
-13. Improved: Drone GUI allows interaction with the map while open
+ 1. New Function: Zen_OF_DeleteDrone
+ 2. New Function: Zen_OF_GenerateZoneHeuristic
+ 3. New Function: Zen_OF_ManageDrones
+ 4. Fixed: Several subsystem data functions did not remove themselves from the stack when exiting on a missing identifier error
+ 5. Added: Logging for drones entering airspace zones
+ 6. Added: Depletion of drone fuel based upon drone movement
+ 7. Added: Drone death is handled
+ 8. Added: Drone fuel alerts print to user
+ 9. Added: Drone forced RTB at 30/70% fuel/health; also disables drone GUI orders
+10. Added: Zones now cache their AAA when no drone is over them

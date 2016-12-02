@@ -53,7 +53,7 @@ Zen_RefreshDialog = {
                 };
             };
         } forEach Zen_Active_Dialog_Control_Data;
-        0 = [Zen_Active_Dialog, _controlsToRepeat] spawn Zen_InvokeDialog;
+        0 = [Zen_Active_Dialog, false, _controlsToRepeat] spawn Zen_InvokeDialog;
     };
 
     if (true) exitWith {};

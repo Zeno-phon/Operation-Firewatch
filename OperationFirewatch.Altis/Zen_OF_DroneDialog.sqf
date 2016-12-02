@@ -3,6 +3,17 @@
 #include "Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
 #include "Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
+#define CHECK_FOR_RTB \
+    _dataArray = []; \
+    { \
+        if ([(_x select 0), _drone] call Zen_ValuesAreEqual) exitWith { \
+            _dataArray = _x; \
+        }; \
+    } forEach Zen_OF_DroneManagerData; \
+    if (_dataArray select 2) exitWith { \
+        player sideChat (_drone + " is on automatic RTB course; no orders will be accepted."); \
+    };
+
 Zen_OF_DroneGUIRefresh = {
     _list = [];
     _listData = [];
@@ -13,13 +24,15 @@ Zen_OF_DroneGUIRefresh = {
 
     0 = [Zen_OF_DroneGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
 
-    _bars = _this select 0;
-    _drone = _this select 2;
-    _droneData = [_drone] call Zen_OF_GetDroneData;
+    if (count _listData > 0) then {
+        _bars = _this select 0;
+        _drone = _this select 2;
+        _droneData = [_drone] call Zen_OF_GetDroneData;
 
-    0 = [_bars select 0, ["Progress", (_droneData select 2) * 100]] call Zen_UpdateControl;
-    0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
-    call Zen_RefreshDialog;
+        0 = [_bars select 0, ["Progress", (_droneData select 2) * 100]] call Zen_UpdateControl;
+        0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
+        call Zen_RefreshDialog;
+    };
 };
 
 Zen_OF_DroneGUIInvoke= {
@@ -31,7 +44,7 @@ Zen_OF_DroneGUIInvoke= {
     } forEach Zen_OF_Drones_Local;
 
     0 = [Zen_OF_DroneGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
-    0 = [Zen_OF_DroneGUIDialog] call Zen_InvokeDialog;
+    0 = [Zen_OF_DroneGUIDialog, true] call Zen_InvokeDialog;
     0 = [Zen_OF_DroneGUIRefreshButton, "ActivationFunction"] spawn Zen_ExecuteEvent;
 };
 
@@ -124,6 +137,8 @@ Zen_OF_DroneGUIMove = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
 
+    CHECK_FOR_RTB
+
     openMap [true, false];
     // call Zen_CloseDialog;
 
@@ -137,12 +152,11 @@ Zen_OF_DroneGUIMove = {
     };
 
     _localMovePos =+ Zen_OF_DroneMovePos;
-    call Zen_OF_DroneGUIInvoke;
+    // call Zen_OF_DroneGUIInvoke;
     player sideChat str ("Click the approve button to confirm the path of " + _drone + ".");
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + _drone + " at " + str (getPosATL (_droneData select 1)) + " to compute path to " + str _localMovePos + "."], call)
 
     terminate (_droneData select 4);
-
     _markers = _droneData select 8;
     {
         deleteMarker _x;
@@ -169,6 +183,8 @@ Zen_OF_DroneGUIMove = {
 Zen_OF_DroneGUIRTB = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
+
+    CHECK_FOR_RTB
 
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + _drone + " at " + str (getPosATL (_droneData select 1)) + " with health " + str (_droneData select 2) + " and fuel " + str (_droneData select 3) + " to RTB."], call)
     _nearest = [Zen_OF_RepairRefuel_Global, compile format["
@@ -219,6 +235,8 @@ Zen_OF_DroneGUIApprove = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
 
+    CHECK_FOR_RTB
+
     // player groupChat str _droneData;
     _paths = _droneData select 7;
     _markers = _droneData select 8;
@@ -238,6 +256,8 @@ Zen_OF_DroneGUIApprove = {
 Zen_OF_DroneGUIRecalc = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
+
+    CHECK_FOR_RTB
 
     _paths = _droneData select 7;
     _markers = _droneData select 8;
@@ -269,6 +289,8 @@ Zen_OF_DroneGUIStop = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
 
+    CHECK_FOR_RTB
+
     terminate (_droneData select 4);
     (_droneData select 1) move getPosATL (_droneData select 1);
 
@@ -276,7 +298,6 @@ Zen_OF_DroneGUIStop = {
     {
         deleteMarker _x;
     } forEach _markers;
-
     0 = [_drone, "", "", "", "", 0, [], [], 0] call Zen_OF_UpdateDrone;
 
     player sideChat (_drone + " stopping.");

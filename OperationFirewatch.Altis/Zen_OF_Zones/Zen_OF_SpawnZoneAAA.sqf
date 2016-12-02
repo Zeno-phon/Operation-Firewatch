@@ -24,8 +24,7 @@ _dataArray = [];
 } forEach Zen_OF_Zones_Global;
 
 if (count _dataArray == 0) exitWith {
-    0 = ["Zen_OF_UpdateZone", "Given zone does not exist", _this] call Zen_PrintError;
-    call Zen_StackPrint;
+    ZEN_FMW_Code_ErrorExitVoid("Zen_OF_SpawnZoneAAA", "Given zone does not exist")
 };
 
 /**  What we need to do here is create a distribution function for which marker to select that depends upon the area of the markers.  We want to select a marker at random and then generate a random point within that marker such that over many random selections we produce a pattern that is spatially random overall.  The distribution function uses a bin system in which the width of each bin is the area of each corresponding marker.  We generate a random number from the the sum of all areas and then find which bin it falls into. **/
@@ -55,6 +54,7 @@ for "_i" from 1 to round (ZEN_STD_Array_LastElement(_binStops) * _density) step 
     _mkr = _markers select _index;
     _pos = [_mkr] call Zen_FindGroundPosition;
     _veh = [_pos, _classname, random 360] call Zen_SpawnGroundVehicle;
+    0 = [crew _veh, "player"] call Zen_SetAISkill;
     _AAA pushBack [[_veh, crew _veh]];
 };
 

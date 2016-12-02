@@ -20,6 +20,9 @@ Return: Array
             2. String, zone type
             3. Array of string, zone markers
             4. String, AAA cache id
+            5. Array, heuristic coverage center
+            6. Scalar, heuristic coverage radius
+            7. Boolean, if there is a drone in this zone
 
 Zen_OF_IsInZone
 

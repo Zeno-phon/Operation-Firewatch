@@ -22,8 +22,7 @@ _dataArray = [];
 } forEach Zen_OF_Zones_Global;
 
 if (count _dataArray == 0) exitWith {
-    0 = ["Zen_OF_UpdateZone", "Given zone does not exist", _this] call Zen_PrintError;
-    call Zen_StackPrint;
+    ZEN_FMW_Code_ErrorExitVoid("Zen_OF_DeleteZoneAAA", "Given zone does not exist")
 };
 
 // This deals with cached units, there is a lot of framework documentation about the cache system

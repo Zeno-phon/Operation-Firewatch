@@ -25,7 +25,7 @@ player sideChat str ([_zone] call Zen_OF_GetZoneData);
 player sideChat str ([player, _zone] call Zen_OF_IsInZone);
 
 // test updating the zone's type
-0 = [_zone, "B"] call Zen_OF_UpdateZone;
+0 = [_zone, "C"] call Zen_OF_UpdateZone;
 player sideChat str ([_zone] call Zen_OF_GetZoneData);
 
 // Spawn some AAA in the zone
@@ -41,15 +41,15 @@ player sideChat str ([_zone] call Zen_OF_GetZoneData);
 // sleep 5;
 
 // Here the AAA should be deleted and the identifier removed from the data
-0 = [_zone] call Zen_OF_DeleteZoneAAA;
+// 0 = [_zone] call Zen_OF_DeleteZoneAAA;
 player sideChat str ([_zone] call Zen_OF_GetZoneData);
 
 player sideChat "Zones Test Complete";
 
-_drone = [player, "b_uav_01_f"] call Zen_OF_InvokeDrone;
+_drone = [player, "o_uav_01_f"] call Zen_OF_InvokeDrone;
 player sideChat str ([_drone] call Zen_OF_GetDroneData);
 
-0 = [_drone, "", 0.5] call Zen_OF_UpdateDrone;
+0 = [_drone, "", 0.31] call Zen_OF_UpdateDrone;
 player sideChat str ([_drone] call Zen_OF_GetDroneData);
 
 player sideChat "Drones Test Complete";
@@ -69,3 +69,5 @@ player sideChat str ([_rr] call Zen_OF_GetRepairRefuelData);
 
 player sideChat "Repair/Refueling point Test Complete";
 
+player sideChat "Drone manager thread started.";
+ZEN_FMW_MP_REAll("Zen_OF_ManageDrones", [], spawn)

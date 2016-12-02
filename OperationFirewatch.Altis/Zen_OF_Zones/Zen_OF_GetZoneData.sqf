@@ -23,8 +23,7 @@ _dataArray = [];
 
 // If it failed to find the zone, report the error
 if (count _dataArray == 0) then {
-    0 = ["Zen_OF_GetZoneData", "Given zone does not exist", _this] call Zen_PrintError;
-    call Zen_StackPrint;
+    ZEN_FMW_Code_Error("Zen_OF_GetZoneData", "Given zone does not exist")
 };
 
 call Zen_StackRemove;

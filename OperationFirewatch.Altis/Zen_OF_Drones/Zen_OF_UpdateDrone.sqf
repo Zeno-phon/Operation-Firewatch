@@ -31,8 +31,7 @@ _dataArray = [];
 } forEach Zen_OF_Drones_Local;
 
 if (count _dataArray == 0) exitWith {
-    0 = ["Zen_OF_UpdateDrone", "Given drone does not exist", _this] call Zen_PrintError;
-    call Zen_StackPrint;
+    ZEN_FMW_Code_ErrorExitVoid("Zen_OF_UpdateDrone", "Given drone does not exist")
 };
 
 if (typeName _health == "SCALAR") then {

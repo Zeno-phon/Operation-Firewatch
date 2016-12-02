@@ -27,8 +27,7 @@ _dataArray = [];
 } forEach Zen_OF_Zones_Global;
 
 if (count _dataArray == 0) exitWith {
-    0 = ["Zen_OF_UpdateZone", "Given zone does not exist", _this] call Zen_PrintError;
-    call Zen_StackPrint;
+    ZEN_FMW_Code_ErrorExitVoid("Zen_OF_UpdateZone", "Given zone does not exist")
 };
 
 _hasChanged = false;
@@ -41,6 +40,7 @@ if (typeName _type == "STRING") then {
 if (typeName _markers == "ARRAY") then {
     _hasChanged = true;
     _dataArray set [2, _markers];
+    0 = [_nameString] call Zen_OF_GenerateZoneHeuristic;
 };
 
 // this is an optimization to reduce network traffic
