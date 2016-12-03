@@ -42,7 +42,7 @@ Zen_OF_FindFire
         // count out->in and in->out event as 0.5 timescale
         // Spawn AAA in C zone
     // scan for fires
-        only spam update fire location when it actually moves
+        // only spam update fire location when it actually moves
     // deplete sensor health (as function of usage)
 
 ////////////////////////////////////////////////
@@ -140,24 +140,25 @@ Timer text field for auto-confirm
 // Permission GUI
 ////////////////////////////////////////////////
 
-New GUI elements
-    list of all drones
-    list of all A zones
-    refresh button
-    close button
-    show drone button
-        same as drone GUI
-    show zone button
-        opens map and highlights the selected zone
-    request permission button
-        update permissions for selected drone
+// GUI elements
+    // list of all drones
+    // list of all A zones
+    // refresh button
+    // close button
+    // show drone and zone button
+        // same as drone GUI for drone
+        // marks selected zone
+    // request permission button
+        // update permissions for selected drone
+
+// Zen_OF_PermissionGUIRefresh
+// Zen_OF_PermissionGUIInvoke
+// Zen_OF_PermissionGUIShow
+// Zen_OF_PermissionGUIRequestPermission
 
 ////////////////////////////////////////////////
 // Global functions
 ////////////////////////////////////////////////
-
-Zen_OF_ShowPermission
-    show permissions GUI
 
 Zen_OF_GenerateFire
     thread for the random starting of fires
@@ -166,11 +167,12 @@ Zen_OF_GenerateFire
 // Changelog
 ////////////////////////////////////////////////
 
-1. New Function: Zen_OF_FindFire
-2. New Function: Zen_OF_GetFireData
-3. New Function: Zen_OF_InvokeFire
-4. Fixed: Using the drone GUI buttons too soon resulted in an error
-5. Added: Drones scan for fires and deplete sensor health
-6. Added: Drones GUI report fire button
-7. Improved: Drones crash on 0 fuel
-8. Documentation: Added for Zen_OF_FindFire, Zen_OF_GetFireData, Zen_OF_InvokeFire
+1. Fixed: Drone GUI no longer allows stacked move events
+2. Fixed: Drone GUI stop button no longer deletes a planned route
+3. Fixed: Group #2 auto-confirm did not use the latest recalculated path
+4. Fixed: Drone GUI approve button no longer allows duplicate approvals once the drone has orders
+5. Added: Permissions GUI
+6. Added: Drone GUI cancel button
+7. Improved: Using the move, RTB, and recalc orders require that the drone is stopped
+8. Improved: Drone violation of zones accounts for Alpha zone permissions
+9. Improved: Drone detection of fire only updates if the fire has moved more than 10m

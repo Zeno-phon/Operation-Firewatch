@@ -66,11 +66,13 @@ while {true} do {
                     {
                         _indexes = [_oldFires, _x select 0, 0] call Zen_ArrayGetNestedIndex;
                         if (count _indexes > 0) then {
-                            _oldFires set [1, (_x select 1)];
-                            _mkr = (_oldFires select _forEachIndex) select 2;
-                            _mkr setMarkerPos (_x select 1);
-                            player sideChat (_drone + " has updated the position of a fire at about " + str (_x select 1) + ".");
-                            ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has updated the position of fire " + (_x select 0) + " at about " + str (_x select 1) + ".")], call)
+                            if (((_x select 1) distance2D ((_oldFires select _forEachIndex) select 1)) > 10.) then {
+                                (_oldFires select _forEachIndex) set [1, (_x select 1)];
+                                _mkr = (_oldFires select _forEachIndex) select 2;
+                                _mkr setMarkerPos (_x select 1);
+                                player sideChat (_drone + " has updated the position of a fire at about " + str (_x select 1) + ".");
+                                ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has updated the position of fire " + (_x select 0) + " at about " + str (_x select 1) + ".")], call)
+                            };
                         } else {
                             player sideChat (_drone + " has detected a new fire at about " + str (_x select 1) + ".");
                             ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has detected new fire " + (_x select 0) + " at about " + str (_x select 1) + ".")], call)
@@ -151,22 +153,25 @@ while {true} do {
                             _isIn = [_newPos, _x select 0] call Zen_OF_IsInZone;
 
                             if (_isIn) then {
-                                // TODO check against A zone permission list
-                                _zoneViolationNew set [ALPHA_TO_NUMBER(_type), true];
-                                ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has trespassed into zone " + (_x select 0) + " of type " + _type + " at " + str _newPos)], call)
+                                _indexes = [Zen_OF_Zone_Permissions_Local, (_x select 0), 1] call Zen_ArrayGetNestedIndex;
+                                if (count _indexes == 0) then {
 
-                                _x set [6, true];
+                                    _zoneViolationNew set [ALPHA_TO_NUMBER(_type), true];
+                                    ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has trespassed into zone " + (_x select 0) + " of type " + _type + " at " + str _newPos)], call)
 
-                                if (ALPHA_TO_NUMBER(_type) == 2) then {
-                                    (_droneData select 1) allowDamage true;
-                                    _zoneAAA = _x select 3;
-                                    0 = [_zoneAAA] call Zen_UnCache;
-                                    _AAAObjs = [_zoneAAA] call Zen_GetCachedUnits;
-                                    {
-                                        _x reveal (_droneData select 1);
-                                    } forEach ([_AAAObjs] call Zen_ConvertToObjectArray);
+                                    _x set [6, true];
 
-                                    ZEN_FMW_MP_REServerOnly("A3log", ["AAA has been uncached in " + (_x select 0) + " in response to trespass by " + _drone], call)
+                                    if (ALPHA_TO_NUMBER(_type) == 2) then {
+                                        (_droneData select 1) allowDamage true;
+                                        _zoneAAA = _x select 3;
+                                        0 = [_zoneAAA] call Zen_UnCache;
+                                        _AAAObjs = [_zoneAAA] call Zen_GetCachedUnits;
+                                        {
+                                            _x reveal (_droneData select 1);
+                                        } forEach ([_AAAObjs] call Zen_ConvertToObjectArray);
+
+                                        ZEN_FMW_MP_REServerOnly("A3log", ["AAA has been uncached in " + (_x select 0) + " in response to trespass by " + _drone], call)
+                                    };
                                 };
                             };
                         };

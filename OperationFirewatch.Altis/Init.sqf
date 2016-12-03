@@ -19,7 +19,8 @@ sleep 1;
 ["----------Start----------"] call A3log;
 
 // Test creating a zone with one marker
-_zone = ["A", ["mkTest", "mkTest2"]] call Zen_OF_InvokeZone;
+_zone = ["A", ["mkTest"]] call Zen_OF_InvokeZone;
+_zone = ["A", ["mkTest2"]] call Zen_OF_InvokeZone;
 player commandChat str ([_zone] call Zen_OF_GetZoneData);
 
 // check if the player is in the zone
@@ -56,7 +57,6 @@ player commandChat str ([_drone] call Zen_OF_GetDroneData);
 player commandChat "Drones Test Complete";
 
 #include "Zen_OF_DroneDialog.sqf"
-
 player addAction ["Drone GUI", {call Zen_OF_DroneGUIInvoke}];
 player commandChat "Drone GUI added";
 
@@ -75,3 +75,9 @@ ZEN_FMW_MP_REAll("Zen_OF_ManageDrones", [], spawn)
 _fire = [["mkFire"]] call Zen_OF_InvokeFire;
 player commandChat str ([_fire] call Zen_OF_GetFireData);
 player commandChat "Fire system test complete.";
+
+#include "Zen_OF_PermissionsDialog.sqf"
+player addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
+player commandChat "Permissions GUI added";
+
+
