@@ -10,7 +10,7 @@
             _dataArray = _x; \
         }; \
     } forEach Zen_OF_DroneManagerData; \
-    if (_dataArray select 2) exitWith { \
+    if ((count _dataArray > 0) && {(_dataArray select 2)}) exitWith { \
         player sideChat (_drone + " is on automatic RTB course; no orders will be accepted."); \
     };
 
@@ -304,6 +304,13 @@ Zen_OF_DroneGUIStop = {
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + _drone + " at " + str (getPosATL (_droneData select 1)) + " to stop."], call)
 };
 
+Zen_OF_DroneGUIReportFire = {
+    //
+
+    player sideChat ("All detected fires reported.");
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has reported all known fires; they are " + str Zen_OF_Fires_Detected_Local], call)
+};
+
 _buttonShow = ["Button",
     ["Text", "Show"],
     ["Position", [0, 0]],
@@ -346,15 +353,23 @@ _buttonRecalc= ["Button",
 
 _buttonStop = ["Button",
     ["Text", "Stop"],
-    ["Position", [0, 10]],
+    ["Position", [0, 12]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_OF_DroneGUIStop"],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
+_buttonFire = ["Button",
+    ["Text", "Report Fire"],
+    ["Position", [0, 10]],
+    ["Size", [5,2]],
+    // ["LinksTo", [Zen_OF_DroneGUIList]],
+    ["ActivationFunction", "Zen_OF_DroneGUIReportFire"]
+] call Zen_CreateControl;
+
 Zen_OF_DroneGUIRefreshButton = ["Button",
     ["Text", "Refresh"],
-    ["Position", [0, 12]],
+    ["Position", [0, 14]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_OF_DroneGUIRefresh"],
     ["Data", [_barHealth, _barFuel]],
@@ -363,7 +378,7 @@ Zen_OF_DroneGUIRefreshButton = ["Button",
 
 _buttonClose = ["Button",
     ["Text", "Close"],
-    ["Position", [0, 14]],
+    ["Position", [0, 16]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_CloseDialog"]
 ] call Zen_CreateControl;
@@ -371,6 +386,6 @@ _buttonClose = ["Button",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [Zen_OF_DroneGUIList, _buttonShow, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel];
+} forEach [Zen_OF_DroneGUIList, _buttonShow, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire];
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

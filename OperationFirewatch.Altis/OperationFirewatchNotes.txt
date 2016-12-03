@@ -23,23 +23,27 @@ Zen_OF_FindDroneRoute
     apply Dijkstra's algorithm (https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
     use dynamic graph generated in X/Y steps with weighted mult on the distance for ABC zones
     define a tolerance and keep multiple solutions
+    cull points along straight lines
+    cull 90 deg turns to diag OR have diag + sqr grid (second nearest neighbors)
 
 Zen_OF_FindFire
     use fire object geometry to evaluate probability of detection
 
-Zen_OF_ManageDrones
+// Zen_OF_ManageDrones
     // deplete fuel (as function of velocity/acceleration)
     // print fuel level alerts at 10% steps
     // if 30% fuel or 70% health, force RTB
         // use straight line path
         // don't report which repair/refuel point was selected to the user
+        // crash on 0% fuel (and log it)
     // detect current zone
         // count out->in event as 1 violation
         // count in->in event as 1 timescale
         // count out->in and in->out event as 0.5 timescale
         // Spawn AAA in C zone
-    scan for fires
-    deplete sensor health (as function of usage)
+    // scan for fires
+        only spam update fire location when it actually moves
+    // deplete sensor health (as function of usage)
 
 ////////////////////////////////////////////////
 // Refuel/Repair points
@@ -58,16 +62,16 @@ Zen_OF_ManageDrones
 // Fires
 ////////////////////////////////////////////////
 Data
-    string, id
-    array of markers, fire coverage
+    // string, id
+    // array of markers, fire coverage
     array of arrays
         Scalar, X coordinate
         Scalar, Y coordinate
         Scalar, fire temp
         Scalar, burn fraction
 
-Zen_OF_InvokeFire
-    create a new fire area
+// Zen_OF_InvokeFire
+// Zen_OF_GetFireData
 
 Zen_OF_EvolveFire
     fire increases its area (creates more coverage markers)
@@ -108,13 +112,18 @@ Zen_OF_ManageFire
 // Show drone button
 // Order stop button
 // Order move button
-// Recalculate route button
+Recalculate route button
+    display total distance, time to travel, time before refuel needed, time to travel to nearest refuel point (from end of route)
+    measure average straight path nominal velocity
+    average time take to reach shortest straight line path after turn as function of angle between paths
+        dot prod of vel w/ direct path to nominal vel
+        average dist traveled towards next point as func of time to next point (to check if it passed over)
 // Approve route button
 // RTB button
 // Refresh GUI button
 // Close GUI button
+// Report fire button
 Timer text field for auto-confirm
-Report fire button
 
 // Zen_OF_DroneGUIListSelect
 // Zen_OF_DroneGUIRefresh
@@ -157,13 +166,11 @@ Zen_OF_GenerateFire
 // Changelog
 ////////////////////////////////////////////////
 
- 1. New Function: Zen_OF_DeleteDrone
- 2. New Function: Zen_OF_GenerateZoneHeuristic
- 3. New Function: Zen_OF_ManageDrones
- 4. Fixed: Several subsystem data functions did not remove themselves from the stack when exiting on a missing identifier error
- 5. Added: Logging for drones entering airspace zones
- 6. Added: Depletion of drone fuel based upon drone movement
- 7. Added: Drone death is handled
- 8. Added: Drone fuel alerts print to user
- 9. Added: Drone forced RTB at 30/70% fuel/health; also disables drone GUI orders
-10. Added: Zones now cache their AAA when no drone is over them
+1. New Function: Zen_OF_FindFire
+2. New Function: Zen_OF_GetFireData
+3. New Function: Zen_OF_InvokeFire
+4. Fixed: Using the drone GUI buttons too soon resulted in an error
+5. Added: Drones scan for fires and deplete sensor health
+6. Added: Drones GUI report fire button
+7. Improved: Drones crash on 0 fuel
+8. Documentation: Added for Zen_OF_FindFire, Zen_OF_GetFireData, Zen_OF_InvokeFire

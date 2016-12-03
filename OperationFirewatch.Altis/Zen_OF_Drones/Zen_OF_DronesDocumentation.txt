@@ -14,6 +14,15 @@ Return: Array
             1. Array of Arrays, a list of positions
             N. ...
 
+Zen_OF_FindFire
+
+Returns all fires within 1000m of (1).
+Usage : Call
+Params: 1. String, drone id
+Return: Array
+            1. String, fire id
+            2. Array, fire average position
+
 Zen_OF_GetDroneData
 
 Returns all data of (1).  Must be run local to the client

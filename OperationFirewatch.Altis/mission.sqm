@@ -8,11 +8,11 @@ class EditorData
 	toggles=1;
 	class ItemIDProvider
 	{
-		nextID=16;
+		nextID=17;
 	};
 	class MarkerIDProvider
 	{
-		nextID=3;
+		nextID=4;
 	};
 	class Camera
 	{
@@ -109,7 +109,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=4;
+		items=5;
 		class Item0
 		{
 			dataType="Group";
@@ -174,6 +174,18 @@ class Mission
 			b=50;
 			id=15;
 			atlOffset=7.9596848e+024;
+		};
+		class Item4
+		{
+			dataType="Marker";
+			position[]={23297.061,4.5210574e+030,18787.088};
+			name="mkFire";
+			markerType="ELLIPSE";
+			type="ellipse";
+			a=50;
+			b=50;
+			id=16;
+			atlOffset=4.5210574e+030;
 		};
 	};
 };
