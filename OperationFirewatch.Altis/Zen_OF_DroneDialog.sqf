@@ -3,6 +3,9 @@
 #include "Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
 #include "Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
+#define DRONE_AUTO_CONFIRM_TIMER 60
+#define DEBUG_IS_GROUP_2 true
+
 #define CHECK_FOR_RTB \
     _dataArray = []; \
     { \
@@ -31,6 +34,16 @@ Zen_OF_DroneGUIRefresh = {
 
         0 = [_bars select 0, ["Progress", (_droneData select 2) * 100]] call Zen_UpdateControl;
         0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
+
+        if (DEBUG_IS_GROUP_2) then {
+            _timer = _droneData select 13;
+            if (((_timer > 0) && (time - _timer < DRONE_AUTO_CONFIRM_TIMER)) && {(scriptDone (_droneData select 4)) && (scriptDone (_droneData select 11))}) then {
+                0 = [_bars select 2, ["Text", "Auto-Confirming Orders in: " + str round (_timer - time + 60) + " seconds"]] call Zen_UpdateControl;
+            } else {
+                0 = [_bars select 2, ["Text", ""]] call Zen_UpdateControl;
+            };
+        };
+
         call Zen_RefreshDialog;
     };
 };
@@ -68,6 +81,12 @@ Zen_OF_DroneGUIDrawPath = {
 
     (_markers)
 };
+
+_textTimer = ["Text",
+    ["Text", ""],
+    ["Position", [5, 16]],
+    ["Size", [15,2]]
+] call Zen_CreateControl;
 
 _textHealth = ["Text",
     ["Text", "Health"],
@@ -179,19 +198,20 @@ Zen_OF_DroneGUIMove = {
         0 = [_drone, "", "", "", "", 0, _paths, _markers, 0] call Zen_OF_UpdateDrone;
 
         // for group #2
-        if (false) then {
+        if (DEBUG_IS_GROUP_2) then {
             terminate (_droneData select 12);
-            _h_wait = [_drone] spawn {
+            _h_wait = [_drone, _paths] spawn {
                 _drone = _this select 0;
+                _paths = _this select 1;
                 _droneData = [_drone] call Zen_OF_GetDroneData;
 
                 _pathIndex = _droneData select 9;
-                sleep 60;
+                sleep DRONE_AUTO_CONFIRM_TIMER;
                 player sideChat (_drone + " route auto-confirmed");
                 ZEN_FMW_MP_REServerOnly("A3log", [name player + " has run out of time; path of " + _drone + " through " + str (_paths select _pathIndex) + " is auto-confirmed."], call)
                 [0, _drone] call Zen_OF_DroneGUIApprove;
             };
-            0 = [_drone, "", "", "", "", 0, "", "", "", "", "", _h_wait] call Zen_OF_UpdateDrone;
+            0 = [_drone, "", "", "", "", 0, "", "", "", "", "", _h_wait, time] call Zen_OF_UpdateDrone;
         };
     };
 
@@ -245,19 +265,20 @@ Zen_OF_DroneGUIRTB = {
         0 = [_drone, "", "", "", "", 0, _paths, _markers, 0, [true, (_nearest select 0)]] call Zen_OF_UpdateDrone;
 
         // for group #2
-        if (false) then {
+        if (DEBUG_IS_GROUP_2) then {
             terminate (_droneData select 12);
-            _h_wait = [_drone] spawn {
+            _h_wait = [_drone, _paths] spawn {
                 _drone = _this select 0;
+                _paths = _this select 1;
                 _droneData = [_drone] call Zen_OF_GetDroneData;
 
                 _pathIndex = _droneData select 9;
-                sleep 60;
+                sleep DRONE_AUTO_CONFIRM_TIMER;
                 player sideChat (_drone + " route auto-confirmed");
                 ZEN_FMW_MP_REServerOnly("A3log", [name player + " has run out of time; path of " + _drone + " through " + str (_paths select _pathIndex) + " is auto-confirmed."], call)
                 [0, _drone] call Zen_OF_DroneGUIApprove;
             };
-            0 = [_drone, "", "", "", "", 0, "", "", "", "", "", _h_wait] call Zen_OF_UpdateDrone;
+            0 = [_drone, "", "", "", "", 0, "", "", "", "", "", _h_wait, time] call Zen_OF_UpdateDrone;
         };
     };
 };
@@ -429,7 +450,7 @@ Zen_OF_DroneGUIRefreshButton = ["Button",
     ["Position", [0, 16]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_OF_DroneGUIRefresh"],
-    ["Data", [_barHealth, _barFuel]],
+    ["Data", [_barHealth, _barFuel, _textTimer]],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
@@ -443,6 +464,6 @@ _buttonClose = ["Button",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [Zen_OF_DroneGUIList, _buttonShow, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel];
+} forEach [Zen_OF_DroneGUIList, _buttonShow, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer];
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

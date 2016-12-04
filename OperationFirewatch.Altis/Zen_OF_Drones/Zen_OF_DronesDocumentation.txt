@@ -43,6 +43,7 @@ Return: Array
             11. Array, RTB arguments for Zen_OF_OrderDroneExecuteRoute
             12. Script handle, drone GUI event thread
             13. Script handle, drone GUI auto confirm countdown
+            14. Scalar, time that the auto confirm countdown started
 
 Zen_OF_InvokeDrone
 
@@ -67,7 +68,7 @@ Return: Void
 Zen_OF_UpdateDrone
 
 Sets the data of (1) to (2,5).  Must be run local to the client
-that will manage this drone.  Use '' to skip (2,5) and (7,12), and 0 to skip (6).
+that will manage this drone.  Use '' to skip (2,5) and (7,13), and 0 to skip (6).
 Usage : Call
 Params: 1. String, drone identifier
         2. Scalar, sensor health
@@ -81,4 +82,5 @@ Params: 1. String, drone identifier
  (opt.) 10. Array, RTB arguments for Zen_OF_OrderDroneExecuteRoute, (default: '')
  (opt.) 11. Script handle, drone GUI event thread, (default: '')
  (opt.) 12. Script handle, drone GUI auto confirm countdown, (default: '')
+ (opt.) 13. Scalar, time that the auto confirm countdown started, (default: '')
 Return: Void

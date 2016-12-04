@@ -156,21 +156,30 @@ while {true} do {
                                 _indexes = [Zen_OF_Zone_Permissions_Local, (_x select 0), 1] call Zen_ArrayGetNestedIndex;
                                 if (count _indexes == 0) then {
 
-                                    _zoneViolationNew set [ALPHA_TO_NUMBER(_type), true];
-                                    ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has trespassed into zone " + (_x select 0) + " of type " + _type + " at " + str _newPos)], call)
+                                    _droneCleared = false;
+                                    {
+                                        if ([((Zen_OF_Zone_Permissions_Local select _x) select 0), _drone] call Zen_ValuesAreEqual) exitWith {
+                                        _droneCleared = true;
+                                        };
+                                    } forEach _indexes;
 
-                                    _x set [6, true];
+                                    if !(_droneCleared) then {
+                                        _zoneViolationNew set [ALPHA_TO_NUMBER(_type), true];
+                                        ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has trespassed into zone " + (_x select 0) + " of type " + _type + " at " + str _newPos)], call)
 
-                                    if (ALPHA_TO_NUMBER(_type) == 2) then {
-                                        (_droneData select 1) allowDamage true;
-                                        _zoneAAA = _x select 3;
-                                        0 = [_zoneAAA] call Zen_UnCache;
-                                        _AAAObjs = [_zoneAAA] call Zen_GetCachedUnits;
-                                        {
-                                            _x reveal (_droneData select 1);
-                                        } forEach ([_AAAObjs] call Zen_ConvertToObjectArray);
+                                        _x set [6, true];
 
-                                        ZEN_FMW_MP_REServerOnly("A3log", ["AAA has been uncached in " + (_x select 0) + " in response to trespass by " + _drone], call)
+                                        if (ALPHA_TO_NUMBER(_type) == 2) then {
+                                            (_droneData select 1) allowDamage true;
+                                            _zoneAAA = _x select 3;
+                                            0 = [_zoneAAA] call Zen_UnCache;
+                                            _AAAObjs = [_zoneAAA] call Zen_GetCachedUnits;
+                                            {
+                                                _x reveal (_droneData select 1);
+                                            } forEach ([_AAAObjs] call Zen_ConvertToObjectArray);
+
+                                            ZEN_FMW_MP_REServerOnly("A3log", ["AAA has been uncached in " + (_x select 0) + " in response to trespass by " + _drone], call)
+                                        };
                                     };
                                 };
                             };

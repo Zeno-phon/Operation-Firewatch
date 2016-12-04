@@ -4,9 +4,9 @@
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
 _Zen_stack_Trace = ["Zen_OF_UpdateDrone", _this] call Zen_StackAdd;
-private ["_nameString", "_health", "_fuel", "_dataArray", "_zones", "_script", "_marker", "_pathMarkers", "_paths", "_currentPath", "_RTBArgs", "_GUIScript", "_autoConfirmScript"];
+private ["_nameString", "_health", "_fuel", "_dataArray", "_zones", "_script", "_marker", "_pathMarkers", "_paths", "_currentPath", "_RTBArgs", "_GUIScript", "_autoConfirmScript", "_timer"];
 
-if !([_this, [["STRING"], ["STRING", "SCALAR"], ["STRING", "SCALAR"], ["SCRIPT", "STRING"], ["ARRAY", "STRING"], ["SCALAR", "STRING"], ["ARRAY", "STRING"], ["ARRAY", "STRING"], ["SCALAR", "STRING"], ["ARRAY", "STRING"], ["SCRIPT", "STRING"], ["SCRIPT", "STRING"]], [[], [], [], [], ["STRING"], [], ["ARRAY"], ["STRING"]], 2] call Zen_CheckArguments) exitWith {
+if !([_this, [["STRING"], ["STRING", "SCALAR"], ["STRING", "SCALAR"], ["SCRIPT", "STRING"], ["ARRAY", "STRING"], ["SCALAR", "STRING"], ["ARRAY", "STRING"], ["ARRAY", "STRING"], ["SCALAR", "STRING"], ["ARRAY", "STRING"], ["SCRIPT", "STRING"], ["SCRIPT", "STRING"], ["SCALAR", "STRING"]], [[], [], [], [], ["STRING"], [], ["ARRAY"], ["STRING"]], 2] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
 };
 
@@ -23,6 +23,7 @@ ZEN_STD_Parse_GetArgumentDefault(_currentPath, 8, "")
 ZEN_STD_Parse_GetArgumentDefault(_RTBArgs, 9, "")
 ZEN_STD_Parse_GetArgumentDefault(_GUIScript, 10, "")
 ZEN_STD_Parse_GetArgumentDefault(_autoConfirmScript, 11, "")
+ZEN_STD_Parse_GetArgumentDefault(_timer, 12, "")
 
 _dataArray = [];
 
@@ -78,6 +79,10 @@ if (typeName _GUIScript == "SCRIPT") then {
 
 if (typeName _autoConfirmScript == "SCRIPT") then {
     _dataArray set [12, _autoConfirmScript];
+};
+
+if (typeName _timer == "SCALAR") then {
+    _dataArray set [13, _timer];
 };
 
 call Zen_StackRemove;
