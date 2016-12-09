@@ -20,11 +20,25 @@
 
 Zen_OF_FindDroneRoute
     // get end point from user
-    apply Dijkstra's algorithm (https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
-    use dynamic graph generated in X/Y steps with weighted mult on the distance for ABC zones
-    define a tolerance and keep multiple solutions
-    cull points along straight lines
-    cull 90 deg turns to diag OR have diag + sqr grid (second nearest neighbors)
+    diamond algorithm
+        // choose angle and distance by gaussian random (centered at half distance, and double gaussian at +-45 deg)
+            // draw a line from the destination at an angle and radius
+            // if that line does not intersect a zone (use heuristic circle)
+                // draw another line to the starting point
+                // if that line does not intersect a zone
+                    // add to the list of solutions (cutoff at X solutions)
+        // sort by min overall distance
+        account for start or end being inside zone
+    diamond tunneling algorithm
+        choose angle and distance by gaussian random (centered at half distance, and double gaussian at +-45 deg)
+            draw a line from the destination at an angle and radius
+            draw another line to the starting point
+            add to the list of solutions with weight factor for distance through zones (cutoff at X solutions)
+        sort by min overall distance
+    A*
+        dynamic graph rotated such that start -> end || x (with 2nd NN)
+        choose NN with lowest heuristic distance + real distance with no closed set
+        heuristic is not monotonic and is shortest taxicab weighted norm to end
 
 Zen_OF_FindFire
     use fire object geometry to evaluate probability of detection
@@ -97,6 +111,7 @@ Zen_OF_ManageFire
     // string, AAA cache id
 
 // Zen_OF_InvokeZone
+// Zen_OF_GenerateZoneHeuristic
 // Zen_OF_GetZoneData
 // Zen_OF_IsInZone
 // Zen_OF_UpdateZone
@@ -132,10 +147,13 @@ Recalculate route button
 // Zen_OF_DroneGUIDrawPath
 // Zen_OF_DroneGUIStop
 // Zen_OF_DroneGUIRTB
-// Zen_OF_DroneGUIMove
+Zen_OF_DroneGUIMove
+    stack move orders for group #1
 // Zen_OF_DroneGUIShow
-// Zen_OF_DroneGUIRecalc
-// Zen_OF_DroneGUIApprove
+Zen_OF_DroneGUIRecalc
+    disable for group #1
+Zen_OF_DroneGUIApprove
+    make move/go button
 
 ////////////////////////////////////////////////
 // Permission GUI
@@ -161,14 +179,20 @@ Recalculate route button
 // Global functions
 ////////////////////////////////////////////////
 
+// split players into groups #1 and #2
+
 Zen_OF_GenerateFire
     thread for the random starting of fires
+    create probability distribution for fires starting
 
-split players into groups #1 and #2
+Heat map of fires
+    average discrete grid of prob distr
 
 ////////////////////////////////////////////////
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Drone manager did not match the drone to the permitted Alpha zone list
-2. Added: Auto confirm countdown timer for group #2
+1. Fixed: Drone GUI auto-confirm timer caused an error when selecting the drone from the list
+2. Added: Drone pathfinding algorithm to avoid zones
+3. Improved: Zone permissions dialog now uses zones known locally by the user
+4. Improved: Drone pathfindng now uses zones known to the drone

@@ -8,8 +8,9 @@ Computes a set of paths from (1) to (2), sorted by cost.
 NOTE - Actual pathfinding algorithm not implemented
 The current code is a placeholder.
 Usage : Call
-Params: 1. Array, group, object, string, the start
-        2. Array, group, object, string, the end
+Params: 1. String, drone id
+        2. Array, group, object, string, the start
+        3. Array, group, object, string, the end
 Return: Array
             1. Array of Arrays, a list of positions
             N. ...

@@ -26,7 +26,7 @@ if (count _dataArray == 0) exitWith {
 _markers = _dataArray select 2;
 
 _center = [_markers] call Zen_FindCenterPosition;
-for "_r" from 1 to 10000 step 50 do {
+for "_r" from 1 to 10000 step 25 do {
     _isIn = false;
     for "_phi" from 0 to 330 step 30 do {
         if ([([_center, _r, _phi, "trig"] call Zen_ExtendVector), _nameString] call Zen_OF_IsInZone) exitWith {

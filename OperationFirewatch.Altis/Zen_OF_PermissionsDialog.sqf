@@ -14,11 +14,12 @@ Zen_OF_PermissionGUIRefresh = {
         _listZones = []; \
         _listZonesData = []; \
         { \
-            if ((_x select 1) == "A") then { \
-                _listZones pushBack (_x select 0); \
-                _listZonesData pushBack (_x select 0); \
+            _data = [_x] call Zen_OF_GetZoneData; \
+            if ((_data select 1) == "A") then { \
+                _listZones pushBack _x; \
+                _listZonesData pushBack _x; \
             }; \
-        } forEach Zen_OF_Zones_Global; \
+        } forEach Zen_OF_Zone_Knowledge_Local; \
         0 = [Zen_OF_PermissionGUIDroneList, ["List", _listDrones], ["ListData", _listDronesData]] call Zen_UpdateControl; \
         0 = [Zen_OF_PermissionGUIZoneList, ["List", _listZones], ["ListData", _listZonesData]] call Zen_UpdateControl;
 

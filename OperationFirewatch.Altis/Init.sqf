@@ -16,7 +16,12 @@ enableSaving [false, false];
 if (!isServer) exitWith {};
 sleep 1;
 
+// if (random 1 > 0.5) then {
+    Zen_OF_User_Is_Group_Two = true;
+// };
+
 ["----------Start----------"] call A3log;
+["Group 2 flag: " + str Zen_OF_User_Is_Group_Two] call A3log;
 
 // Test creating a zone with one marker
 _zone = ["A", ["mkTest"]] call Zen_OF_InvokeZone;
@@ -46,12 +51,16 @@ player commandChat str ([_zone] call Zen_OF_GetZoneData);
 // 0 = [_zone] call Zen_OF_DeleteZoneAAA;
 player commandChat str ([_zone] call Zen_OF_GetZoneData);
 
+{
+    Zen_OF_Zone_Knowledge_Local pushBack (_x select 0);
+} forEach Zen_OF_Zones_Global;
+
 player commandChat "Zones Test Complete";
 
 _drone = [player, "o_uav_01_f"] call Zen_OF_InvokeDrone;
 player commandChat str ([_drone] call Zen_OF_GetDroneData);
 
-0 = [_drone, "", 0.5] call Zen_OF_UpdateDrone;
+0 = [_drone, "", 0.5, "", +Zen_OF_Zone_Knowledge_Local] call Zen_OF_UpdateDrone;
 player commandChat str ([_drone] call Zen_OF_GetDroneData);
 
 player commandChat "Drones Test Complete";
@@ -79,5 +88,3 @@ player commandChat "Fire system test complete.";
 #include "Zen_OF_PermissionsDialog.sqf"
 player addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
 player commandChat "Permissions GUI added";
-
-

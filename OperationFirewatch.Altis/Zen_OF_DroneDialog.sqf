@@ -4,7 +4,6 @@
 #include "Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
 #define DRONE_AUTO_CONFIRM_TIMER 60
-#define DEBUG_IS_GROUP_2 true
 
 #define CHECK_FOR_RTB \
     _dataArray = []; \
@@ -35,7 +34,7 @@ Zen_OF_DroneGUIRefresh = {
         0 = [_bars select 0, ["Progress", (_droneData select 2) * 100]] call Zen_UpdateControl;
         0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
 
-        if (DEBUG_IS_GROUP_2) then {
+        if (Zen_OF_User_Is_Group_Two) then {
             _timer = _droneData select 13;
             if (((_timer > 0) && (time - _timer < DRONE_AUTO_CONFIRM_TIMER)) && {(scriptDone (_droneData select 4)) && (scriptDone (_droneData select 11))}) then {
                 0 = [_bars select 2, ["Text", "Auto-Confirming Orders in: " + str round (_timer - time + 60) + " seconds"]] call Zen_UpdateControl;
@@ -134,7 +133,7 @@ Zen_OF_DroneGUIList = ["List",
     ["Position", [5, 0]],
     ["Size", [35,11.5]],
     ["SelectionFunction", "Zen_OF_DroneGUIListSelect"],
-    ["Data", [_barHealth, _barFuel]]
+    ["Data", [_barHealth, _barFuel, _textTimer]]
 ] call Zen_CreateControl;
 
 Zen_OF_DroneGUIShow = {
@@ -191,14 +190,14 @@ Zen_OF_DroneGUIMove = {
             deleteMarker _x;
         } forEach _markers;
 
-        _paths = [(_droneData select 1), _localMovePos] call Zen_OF_FindDroneRoute;
+        _paths = [_drone, (_droneData select 1), _localMovePos] call Zen_OF_FindDroneRoute;
         _path = _paths select 0;
         _markers = [_path] call Zen_OF_DroneGUIDrawPath;
 
         0 = [_drone, "", "", "", "", 0, _paths, _markers, 0] call Zen_OF_UpdateDrone;
 
         // for group #2
-        if (DEBUG_IS_GROUP_2) then {
+        if (Zen_OF_User_Is_Group_Two) then {
             terminate (_droneData select 12);
             _h_wait = [_drone, _paths] spawn {
                 _drone = _this select 0;
@@ -258,14 +257,14 @@ Zen_OF_DroneGUIRTB = {
             deleteMarker _x;
         } forEach _markers;
 
-        _paths = [(_droneData select 1), (_nearest select 1)] call Zen_OF_FindDroneRoute;
+        _paths = [_drone, (_droneData select 1), (_nearest select 1)] call Zen_OF_FindDroneRoute;
         _path = _paths select 0;
         _markers = [_path] call Zen_OF_DroneGUIDrawPath;
 
         0 = [_drone, "", "", "", "", 0, _paths, _markers, 0, [true, (_nearest select 0)]] call Zen_OF_UpdateDrone;
 
         // for group #2
-        if (DEBUG_IS_GROUP_2) then {
+        if (Zen_OF_User_Is_Group_Two) then {
             terminate (_droneData select 12);
             _h_wait = [_drone, _paths] spawn {
                 _drone = _this select 0;
