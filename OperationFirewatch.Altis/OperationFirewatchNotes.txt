@@ -21,7 +21,7 @@
 Zen_OF_FindDroneRoute
     // get end point from user
     diamond algorithm
-        // choose angle and distance by gaussian random (centered at half distance, and double gaussian at +-45 deg)
+        // choose angle and distance by Gaussian random (centered at half distance, and double Gaussian at +-45 deg)
             // draw a line from the destination at an angle and radius
             // if that line does not intersect a zone (use heuristic circle)
                 // draw another line to the starting point
@@ -29,12 +29,19 @@ Zen_OF_FindDroneRoute
                     // add to the list of solutions (cutoff at X solutions)
         // sort by min overall distance
         account for start or end being inside zone
+        account for zone permissions
     diamond tunneling algorithm
-        choose angle and distance by gaussian random (centered at half distance, and double gaussian at +-45 deg)
+        choose angle and distance by Gaussian random (centered at half distance, and double Gaussian at +-45 deg)
             draw a line from the destination at an angle and radius
             draw another line to the starting point
             add to the list of solutions with weight factor for distance through zones (cutoff at X solutions)
         sort by min overall distance
+    stepped diamond algorithm
+        to avoid a large (Width > dist), circular (width ~ depth) obstacle between start and end
+        ray cast horizontally until vertical path is clear
+        use this distance to draw diamond
+    splitting diamond algorithm
+        split the corner of the diamond in a line parallel to start->end
     A*
         dynamic graph rotated such that start -> end || x (with 2nd NN)
         choose NN with lowest heuristic distance + real distance with no closed set
@@ -133,7 +140,7 @@ Recalculate route button
     measure average straight path nominal velocity
     average time take to reach shortest straight line path after turn as function of angle between paths
         dot prod of vel w/ direct path to nominal vel
-        average dist traveled towards next point as func of time to next point (to check if it passed over)
+        average dist travelled towards next point as func of time to next point (to check if it passed over)
 // Approve route button
 // RTB button
 // Refresh GUI button
@@ -147,13 +154,12 @@ Recalculate route button
 // Zen_OF_DroneGUIDrawPath
 // Zen_OF_DroneGUIStop
 // Zen_OF_DroneGUIRTB
-Zen_OF_DroneGUIMove
-    stack move orders for group #1
+// Zen_OF_DroneGUIMove
+    // becomes plan route button for group #1
 // Zen_OF_DroneGUIShow
-Zen_OF_DroneGUIRecalc
-    disable for group #1
-Zen_OF_DroneGUIApprove
-    make move/go button
+// Zen_OF_DroneGUIRecalc
+    // disable for group #1
+// Zen_OF_DroneGUIApprove
 
 ////////////////////////////////////////////////
 // Permission GUI
@@ -174,6 +180,23 @@ Zen_OF_DroneGUIApprove
 // Zen_OF_PermissionGUIInvoke
 // Zen_OF_PermissionGUIShow
 // Zen_OF_PermissionGUIRequestPermission
+
+////////////////////////////////////////////////
+// Route planning GUI
+////////////////////////////////////////////////
+
+// List of all waypoints
+// move waypoint button
+    // sets waypoint position to clicked position
+// new waypoint button
+    // appends
+// delete waypoint button
+    // removes selected waypoint
+// cancel button
+    // stops move click event
+?? insert waypoint button
+    after selected waypoint
+?? swap waypoint button
 
 ////////////////////////////////////////////////
 // Global functions

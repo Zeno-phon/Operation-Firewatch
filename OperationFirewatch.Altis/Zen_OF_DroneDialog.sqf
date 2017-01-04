@@ -68,13 +68,13 @@ Zen_OF_DroneGUIDrawPath = {
     private ["_path", "_half", "_mkr", "_markers"];
     _path = _this select 0;
 
-    _markers = [[_path select 0] call Zen_SpawnMarker];
+    _markers = [[_path select 0, "0"] call Zen_SpawnMarker];
     for "_i" from 0 to (count _path - 2) do {
         _half = ([(_path select _i), ((_path select _i) distance2D (_path select (_i + 1))) / 2, [(_path select _i), (_path select (_i + 1))] call Zen_FindDirection, "trig"] call Zen_ExtendVector);
         _mkr = [_half, "", "colorBlack", [((_path select _i) distance2D (_path select (_i + 1))) / 2, 5], "rectangle", 180-([(_path select _i), (_path select (_i + 1))] call Zen_FindDirection), 1] call Zen_SpawnMarker;
         _markers pushBack _mkr;
 
-        _mkr = [_path select (_i + 1)] call Zen_SpawnMarker;
+        _mkr = [_path select (_i + 1), str (_i + 1)] call Zen_SpawnMarker;
         _markers pushBack _mkr;
     };
 
@@ -166,6 +166,12 @@ Zen_OF_DroneGUIMove = {
 
     if !(scriptDone (_droneData select 4)) exitWith {
         player sideChat (_drone + " is carrying out a previous move order; use the stop button.");
+    };
+
+    if !(Zen_OF_User_Is_Group_Two) exitWith {
+        call Zen_CloseDialog;
+        Zen_OF_RouteGUICurrentDrone = _drone;
+        [_drone]  call Zen_OF_RouteGUIInvoke;
     };
 
     player sideChat "Click on the map to order the drone to Move.";
@@ -308,6 +314,11 @@ Zen_OF_DroneGUIApprove = {
 };
 
 Zen_OF_DroneGUIRecalc = {
+
+    if !(Zen_OF_User_Is_Group_Two) exitWith {
+        player commandChat str "Recalc has no function for group #1.";
+    };
+
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
 

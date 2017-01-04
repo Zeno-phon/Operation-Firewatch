@@ -17,7 +17,7 @@ if (!isServer) exitWith {};
 sleep 1;
 
 // if (random 1 > 0.5) then {
-    Zen_OF_User_Is_Group_Two = true;
+    Zen_OF_User_Is_Group_Two = false;
 // };
 
 ["----------Start----------"] call A3log;
@@ -88,3 +88,7 @@ player commandChat "Fire system test complete.";
 #include "Zen_OF_PermissionsDialog.sqf"
 player addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
 player commandChat "Permissions GUI added";
+
+#include "Zen_OF_RoutePlanningDialog.sqf"
+// player addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
+player commandChat "Route Planning GUI added";
