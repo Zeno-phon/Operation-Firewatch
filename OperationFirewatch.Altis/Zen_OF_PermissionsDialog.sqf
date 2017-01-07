@@ -29,7 +29,7 @@ Zen_OF_PermissionGUIRefresh = {
 
 Zen_OF_PermissionGUIInvoke= {
     REFRESH_LISTS
-    0 = [Zen_OF_PermissionGUIDialog, true] call Zen_InvokeDialog;
+    0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX,safeZoneH - 1], true] call Zen_InvokeDialog;
 };
 
 Zen_OF_PermissionGUIDroneList = ["List",
@@ -54,6 +54,7 @@ Zen_OF_PermissionGUIShow = {
     player commandChat str _this;
     _drone = _this select 0;
     _droneData = [_drone] call Zen_OF_GetDroneData;
+    CHECK_FOR_DEAD
 
     if ((_droneData select 6) == "") then {
         _mkr = [_droneData select 1, _drone] call Zen_SpawnMarker;
@@ -74,6 +75,8 @@ Zen_OF_PermissionGUIShow = {
 Zen_OF_PermissionGUIRequestPermission = {
     _drone = _this select 0;
     _droneData = [_drone] call Zen_OF_GetDroneData;
+    CHECK_FOR_DEAD
+
     _zone = _this select 1;
     _zoneData = [_zone] call Zen_OF_GetZoneData;
 

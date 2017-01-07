@@ -211,11 +211,12 @@ Zen_OF_GenerateFire
 Heat map of fires
     average discrete grid of prob distr
 
+random generation of zones
+better definition of marker areas
+
 ////////////////////////////////////////////////
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Drone GUI auto-confirm timer caused an error when selecting the drone from the list
-2. Added: Drone pathfinding algorithm to avoid zones
-3. Improved: Zone permissions dialog now uses zones known locally by the user
-4. Improved: Drone pathfindng now uses zones known to the drone
+1. Fixed: Drone dialog caused an error when the drone was killed when button where pressed
+2. Improved: All dialogs are now placed in the lower right corner

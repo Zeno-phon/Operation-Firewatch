@@ -7,18 +7,20 @@ disableSerialization;
 #include "..\Zen_StandardLibrary.sqf"
 
 _Zen_stack_Trace = ["Zen_InvokeDialog", _this] call Zen_StackAdd;
-private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions"];
+private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset"];
 
-if !([_this, [["STRING"], ["BOOL"]], [], 1] call Zen_CheckArguments) exitWith {
+if !([_this, [["STRING"], ["ARRAY"], ["BOOL"]], [[], ["SCALAR"]], 1] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
 };
 
 _dialogID = _this select 0;
-ZEN_STD_Parse_GetArgumentDefault(_allowActions, 1, false)
+_offset = [0,0];
+ZEN_STD_Parse_GetArgument(_offset, 1)
+ZEN_STD_Parse_GetArgumentDefault(_allowActions, 2, false)
 
-if (count _this > 2) then {
+if (count _this > 3) then {
     _doRefresh = true;
-    _controlsArray = _this select 2;
+    _controlsArray = _this select 3;
 } else {
     _doRefresh = false;
     _controlsArray = [_dialogID] call Zen_GetDialogControls;
@@ -183,7 +185,7 @@ if !(_doRefresh) then {
                         };
                     };
                     case "POSITION": {
-                        _control ctrlSetPosition [(_data select 0) * GRID_DIVISION, (_data select 1) * GRID_DIVISION];
+                        _control ctrlSetPosition [(_data select 0) * GRID_DIVISION + (_offset select 0), (_data select 1) * GRID_DIVISION + (_offset select 1)];
                     };
                     case "SIZE": {
                         _oldPos = ctrlPosition _control;
@@ -219,7 +221,7 @@ if !(_doRefresh) then {
 } forEach _controlsArray;
 
 if !(_doRefresh) then {
-    uiNamespace setVariable ["Zen_Dialog_Object_Local", [_dialogID, _Zen_Dialog_Controls_Local]];
+    uiNamespace setVariable ["Zen_Dialog_Object_Local", [_dialogID, _Zen_Dialog_Controls_Local, _offset]];
 } else {
     _oldLocalData = uiNamespace getVariable "Zen_Dialog_Object_Local";
     _localToAdd = +(_oldLocalData select 1);
@@ -233,7 +235,7 @@ if !(_doRefresh) then {
         } forEach +_localToAdd;
     } forEach _Zen_Dialog_Controls_Local;
 
-    uiNamespace setVariable ["Zen_Dialog_Object_Local", [_dialogID, _Zen_Dialog_Controls_Local + _localToAdd]];
+    uiNamespace setVariable ["Zen_Dialog_Object_Local", [_dialogID, _Zen_Dialog_Controls_Local + _localToAdd, _offset]];
 };
 
 call Zen_StackRemove;

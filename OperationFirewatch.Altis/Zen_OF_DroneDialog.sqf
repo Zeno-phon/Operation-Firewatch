@@ -16,6 +16,11 @@
         player sideChat (_drone + " is on automatic RTB course; no orders will be accepted."); \
     };
 
+#define CHECK_FOR_DEAD \
+    if (count _droneData == 0) exitWith { \
+        player sideChat (_drone + " is dead."); \
+    };
+
 Zen_OF_DroneGUIRefresh = {
     _list = [];
     _listData = [];
@@ -30,6 +35,8 @@ Zen_OF_DroneGUIRefresh = {
         _bars = _this select 0;
         _drone = _this select 2;
         _droneData = [_drone] call Zen_OF_GetDroneData;
+
+        CHECK_FOR_DEAD
 
         0 = [_bars select 0, ["Progress", (_droneData select 2) * 100]] call Zen_UpdateControl;
         0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
@@ -56,7 +63,7 @@ Zen_OF_DroneGUIInvoke= {
     } forEach Zen_OF_Drones_Local;
 
     0 = [Zen_OF_DroneGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
-    0 = [Zen_OF_DroneGUIDialog, true] call Zen_InvokeDialog;
+    0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX,safeZoneH - 1], true] call Zen_InvokeDialog;
     0 = [Zen_OF_DroneGUIRefreshButton, "ActivationFunction"] spawn Zen_ExecuteEvent;
 };
 
@@ -139,6 +146,7 @@ Zen_OF_DroneGUIList = ["List",
 Zen_OF_DroneGUIShow = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
+    CHECK_FOR_DEAD
 
     if ((_droneData select 6) == "") then {
         _mkr = [_droneData select 1, _drone] call Zen_SpawnMarker;
@@ -154,7 +162,7 @@ Zen_OF_DroneGUIShow = {
 Zen_OF_DroneGUIMove = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
-
+    CHECK_FOR_DEAD
     CHECK_FOR_RTB
 
     openMap [true, false];
@@ -178,6 +186,7 @@ Zen_OF_DroneGUIMove = {
     _h_event = [_drone, _droneData] spawn {
         _drone = _this select 0;
         _droneData = _this select 1;
+        CHECK_FOR_DEAD
         sleep 0.5;
         Zen_OF_DroneMovePos = 0;
         waitUntil {
@@ -226,7 +235,7 @@ Zen_OF_DroneGUIMove = {
 Zen_OF_DroneGUIRTB = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
-
+    CHECK_FOR_DEAD
     CHECK_FOR_RTB
 
     if !(scriptDone (_droneData select 11)) exitWith {
@@ -291,7 +300,7 @@ Zen_OF_DroneGUIRTB = {
 Zen_OF_DroneGUIApprove = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
-
+    CHECK_FOR_DEAD
     CHECK_FOR_RTB
 
     if !(scriptDone (_droneData select 4)) exitWith {
@@ -321,7 +330,7 @@ Zen_OF_DroneGUIRecalc = {
 
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
-
+    CHECK_FOR_DEAD
     CHECK_FOR_RTB
 
     if !(scriptDone (_droneData select 4)) exitWith {
@@ -357,7 +366,7 @@ Zen_OF_DroneGUIRecalc = {
 Zen_OF_DroneGUIStop = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
-
+    CHECK_FOR_DEAD
     CHECK_FOR_RTB
 
     if !(scriptDone (_droneData select 4)) then {
@@ -384,7 +393,7 @@ Zen_OF_DroneGUIReportFire = {
 Zen_OF_DroneGUICancel = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
-
+    CHECK_FOR_DEAD
     terminate (_droneData select 11);
 
     player sideChat (_drone + " is no longer waiting for destination.");

@@ -25,7 +25,7 @@ Zen_OF_RouteGUIInvoke= {
     _list = [];
     _listData = [];
     0 = [Zen_OF_RouteGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
-    0 = [Zen_OF_RouteDialog, true] call Zen_InvokeDialog;
+    0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX,safeZoneH - 1], true] call Zen_InvokeDialog;
 };
 
 Zen_OF_RouteGUIMove = {
@@ -39,6 +39,7 @@ Zen_OF_RouteGUIMove = {
     _h_move = [_waypoint] spawn {
         _waypoint = _this select 0;
         _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+        CHECK_FOR_DEAD
 
         sleep 0.5;
         Zen_OF_DroneMovePos = 0;
@@ -70,6 +71,7 @@ Zen_OF_RouteGUINew = {
     player sideChat "Click on the map to set the waypoint's position.";
     _h_move = [] spawn {
         _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+        CHECK_FOR_DEAD
 
         sleep 0.5;
         Zen_OF_DroneMovePos = 0;
@@ -106,6 +108,7 @@ Zen_OF_RouteGUIDelete = {
 
     _waypoint = _this select 0;
     _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+    CHECK_FOR_DEAD
 
     _path = (_droneData select 7) select 0;
     // if (count _path == 1) exitWith {
@@ -130,7 +133,7 @@ Zen_OF_RouteGUIInsert = {
 
 Zen_OF_RouteGUICancel = {
     _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
-
+    CHECK_FOR_DEAD
     terminate (_droneData select 11);
 
     player sideChat (Zen_OF_RouteGUICurrentDrone + " is no longer waiting for destination.");
