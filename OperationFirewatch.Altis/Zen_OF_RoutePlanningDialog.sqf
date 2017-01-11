@@ -33,6 +33,11 @@ Zen_OF_RouteGUIMove = {
         player sideChat "There are no waypoints to modify.";
     };
 
+    _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+    if !(scriptDone (_droneData select 11)) exitWith {
+        player sideChat "Use the Cancel button before issuing another move order.";
+    };
+
     _waypoint = _this select 0;
 
     player sideChat "Click on the map to set the waypoint's position.";
@@ -49,8 +54,7 @@ Zen_OF_RouteGUIMove = {
         };
 
         _localMovePos =+ Zen_OF_DroneMovePos;
-        // player sideChat str ("Click the approve button to confirm the position of the waypoint.");
-        // ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + Zen_OF_RouteGUICurrentDrone + " at " + str (getPosATL (_droneData select 1)) + " to compute path to " + str _localMovePos + "."], call)
+        ZEN_FMW_MP_REServerOnly("A3log", [name player + " has moved waypoint " + str _waypoint + " for " + Zen_OF_RouteGUICurrentDrone + " to " + str _localMovePos + "."], call)
 
         _path = (_droneData select 7) select 0;
         _markers = _droneData select 8;
@@ -59,15 +63,20 @@ Zen_OF_RouteGUIMove = {
         } forEach _markers;
 
         _path set [_waypoint, _localMovePos];
-        _markers = [[(getPosATL (_droneData select 1))] + _path] call Zen_OF_DroneGUIDrawPath;
 
         0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0] call Zen_OF_UpdateDrone;
+        _markers = [Zen_OF_RouteGUICurrentDrone, true, true] call Zen_OF_DroneGUIDrawPath;
     };
 
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, "", "", "", "", _h_move] call Zen_OF_UpdateDrone;
 };
 
 Zen_OF_RouteGUINew = {
+    _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+    if !(scriptDone (_droneData select 11)) exitWith {
+        player sideChat "Use the Cancel button before issuing another move order.";
+    };
+
     player sideChat "Click on the map to set the waypoint's position.";
     _h_move = [] spawn {
         _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
@@ -81,8 +90,7 @@ Zen_OF_RouteGUINew = {
         };
 
         _localMovePos =+ Zen_OF_DroneMovePos;
-        // player sideChat str ("Click the approve button to confirm the position of the new waypoint.");
-        // ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + Zen_OF_RouteGUICurrentDrone + " at " + str (getPosATL (_droneData select 1)) + " to compute path to " + str _localMovePos + "."], call)
+        ZEN_FMW_MP_REServerOnly("A3log", [name player + " has created a waypoint for " + Zen_OF_RouteGUICurrentDrone + " at " + str _localMovePos + "."], call)
 
         _path = (_droneData select 7) select 0;
         _markers = _droneData select 8;
@@ -91,10 +99,10 @@ Zen_OF_RouteGUINew = {
         } forEach _markers;
 
         _path pushBack _localMovePos;
-        _markers = [[(getPosATL (_droneData select 1))] + _path] call Zen_OF_DroneGUIDrawPath;
 
-        // player sideChat str _path;
         0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0] call Zen_OF_UpdateDrone;
+        _markers = [Zen_OF_RouteGUICurrentDrone, true, true] call Zen_OF_DroneGUIDrawPath;
+
         call Zen_OF_RouteGUIRefresh;
     };
 
@@ -115,15 +123,16 @@ Zen_OF_RouteGUIDelete = {
         // player sideChat "Cannot delete final waypoint.";
     // };
 
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has deleted waypoint " + str _waypoint + " for " + Zen_OF_RouteGUICurrentDrone + "."], call)
     _markers = _droneData select 8;
     {
         deleteMarker _x;
     } forEach _markers;
 
     0 = [_path, _waypoint] call Zen_ArrayRemoveIndex;
-    _markers = [[(getPosATL (_droneData select 1))] + _path] call Zen_OF_DroneGUIDrawPath;
 
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0] call Zen_OF_UpdateDrone;
+    _markers = [Zen_OF_RouteGUICurrentDrone, true, true] call Zen_OF_DroneGUIDrawPath;
     call Zen_OF_RouteGUIRefresh;
 };
 

@@ -21,7 +21,7 @@ _dataArray = [];
 } forEach Zen_OF_Drones_Local;
 
 if (count _dataArray == 0) then {
-    ZEN_FMW_Code_Error("Zen_OF_UpdateDrone", "Given drone does not exist")
+    ZEN_FMW_Code_Error("Zen_OF_GetDroneData", "Given drone does not exist")
 };
 
 call Zen_StackRemove;

@@ -72,19 +72,46 @@ Zen_OF_DroneGUIListSelect = {
 };
 
 Zen_OF_DroneGUIDrawPath = {
-    private ["_path", "_half", "_mkr", "_markers"];
-    _path = _this select 0;
+    private ["_drone", "_markDrone", "_droneData", "_path", "_half", "_mkr", "_markers", "_pathData", "_infoOverride"];
+    _drone = _this select 0;
 
-    _markers = [[_path select 0, "0"] call Zen_SpawnMarker];
+    ZEN_STD_Parse_GetArgumentDefault(_markDrone, 1, false)
+    ZEN_STD_Parse_GetArgumentDefault(_infoOverride, 2, false)
+
+    _droneData = [_drone] call Zen_OF_GetDroneData;
+    _path = (_droneData select 7) select (_droneData select 9);
+
+    if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
+        _pathData = [_drone] call Zen_OF_FindDroneRouteData;
+    };
+
+    _markers = [];
+    if (_markDrone) then {
+        _markers pushBack ([_droneData select 1, "Drone: " + str (_droneData select 0)] call Zen_SpawnMarker);
+        _half = ([(_droneData select 1), ((_droneData select 1) distance2D (_path select 0)) / 2, [(_droneData select 1), (_path select 0)] call Zen_FindDirection, "trig"] call Zen_ExtendVector);
+        _mkr = [_half, "", "colorBlack", [((_droneData select 1) distance2D (_path select 0)) / 2, 5], "rectangle", 180-([(_droneData select 1), (_path select 0)] call Zen_FindDirection), 1] call Zen_SpawnMarker;
+        _markers pushBack _mkr;
+    };
+
+    if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
+        _markers pushBack ([_path select 0, str (_pathData select 0)] call Zen_SpawnMarker);
+    } else {
+        _markers pushBack ([_path select 0, "1"] call Zen_SpawnMarker);
+    };
+
     for "_i" from 0 to (count _path - 2) do {
         _half = ([(_path select _i), ((_path select _i) distance2D (_path select (_i + 1))) / 2, [(_path select _i), (_path select (_i + 1))] call Zen_FindDirection, "trig"] call Zen_ExtendVector);
         _mkr = [_half, "", "colorBlack", [((_path select _i) distance2D (_path select (_i + 1))) / 2, 5], "rectangle", 180-([(_path select _i), (_path select (_i + 1))] call Zen_FindDirection), 1] call Zen_SpawnMarker;
         _markers pushBack _mkr;
 
-        _mkr = [_path select (_i + 1), str (_i + 1)] call Zen_SpawnMarker;
-        _markers pushBack _mkr;
+        if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
+            _markers pushBack ([_path select (_i + 1), str (_pathData select (_i + 1))] call Zen_SpawnMarker);
+        } else {
+            _markers pushBack ([_path select (_i + 1), str (_i + 2)] call Zen_SpawnMarker);
+        };
     };
 
+    0 = [_drone, "", "", "", "", 0, "", _markers, ""] call Zen_OF_UpdateDrone;
     (_markers)
 };
 
@@ -207,9 +234,9 @@ Zen_OF_DroneGUIMove = {
 
         _paths = [_drone, (_droneData select 1), _localMovePos] call Zen_OF_FindDroneRoute;
         _path = _paths select 0;
-        _markers = [_path] call Zen_OF_DroneGUIDrawPath;
 
         0 = [_drone, "", "", "", "", 0, _paths, _markers, 0] call Zen_OF_UpdateDrone;
+        _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
 
         // for group #2
         if (Zen_OF_User_Is_Group_Two) then {
@@ -274,9 +301,9 @@ Zen_OF_DroneGUIRTB = {
 
         _paths = [_drone, (_droneData select 1), (_nearest select 1)] call Zen_OF_FindDroneRoute;
         _path = _paths select 0;
-        _markers = [_path] call Zen_OF_DroneGUIDrawPath;
 
         0 = [_drone, "", "", "", "", 0, _paths, _markers, 0, [true, (_nearest select 0)]] call Zen_OF_UpdateDrone;
+        _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
 
         // for group #2
         if (Zen_OF_User_Is_Group_Two) then {
@@ -351,14 +378,16 @@ Zen_OF_DroneGUIRecalc = {
         if ((_pathIndex + 1) == count _paths) then {
             ZEN_FMW_MP_REServerOnly("A3log", [name player + " has rejected path of " + _drone + " through " + str (_paths select _pathIndex) + ", but there are no new solutions to show."], call)
             player sideChat "No more computed path solutions, returning to first solution.";
-            _markers = [_paths select 0] call Zen_OF_DroneGUIDrawPath;
+
             0 = [_drone, "", "", "", "", 0, "", _markers, 0] call Zen_OF_UpdateDrone;
+            _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
         } else {
             ZEN_FMW_MP_REServerOnly("A3log", [name player + " has rejected path of " + _drone + " through " + str (_paths select _pathIndex) + "."], call)
             player sideChat ("Drawing next path; click the approve button to confirm the path of " + _drone + ".");
             _pathIndex = _pathIndex + 1;
-            _markers = [_paths select _pathIndex] call Zen_OF_DroneGUIDrawPath;
+
             0 = [_drone, "", "", "", "", 0, "", _markers, _pathIndex] call Zen_OF_UpdateDrone;
+            _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
         };
     };
 };

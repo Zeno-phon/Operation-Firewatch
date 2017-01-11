@@ -218,5 +218,9 @@ better definition of marker areas
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Drone dialog caused an error when the drone was killed when button where pressed
-2. Improved: All dialogs are now placed in the lower right corner
+1. New Function: Zen_OF_FindDroneRouteData
+2. Fixed: Route planning GUI now longer allows duplicate events
+3. Added: Route planning GUI now logs events
+4. Added: Route planning GUI now displays waypoint information
+5. Added: Drone GUI now displays waypoint information for group #2
+6. Documentation: Added for Zen_OF_FindDroneRouteData

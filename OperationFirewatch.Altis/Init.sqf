@@ -13,6 +13,8 @@ call compileFinal preprocessFileLineNumbers "Zen_OF_Fires\Zen_OF_FiresCompile.sq
 // titleText ["Good Luck", "BLACK FADED", 0.2];
 enableSaving [false, false];
 
+Zen_OF_Drone_Speeds = [["o_uav_01_f", 16]];
+
 if (!isServer) exitWith {};
 sleep 1;
 
@@ -62,6 +64,17 @@ player commandChat str ([_drone] call Zen_OF_GetDroneData);
 
 0 = [_drone, "", 0.5, "", +Zen_OF_Zone_Knowledge_Local] call Zen_OF_UpdateDrone;
 player commandChat str ([_drone] call Zen_OF_GetDroneData);
+
+/** Drone speed test
+_droneData = [_drone] call Zen_OF_GetDroneData;
+_droneObj = _droneData select 1;
+0 = [_droneObj] spawn {
+    while {true} do {
+        sleep 2;
+        player commandChat str vectorMagnitude velocity (_this select 0);
+    };
+};
+//*/
 
 player commandChat "Drones Test Complete";
 

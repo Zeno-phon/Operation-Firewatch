@@ -15,6 +15,19 @@ Return: Array
             1. Array of Arrays, a list of positions
             N. ...
 
+Zen_OF_FindDroneRouteData
+
+Computes path information for the current route of (1).  Returns
+as many nested arrays as there are waypoints.
+Usage : Call
+Params: 1. String, drone id
+Return: Array
+            1. Array
+                1. Scalar, distance between two points
+                2. Scalar, ETA in seconds between two points
+                3. Scalar, fuel fraction remaining at second point
+            N. ...
+
 Zen_OF_FindFire
 
 Returns all fires within 1000m of (1).
