@@ -81,9 +81,9 @@ Zen_OF_DroneGUIDrawPath = {
     _droneData = [_drone] call Zen_OF_GetDroneData;
     _path = (_droneData select 7) select (_droneData select 9);
 
-    if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
+    // if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
         _pathData = [_drone] call Zen_OF_FindDroneRouteData;
-    };
+    // };
 
     _markers = [];
     if (_markDrone) then {
@@ -96,7 +96,7 @@ Zen_OF_DroneGUIDrawPath = {
     if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
         _markers pushBack ([_path select 0, str (_pathData select 0)] call Zen_SpawnMarker);
     } else {
-        _markers pushBack ([_path select 0, "1"] call Zen_SpawnMarker);
+        _markers pushBack ([_path select 0, str ((_pathData select 0) select 1)] call Zen_SpawnMarker);
     };
 
     for "_i" from 0 to (count _path - 2) do {
@@ -107,7 +107,7 @@ Zen_OF_DroneGUIDrawPath = {
         if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
             _markers pushBack ([_path select (_i + 1), str (_pathData select (_i + 1))] call Zen_SpawnMarker);
         } else {
-            _markers pushBack ([_path select (_i + 1), str (_i + 2)] call Zen_SpawnMarker);
+            _markers pushBack ([_path select (_i + 1), str ((_pathData select (_i + 1)) select 1)] call Zen_SpawnMarker);
         };
     };
 
@@ -194,6 +194,8 @@ Zen_OF_DroneGUIMove = {
 
     openMap [true, false];
     // call Zen_CloseDialog;
+
+    // player groupChat str _droneData;
 
     if !(scriptDone (_droneData select 11)) exitWith {
         player sideChat "Use the Cancel button before issuing another move order.";
@@ -350,7 +352,6 @@ Zen_OF_DroneGUIApprove = {
 };
 
 Zen_OF_DroneGUIRecalc = {
-
     if !(Zen_OF_User_Is_Group_Two) exitWith {
         player commandChat str "Recalc has no function for group #1.";
     };

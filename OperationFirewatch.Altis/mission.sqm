@@ -8,7 +8,7 @@ class EditorData
 	toggles=1;
 	class ItemIDProvider
 	{
-		nextID=17;
+		nextID=26;
 	};
 	class MarkerIDProvider
 	{
@@ -16,10 +16,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={23146.746,28.190001,18259.406};
-		dir[]={0.16568388,-0.36279523,0.91702545};
-		up[]={0.064504065,0.93186826,0.35701677};
-		aside[]={0.98407006,1.7054845e-008,-0.17779729};
+		pos[]={23194.887,38.291611,18268.148};
+		dir[]={-0.64599907,-0.52052128,0.55836284};
+		up[]={-0.39380762,0.85384554,0.34038404};
+		aside[]={0.65393138,1.3608951e-007,0.75656837};
 	};
 };
 binarizationWanted=0;
@@ -128,10 +128,34 @@ class Mission
 					flags=7;
 					class Attributes
 					{
+						init="player setCaptive true";
 						isPlayer=1;
 					};
 					id=1;
 					type="B_Soldier_F";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1.01;
+								};
+							};
+						};
+						nAttributes=1;
+					};
 				};
 			};
 			class Attributes

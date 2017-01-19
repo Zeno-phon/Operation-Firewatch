@@ -3,7 +3,7 @@
 #include "..\Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
-#define FUEL_FRACTION_PER_METER (1. / 10000.)
+#define FUEL_FRACTION_PER_METER (1. / 100000.)
 #define SENSOR_DAMAGE_PER_SCAN (1. / 1000.)
 #define ALPHA_TO_NUMBER(A) (switch (toUpper A) do {case "A": {(0)}; case "B":{(1)}; case "C": {(2)};})
 

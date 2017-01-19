@@ -13,7 +13,7 @@ call compileFinal preprocessFileLineNumbers "Zen_OF_Fires\Zen_OF_FiresCompile.sq
 // titleText ["Good Luck", "BLACK FADED", 0.2];
 enableSaving [false, false];
 
-Zen_OF_Drone_Speeds = [["o_uav_01_f", 16]];
+Zen_OF_Drone_Speeds = [["b_uav_01_f", 16], ["b_uav_02_f", 105]];
 
 if (!isServer) exitWith {};
 sleep 1;
@@ -23,7 +23,8 @@ sleep 1;
 // };
 
 ["----------Start----------"] call A3log;
-["Group 2 flag: " + str Zen_OF_User_Is_Group_Two] call A3log;
+["Running " + str productVersion] call A3log;
+[name player + " is a member of Group #" + (if (Zen_OF_User_Is_Group_Two) then {("2")} else {("1")}) + "."] call A3log;
 
 // Test creating a zone with one marker
 _zone = ["A", ["mkTest"]] call Zen_OF_InvokeZone;
@@ -39,7 +40,7 @@ player commandChat str ([_zone] call Zen_OF_GetZoneData);
 
 // Spawn some AAA in the zone
 // Here I set the density such that 2 AAA spawn
-0 = [_zone, 1/ZEN_STD_Math_MarkerArea("mkTest"), "B_APC_Tracked_01_AA_F"] call Zen_OF_SpawnZoneAAA;
+0 = [_zone, 1/ZEN_STD_Math_MarkerArea("mkTest"), "O_APC_Tracked_02_AA_F"] call Zen_OF_SpawnZoneAAA;
 player commandChat str ([_zone] call Zen_OF_GetZoneData);
 
 // This tests external management of the cached AAA
@@ -59,11 +60,13 @@ player commandChat str ([_zone] call Zen_OF_GetZoneData);
 
 player commandChat "Zones Test Complete";
 
-_drone = [player, "o_uav_01_f"] call Zen_OF_InvokeDrone;
+_drone = [player, "b_uav_01_f"] call Zen_OF_InvokeDrone;
 player commandChat str ([_drone] call Zen_OF_GetDroneData);
 
 0 = [_drone, "", 0.5, "", +Zen_OF_Zone_Knowledge_Local] call Zen_OF_UpdateDrone;
 player commandChat str ([_drone] call Zen_OF_GetDroneData);
+
+_drone = [player, "b_uav_02_f"] call Zen_OF_InvokeDrone;
 
 /** Drone speed test
 _droneData = [_drone] call Zen_OF_GetDroneData;

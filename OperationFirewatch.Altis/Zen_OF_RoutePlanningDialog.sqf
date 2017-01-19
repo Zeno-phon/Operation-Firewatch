@@ -3,6 +3,8 @@
 #include "Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
 #include "Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
+#define SHOW_FULL_PATH_INFO_FOR_MANUAL false
+
 Zen_OF_RouteGUIRefresh = {
     _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
 
@@ -25,6 +27,8 @@ Zen_OF_RouteGUIInvoke= {
     _list = [];
     _listData = [];
     0 = [Zen_OF_RouteGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
+
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has opened manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
     0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX,safeZoneH - 1], true] call Zen_InvokeDialog;
 };
 
@@ -65,7 +69,7 @@ Zen_OF_RouteGUIMove = {
         _path set [_waypoint, _localMovePos];
 
         0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0] call Zen_OF_UpdateDrone;
-        _markers = [Zen_OF_RouteGUICurrentDrone, true, true] call Zen_OF_DroneGUIDrawPath;
+        _markers = [Zen_OF_RouteGUICurrentDrone, true, SHOW_FULL_PATH_INFO_FOR_MANUAL] call Zen_OF_DroneGUIDrawPath;
     };
 
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, "", "", "", "", _h_move] call Zen_OF_UpdateDrone;
@@ -101,7 +105,7 @@ Zen_OF_RouteGUINew = {
         _path pushBack _localMovePos;
 
         0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0] call Zen_OF_UpdateDrone;
-        _markers = [Zen_OF_RouteGUICurrentDrone, true, true] call Zen_OF_DroneGUIDrawPath;
+        _markers = [Zen_OF_RouteGUICurrentDrone, true, SHOW_FULL_PATH_INFO_FOR_MANUAL] call Zen_OF_DroneGUIDrawPath;
 
         call Zen_OF_RouteGUIRefresh;
     };
@@ -132,7 +136,7 @@ Zen_OF_RouteGUIDelete = {
     0 = [_path, _waypoint] call Zen_ArrayRemoveIndex;
 
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0] call Zen_OF_UpdateDrone;
-    _markers = [Zen_OF_RouteGUICurrentDrone, true, true] call Zen_OF_DroneGUIDrawPath;
+    _markers = [Zen_OF_RouteGUICurrentDrone, true, SHOW_FULL_PATH_INFO_FOR_MANUAL] call Zen_OF_DroneGUIDrawPath;
     call Zen_OF_RouteGUIRefresh;
 };
 
@@ -149,9 +153,25 @@ Zen_OF_RouteGUICancel = {
     ZEN_FMW_MP_REServerOnly("A3log", [(Zen_OF_RouteGUICurrentDrone + " is no longer waiting for destination.")], call)
 };
 
-Zen_OF_RouteGUIBack = {
+Zen_OF_RouteGUIAccept = {
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has closed manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
     call Zen_CloseDialog;
-    0 = [] spawn Zen_OF_DroneGUIInvoke;
+
+    [0, Zen_OF_RouteGUICurrentDrone] call Zen_OF_DroneGUIApprove;
+    // 0 = [] spawn Zen_OF_DroneGUIInvoke;
+};
+
+Zen_OF_RouteGUIBack = {
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has closed manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + " and scrapped the planned route."], call)
+    call Zen_CloseDialog;
+
+    _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+    _markers = _droneData select 8;
+    {
+        deleteMarker _x;
+    } forEach _markers;
+    0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [], [], 0] call Zen_OF_UpdateDrone;
+    // 0 = [] spawn Zen_OF_DroneGUIInvoke;
 };
 
 Zen_OF_RouteGUIList = ["List",
@@ -203,9 +223,17 @@ _buttonCancel = ["Button",
     // ["LinksTo", [Zen_OF_RouteGUIList]]
 ] call Zen_CreateControl;
 
-_buttonBack = ["Button",
-    ["Text", "Back"],
+_buttonAccept = ["Button",
+    ["Text", "Accept Route"],
     ["Position", [0, 10]],
+    ["Size", [5,2]],
+    ["ActivationFunction", "Zen_OF_RouteGUIAccept"]
+    // ["LinksTo", [Zen_OF_RouteGUIList]]
+] call Zen_CreateControl;
+
+_buttonBack = ["Button",
+    ["Text", "Scrap Route"],
+    ["Position", [0, 12]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_OF_RouteGUIBack"]
     // ["LinksTo", [Zen_OF_RouteGUIList]]
@@ -214,4 +242,4 @@ _buttonBack = ["Button",
 Zen_OF_RouteDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_RouteDialog, _x] call Zen_LinkControl;
-} forEach [Zen_OF_RouteGUIList, _buttonMove, _buttonNew, _buttonDelete, _buttonCancel, _buttonBack, _buttonInsert];
+} forEach [Zen_OF_RouteGUIList, _buttonMove, _buttonNew, _buttonDelete, _buttonCancel, _buttonAccept, _buttonBack, _buttonInsert];

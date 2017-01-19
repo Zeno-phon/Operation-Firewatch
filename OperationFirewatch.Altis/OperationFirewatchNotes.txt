@@ -51,6 +51,8 @@ Zen_OF_FindFire
     use fire object geometry to evaluate probability of detection
 
 // Zen_OF_ManageDrones
+    fuel as function of time
+        use straight line speed and max range to compute fuel/time
     // deplete fuel (as function of velocity/acceleration)
     // print fuel level alerts at 10% steps
     // if 30% fuel or 70% health, force RTB
@@ -136,6 +138,7 @@ Zen_OF_ManageFire
 // Order stop button
 // Order move button
 Recalculate route button
+    // distance, time, fuel remaining
     display total distance, time to travel, time before refuel needed, time to travel to nearest refuel point (from end of route)
     measure average straight path nominal velocity
     average time take to reach shortest straight line path after turn as function of angle between paths
@@ -197,6 +200,11 @@ Recalculate route button
 ?? insert waypoint button
     after selected waypoint
 ?? swap waypoint button
+show ETA on each waypoint
+// log enter and exit of dialog
+// remove back button
+    // force accept or scrap all
+    esc key scraps
 
 ////////////////////////////////////////////////
 // Global functions
@@ -218,9 +226,10 @@ better definition of marker areas
 // Changelog
 ////////////////////////////////////////////////
 
-1. New Function: Zen_OF_FindDroneRouteData
-2. Fixed: Route planning GUI now longer allows duplicate events
-3. Added: Route planning GUI now logs events
-4. Added: Route planning GUI now displays waypoint information
-5. Added: Drone GUI now displays waypoint information for group #2
-6. Documentation: Added for Zen_OF_FindDroneRouteData
+1. Fixed: Init spawned a drone and AAA of the wrong side
+2. Added: Fixed wing drone
+3. Added: Logging of opening and closing manual waypoint planning GUI
+4. Improved: Manual waypoint planning GUI requires the user to accept or scrap their route before exiting
+5. Improved: Manual paths display only ETA
+6. Improved: Mission logs ArmA version at start
+7. Tweaked: Gave drones more fuel (for debug purposes)
