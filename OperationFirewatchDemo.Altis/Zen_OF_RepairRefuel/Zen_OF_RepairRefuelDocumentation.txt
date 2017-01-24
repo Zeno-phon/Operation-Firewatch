@@ -1,0 +1,31 @@
+Repair and Refuel Points
+
+Creates and manages abstract repair and refuel points.
+
+Zen_OF_InvokeRepairRefuel
+
+Creates a new repair and refuel point at (1) with (2) maximum occupants.
+Usage: Call
+Params: 1. Array, group, object, string, position
+        2. Scalar, max occupancy
+Return: String
+
+Zen_OF_GetRepairRefuelData
+
+Returns all data of (1).
+Usage : Call
+Params: 1. String
+Return: Array
+            1. String
+            2. Array, position
+            3. Scalar, maximum occupancy
+            4. Scalar, current occupancy
+
+Zen_OF_UpdateRepairRefuel
+
+Sets the data of (1) to (2,5).  Use '' to skip (2).
+Usage : Call
+Params: 1. String
+        2. Scalar, max occupancy
+ (opt.) 3. Scalar, current occupancy, (default: '')
+Return: Void

@@ -1,0 +1,59 @@
+Zones Subsystem
+
+This subsystem deals with 2D zones of arbitrary shape.  In addition to basic data structure functions, it can spawn and despawn AAA within the zone, providing a cache identifier for external usage.
+
+Zen_OF_InvokeZone
+
+Creates a zone of type (1) covering (2).
+Usage : Call
+Params: 1. String, zone type, only 'A', 'B', 'C'
+        2. Array of string, markers that define the zone
+Return: String, zone id
+
+Zen_OF_GetZoneData
+
+Returns a copy of the data of (1).
+Usage : Call
+Params: 1. String, zone id
+Return: Array
+            1. String, zone id
+            2. String, zone type
+            3. Array of string, zone markers
+            4. String, AAA cache id
+            5. Array, heuristic coverage center
+            6. Scalar, heuristic coverage radius
+            7. Boolean, if there is a drone in this zone
+
+Zen_OF_IsInZone
+
+Determines if (1) is in (2).
+Usage : Call
+Params: 1. Array, group, object, string, a position
+        2. String, zone id
+Return: Boolean
+
+Zen_OF_UpdateZone
+
+Sets the data of (1) to (2,3).  Enter a 0 to skip (2).
+Usage : Call
+Params: 1. String, zone id
+        2. String, zone type, only 'A', 'B', 'C'
+ (opt.) 3. Array of string, the zone markers, (default: 0)
+Return: Void
+
+Zen_OF_SpawnZoneAAA
+
+Populates (1) with AAA vehicles of type (3) at average density (2).
+Updates the cache identifier in the zone global data.
+Usage : Call
+Params: 1. String, zone id
+        2. Scalar, AAA density per km^2
+        3. String, AAA vehicle classname
+Return: Void
+
+Zen_OF_DeleteZoneAAA
+
+Deletes all AAA from (1) and resets the cache identifier in the zone global data.
+Usage : Call
+Params: 1. String, zone id
+Return: Void

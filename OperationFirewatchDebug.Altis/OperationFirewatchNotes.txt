@@ -1,0 +1,235 @@
+////////////////////////////////////////////////
+// Drones
+////////////////////////////////////////////////
+// Data
+    // String, a unique identifier
+    // Object, the in-game object
+    // Scalar, sensor health
+    // Scalar, fuel remaining
+    // Script handle, the current drone order thread
+    // Array of strings, zones known to the drone
+    // String, marker on drone
+    // Array of arrays, path solutions
+    // Array of string, path markers
+    // Scalar, current path
+
+// Zen_OF_InvokeDrone
+// Zen_OF_GetDroneData
+// Zen_OF_UpdateDrone
+// Zen_OF_OrderDroneExecuteRoute
+
+Zen_OF_FindDroneRoute
+    // get end point from user
+    diamond algorithm
+        // choose angle and distance by Gaussian random (centered at half distance, and double Gaussian at +-45 deg)
+            // draw a line from the destination at an angle and radius
+            // if that line does not intersect a zone (use heuristic circle)
+                // draw another line to the starting point
+                // if that line does not intersect a zone
+                    // add to the list of solutions (cutoff at X solutions)
+        // sort by min overall distance
+        account for start or end being inside zone
+        account for zone permissions
+    diamond tunneling algorithm
+        choose angle and distance by Gaussian random (centered at half distance, and double Gaussian at +-45 deg)
+            draw a line from the destination at an angle and radius
+            draw another line to the starting point
+            add to the list of solutions with weight factor for distance through zones (cutoff at X solutions)
+        sort by min overall distance
+    stepped diamond algorithm
+        to avoid a large (Width > dist), circular (width ~ depth) obstacle between start and end
+        ray cast horizontally until vertical path is clear
+        use this distance to draw diamond
+    splitting diamond algorithm
+        split the corner of the diamond in a line parallel to start->end
+    A*
+        dynamic graph rotated such that start -> end || x (with 2nd NN)
+        choose NN with lowest heuristic distance + real distance with no closed set
+        heuristic is not monotonic and is shortest taxicab weighted norm to end
+
+Zen_OF_FindFire
+    use fire object geometry to evaluate probability of detection
+
+// Zen_OF_ManageDrones
+    fuel as function of time
+        use straight line speed and max range to compute fuel/time
+    // deplete fuel (as function of velocity/acceleration)
+    // print fuel level alerts at 10% steps
+    // if 30% fuel or 70% health, force RTB
+        // use straight line path
+        // don't report which repair/refuel point was selected to the user
+        // crash on 0% fuel (and log it)
+    // detect current zone
+        // count out->in event as 1 violation
+        // count in->in event as 1 timescale
+        // count out->in and in->out event as 0.5 timescale
+        // Spawn AAA in C zone
+            recache AAA when drones leaves or is killed
+        // account for zone permissions
+    // scan for fires
+        // only spam update fire location when it actually moves
+    // deplete sensor health (as function of usage)
+
+////////////////////////////////////////////////
+// Refuel/Repair points
+////////////////////////////////////////////////
+// Data
+    // String, id
+    // Array, position
+    // Scalar, current occupancy
+    // Scalar, maximum occupancy
+
+// Zen_OF_InvokeRepairRefuel
+// Zen_OF_GetRepairRefuelData
+// Zen_OF_UpdateRepairRefuel
+
+////////////////////////////////////////////////
+// Fires
+////////////////////////////////////////////////
+Data
+    // string, id
+    // array of markers, fire coverage
+    array of arrays
+        Scalar, X coordinate
+        Scalar, Y coordinate
+
+// Zen_OF_InvokeFire
+    visible fire
+// Zen_OF_GetFireData
+
+Zen_OF_FindDistToFire
+    generate shortest distances to fire area at discrete angles
+
+Zen_OF_FindFireCrossSection
+    Compute the angular sector occupied by the fire in a circular sweep from a point
+
+////////////////////////////////////////////////
+// Airspace Zone
+////////////////////////////////////////////////
+// Data
+    // string, id
+    // string, type
+    // array of markers, coverage area
+    // string, AAA cache id
+
+// Zen_OF_InvokeZone
+// Zen_OF_GenerateZoneHeuristic
+// Zen_OF_GetZoneData
+// Zen_OF_IsInZone
+// Zen_OF_UpdateZone
+// Zen_OF_SpawnZoneAAA
+// Zen_OF_DeleteZoneAAA
+
+////////////////////////////////////////////////
+// Drone GUI
+////////////////////////////////////////////////
+
+// List of drones
+// Sensor health bar
+// Fuel bar
+// Show drone button
+// Order stop button
+// Order move button
+Recalculate route button
+    // distance, time, fuel remaining
+    display total distance, time to travel, time before refuel needed, time to travel to nearest refuel point (from end of route)
+    measure average straight path nominal velocity
+    average time take to reach shortest straight line path after turn as function of angle between paths
+        dot prod of vel w/ direct path to nominal vel
+        average dist travelled towards next point as func of time to next point (to check if it passed over)
+// Approve route button
+// RTB button
+// Refresh GUI button
+// Close GUI button
+// Report fire button
+    type in location or false alarm
+// Timer text field for auto-confirm
+take control of drone camera
+
+// Zen_OF_DroneGUIListSelect
+// Zen_OF_DroneGUIRefresh
+// Zen_OF_DroneGUIInvoke
+// Zen_OF_DroneGUIDrawPath
+// Zen_OF_DroneGUIStop
+// Zen_OF_DroneGUIRTB
+// Zen_OF_DroneGUIMove
+    // becomes plan route button for group #1
+// Zen_OF_DroneGUIShow
+// Zen_OF_DroneGUIRecalc
+    // disable for group #1
+// Zen_OF_DroneGUIApprove
+
+////////////////////////////////////////////////
+// Permission GUI
+////////////////////////////////////////////////
+
+// GUI elements
+    // list of all drones
+    // list of all A zones
+    // refresh button
+    // close button
+    // show drone and zone button
+        // same as drone GUI for drone
+        // marks selected zone
+    // request permission button
+        // update permissions for selected drone
+
+// Zen_OF_PermissionGUIRefresh
+// Zen_OF_PermissionGUIInvoke
+// Zen_OF_PermissionGUIShow
+// Zen_OF_PermissionGUIRequestPermission
+
+////////////////////////////////////////////////
+// Route planning GUI
+////////////////////////////////////////////////
+
+// List of all waypoints
+// move waypoint button
+    // sets waypoint position to clicked position
+// new waypoint button
+    // appends
+// delete waypoint button
+    // removes selected waypoint
+// cancel button
+    // stops move click event
+?? insert waypoint button
+    after selected waypoint
+?? swap waypoint button
+// show ETA on each waypoint
+// log enter and exit of dialog
+// remove back button
+    // force accept or scrap all
+    esc key scraps
+
+////////////////////////////////////////////////
+// Global functions
+////////////////////////////////////////////////
+
+// split players into groups #1 and #2
+
+Zen_OF_GenerateFire
+    thread for the random starting of fires
+    create probability distribution for fires starting
+
+Fire spawner
+    random point in any AOR with a drone in it
+    log creation
+    5 min timer
+
+AORs
+    predefined AORs on the server
+    assign AORs to clients
+
+better definition of marker areas
+
+////////////////////////////////////////////////
+// Changelog
+////////////////////////////////////////////////
+
+. Added: Demo Version
+. Added: Simple AOR processing and assignment
+. Added: Spawning of fires in AORs
+. Improved: Renamed Debug Version
+. Improved: Removed delay between clicking 'new' and 'move' waypoint and being able to click the map
+. Improved: Accepting or scrapping a manual route now returns the user to the drone dialog
+. Tweaked: Decreased detection distance of fires

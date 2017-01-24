@@ -1,0 +1,19 @@
+Fires System
+
+Creates and evolves fires detectable by drones
+
+Zen_OF_InvokeFire
+
+Creates a new fire covering (1).
+Usage : Call
+Params: 1. Array of strings, coverage markers
+Return: String
+
+Zen_OF_GetZoneData
+
+Returns a copy of the data of (1).
+Usage : Call
+Params: 1. String, fire id
+Return: Array
+            1. String, fire id
+            2. Array of string, fire markers
