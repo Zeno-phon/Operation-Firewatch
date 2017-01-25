@@ -178,6 +178,15 @@ Zen_OF_DroneGUIShow = {
     if ((_droneData select 6) == "") then {
         _mkr = [_droneData select 1, _drone] call Zen_SpawnMarker;
         0 = [_drone, "", "", "", "", _mkr] call Zen_OF_UpdateDrone;
+
+        0 = [_mkr, _droneData select 1] spawn {
+            _mkr = _this select 0;
+            _drone = _this select 1;
+            while {true} do {
+                sleep 5;
+                _mkr setMarkerPos getPosATL _drone;
+            };
+        };
     } else {
         (_droneData select 6) setMarkerPos getPosATL (_droneData select 1);
     };

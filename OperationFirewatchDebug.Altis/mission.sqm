@@ -16,10 +16,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={23194.887,38.291611,18268.148};
-		dir[]={-0.64599907,-0.52052128,0.55836284};
-		up[]={-0.39380762,0.85384554,0.34038404};
-		aside[]={0.65393138,1.3608951e-007,0.75656837};
+		pos[]={23108.623,28.190001,18272.934};
+		dir[]={0.79247701,-0.27790016,0.54291785};
+		up[]={0.22925995,0.96060789,0.15706356};
+		aside[]={0.5651803,-7.8289304e-008,-0.82497174};
 	};
 };
 binarizationWanted=0;
@@ -166,7 +166,7 @@ class Mission
 		class Item1
 		{
 			dataType="Marker";
-			position[]={23251.098,2.3419263e+012,18449.803};
+			position[]={23450.346,2.3419263e+012,18549.426};
 			name="mkTest";
 			markerType="RECTANGLE";
 			type="rectangle";
@@ -178,7 +178,7 @@ class Mission
 		class Item2
 		{
 			dataType="Marker";
-			position[]={23350.891,8.9964166e+023,18449.748};
+			position[]={23550.139,8.9964166e+023,18549.371};
 			name="mkTest2";
 			markerType="RECTANGLE";
 			type="rectangle";
@@ -190,7 +190,7 @@ class Mission
 		class Item3
 		{
 			dataType="Marker";
-			position[]={23304.922,7.9596848e+024,18348.076};
+			position[]={23504.17,7.9596848e+024,18447.699};
 			name="mkRTB";
 			markerType="ELLIPSE";
 			type="ellipse";
@@ -202,7 +202,7 @@ class Mission
 		class Item4
 		{
 			dataType="Marker";
-			position[]={23297.061,4.5210574e+030,18787.088};
+			position[]={23499.734,4.5210574e+030,18998.043};
 			name="mkFire";
 			markerType="ELLIPSE";
 			type="ellipse";

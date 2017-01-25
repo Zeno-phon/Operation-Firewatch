@@ -29,6 +29,8 @@ _droneData = [_drone] call Zen_OF_GetDroneData;
     ZEN_FMW_MP_REServerOnly("A3log", [_drone + " passing checkpoint at " + str _x], call)
 } forEach _path;
 
+(_droneData select 1) move getPosATL (_droneData select 1);
+
 if (_isRTB) then {
     ZEN_FMW_MP_REServerOnly("A3log", ["RTB order for " + _drone + " compete; standby repair/refuel."], call)
     0 = [_rr, "", (([_rr] call Zen_OF_GetRepairRefuelData) select 3) + 1] call Zen_OF_UpdateRepairRefuel;
@@ -37,8 +39,8 @@ if (_isRTB) then {
     player sideChat (_drone + " repair and refueling complete.");
     0 = [_rr, "", (([_rr] call Zen_OF_GetRepairRefuelData) select 3) - 1] call Zen_OF_UpdateRepairRefuel;
 } else {
-    ZEN_FMW_MP_REServerOnly("A3log", ["Move order for " + _drone + " complete."], call)
     player sideChat (_drone + " move order complete.");
+    ZEN_FMW_MP_REServerOnly("A3log", ["Move order for " + _drone + " complete."], call)
 };
 
 {

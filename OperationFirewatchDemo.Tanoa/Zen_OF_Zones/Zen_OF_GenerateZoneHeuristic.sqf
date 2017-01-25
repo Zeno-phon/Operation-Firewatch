@@ -25,16 +25,27 @@ if (count _dataArray == 0) exitWith {
 
 _markers = _dataArray select 2;
 
-_center = [_markers] call Zen_FindCenterPosition;
-for "_r" from 1 to 10000 step 25 do {
-    _isIn = false;
-    for "_phi" from 0 to 330 step 30 do {
-        if ([([_center, _r, _phi, "trig"] call Zen_ExtendVector), _nameString] call Zen_OF_IsInZone) exitWith {
-            _isIn = true;
-        };
+if (count _markers == 1) then {
+    _mkr = _markers select 0;
+    _size = markerSize _mkr;
+    _center = markerPos _mkr;
+    if (markerShape _mkr == "RECTANGLE") then {
+        _maxRadius = sqrt((_size select 0)^2 + (_size select 1)^2)
+    } else {
+        _maxRadius = (_size select 0) max (_size select 1);
     };
-    if !(_isIn) exitWith {
-        _maxRadius = _r;
+} else {
+    _center = [_markers] call Zen_FindCenterPosition;
+    for "_r" from 1 to 10000 step 25 do {
+        _isIn = false;
+        for "_phi" from 0 to 330 step 30 do {
+            if ([([_center, _r, _phi, "trig"] call Zen_ExtendVector), _nameString] call Zen_OF_IsInZone) exitWith {
+                _isIn = true;
+            };
+        };
+        if !(_isIn) exitWith {
+            _maxRadius = _r;
+        };
     };
 };
 

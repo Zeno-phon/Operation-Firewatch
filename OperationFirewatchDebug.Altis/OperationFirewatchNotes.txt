@@ -64,7 +64,7 @@ Zen_OF_FindFire
         // count in->in event as 1 timescale
         // count out->in and in->out event as 0.5 timescale
         // Spawn AAA in C zone
-            recache AAA when drones leaves or is killed
+            cache AAA when drones leaves or is killed
         // account for zone permissions
     // scan for fires
         // only spam update fire location when it actually moves
@@ -94,7 +94,7 @@ Data
         Scalar, Y coordinate
 
 // Zen_OF_InvokeFire
-    visible fire
+    // visible fire
 // Zen_OF_GetFireData
 
 Zen_OF_FindDistToFire
@@ -208,17 +208,16 @@ take control of drone camera
 // split players into groups #1 and #2
 
 Zen_OF_GenerateFire
-    thread for the random starting of fires
-    create probability distribution for fires starting
+    // thread for the random starting of fires
 
 Fire spawner
-    random point in any AOR with a drone in it
-    log creation
+    // random point in any AOR with a drone in it
+    // log creation
     5 min timer
 
-AORs
-    predefined AORs on the server
-    assign AORs to clients
+// AORs
+    // predefined AORs on the server
+    // assign AORs to clients
 
 better definition of marker areas
 
@@ -226,10 +225,9 @@ better definition of marker areas
 // Changelog
 ////////////////////////////////////////////////
 
-. Added: Demo Version
-. Added: Simple AOR processing and assignment
-. Added: Spawning of fires in AORs
-. Improved: Renamed Debug Version
-. Improved: Removed delay between clicking 'new' and 'move' waypoint and being able to click the map
-. Improved: Accepting or scrapping a manual route now returns the user to the drone dialog
-. Tweaked: Decreased detection distance of fires
+1. Added: Ported Demo mission to Tanoa
+2. Improved: Zen_OF_GenerateZoneHeuristic optimized for the special case of a single marker
+3. Improved: Zen_OF_SpawnZoneAAA spawns AAA away from obstacles
+4. Improved: Zen_OF_InvokeZone now logs the creation of a fire
+5. Improved: Drone dialog 'show' button now adds automatic tracking
+

@@ -23,6 +23,7 @@ sleep 1;
 // };
 
 ["----------Start----------"] call A3log;
+["Operation Firewatch Debug"] call A3log;
 ["Running " + str productVersion] call A3log;
 [name player + " is a member of Group #" + (if (Zen_OF_User_Is_Group_Two) then {("2")} else {("1")}) + "."] call A3log;
 
@@ -67,6 +68,9 @@ player commandChat str ([_drone] call Zen_OF_GetDroneData);
 player commandChat str ([_drone] call Zen_OF_GetDroneData);
 
 _drone = [player, "b_uav_02_f"] call Zen_OF_InvokeDrone;
+
+_obj = ["mkFire", "c_plane_civil_01_f", 100] call Zen_SpawnAircraft;
+0 = [[_obj], "none", 0, 1] call Zen_TrackVehicles;
 
 /** Drone speed test
 _droneData = [_drone] call Zen_OF_GetDroneData;

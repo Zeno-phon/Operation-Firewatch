@@ -52,7 +52,7 @@ for "_i" from 1 to round (ZEN_STD_Array_LastElement(_binStops) * _density) step 
 
     // spawn the AAA in the marker and store it
     _mkr = _markers select _index;
-    _pos = [_mkr] call Zen_FindGroundPosition;
+    _pos = [_mkr, 0, [], ZEN_FMW_ZFGP_LandingZone] call Zen_FindGroundPosition;
     _veh = [_pos, _classname, random 360] call Zen_SpawnGroundVehicle;
     0 = [crew _veh, "player"] call Zen_SetAISkill;
     _AAA pushBack [[_veh, crew _veh]];

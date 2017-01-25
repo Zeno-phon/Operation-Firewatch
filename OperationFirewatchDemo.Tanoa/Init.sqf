@@ -108,6 +108,7 @@ _cam9 = ["new", []] call OO_CAMERA;
 #include "Zen_OF_RoutePlanningDialog.sqf"
 
 ["----------Start----------"] call A3log;
+["Operation Firewatch Demo"] call A3log;
 ["Running " + str productVersion] call A3log;
 [name player + " is a member of Group #" + (if (Zen_OF_User_Is_Group_Two) then {("2")} else {("1")}) + "."] call A3log;
 
@@ -123,14 +124,13 @@ for "_i" from 1 to 21 do {
     _prefix = _x select 1;
     _count = _x select 2;
 
-    
     for "_i" from 1 to _count do {
         _zone = [_type, [_prefix + str _i]] call Zen_OF_InvokeZone;
+
         if (_type == "C") then {
             0 = [_zone, 1/ZEN_STD_Math_MarkerArea((_prefix + str _i)), "O_APC_Tracked_02_AA_F"] call Zen_OF_SpawnZoneAAA;
         };
     };
-
 } forEach [["A", "ALPHA_", 6], ["B", "BRAVO_", 13], ["C", "CHARLIE_", 5]];
 
 {
@@ -145,6 +145,9 @@ player sideChat "Player has been assigned 1 drone.";
 
 PC addAction ["Drone GUI", {call Zen_OF_DroneGUIInvoke}];
 PC addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
+
+player addAction ["Drone GUI", {call Zen_OF_DroneGUIInvoke}];
+player addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
 
 _rr = [player, 5] call Zen_OF_InvokeRepairRefuel;
 
@@ -168,4 +171,3 @@ _rr = [player, 5] call Zen_OF_InvokeRepairRefuel;
     _fireArea = [[_aor] call Zen_FindGroundPosition, "", "colorBlack", [10,10], "ellipse", 0, 0] call Zen_SpawnMarker;
     0 = [[_fireArea]] call Zen_OF_InvokeFire;
 };
-
