@@ -70,6 +70,8 @@ Zen_OF_FindFire
         // only spam update fire location when it actually moves
     // deplete sensor health (as function of usage)
 
+drone orbit function
+
 ////////////////////////////////////////////////
 // Refuel/Repair points
 ////////////////////////////////////////////////
@@ -200,6 +202,8 @@ take control of drone camera
 // remove back button
     // force accept or scrap all
     esc key scraps
+add health and fuel bars
+add name of current drone at top
 
 ////////////////////////////////////////////////
 // Global functions
@@ -225,9 +229,7 @@ better definition of marker areas
 // Changelog
 ////////////////////////////////////////////////
 
-1. Added: Ported Demo mission to Tanoa
-2. Improved: Zen_OF_GenerateZoneHeuristic optimized for the special case of a single marker
-3. Improved: Zen_OF_SpawnZoneAAA spawns AAA away from obstacles
-4. Improved: Zen_OF_InvokeZone now logs the creation of a fire
-5. Improved: Drone dialog 'show' button now adds automatic tracking
-
+1. Fixed: Deleting the last manual waypoint caused an error
+2. Added: Map and background controls to all dialogs
+3. Improved: Dialog placement
+4. Improved: Removed input delay on map click events

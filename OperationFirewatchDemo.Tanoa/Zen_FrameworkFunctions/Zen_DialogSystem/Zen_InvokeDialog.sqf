@@ -64,6 +64,7 @@ if !(_doRefresh) then {
             // case "BACKGROUND": {("RscBackground")};
             case "DROPLIST": {("RscCombo")};
             case "PROGRESSBAR": {("RscProgress")};
+            case "MAP": {("RscMapControl")};
             default {("")};
         };
 

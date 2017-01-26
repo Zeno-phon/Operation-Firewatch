@@ -29,7 +29,7 @@ Zen_OF_PermissionGUIRefresh = {
 
 Zen_OF_PermissionGUIInvoke= {
     REFRESH_LISTS
-    0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX,safeZoneH - 1], true] call Zen_InvokeDialog;
+    0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX + 0.4,safeZoneH - 1], false] call Zen_InvokeDialog;
 };
 
 Zen_OF_PermissionGUIDroneList = ["List",
@@ -121,4 +121,4 @@ _buttonClose = ["Button",
 Zen_OF_PermissionGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_PermissionGUIDialog, _x] call Zen_LinkControl;
-} forEach [Zen_OF_PermissionGUIDroneList, Zen_OF_PermissionGUIZoneList, _buttonShow, _buttonRefresh, _buttonClose, _buttonRequestPermission];
+} forEach [_background, _map, Zen_OF_PermissionGUIDroneList, Zen_OF_PermissionGUIZoneList, _buttonShow, _buttonRefresh, _buttonClose, _buttonRequestPermission];

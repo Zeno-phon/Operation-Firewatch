@@ -29,7 +29,7 @@ Zen_OF_RouteGUIInvoke= {
     0 = [Zen_OF_RouteGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
 
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has opened manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
-    0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX,safeZoneH - 1], true] call Zen_InvokeDialog;
+    0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX + 0.6,safeZoneH - 1], false] call Zen_InvokeDialog;
 };
 
 Zen_OF_RouteGUIMove = {
@@ -50,7 +50,6 @@ Zen_OF_RouteGUIMove = {
         _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
         CHECK_FOR_DEAD
 
-        ZEN_STD_Code_SleepFrames(5)
         Zen_OF_DroneMovePos = 0;
         waitUntil {
             sleep 1;
@@ -86,7 +85,6 @@ Zen_OF_RouteGUINew = {
         _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
         CHECK_FOR_DEAD
 
-        ZEN_STD_Code_SleepFrames(5)
         Zen_OF_DroneMovePos = 0;
         waitUntil {
             sleep 1;
@@ -136,7 +134,11 @@ Zen_OF_RouteGUIDelete = {
     0 = [_path, _waypoint] call Zen_ArrayRemoveIndex;
 
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0] call Zen_OF_UpdateDrone;
-    _markers = [Zen_OF_RouteGUICurrentDrone, true, SHOW_FULL_PATH_INFO_FOR_MANUAL] call Zen_OF_DroneGUIDrawPath;
+
+    if (count _path > 0) then {
+        _markers = [Zen_OF_RouteGUICurrentDrone, true, SHOW_FULL_PATH_INFO_FOR_MANUAL] call Zen_OF_DroneGUIDrawPath;
+    };
+
     call Zen_OF_RouteGUIRefresh;
 };
 
@@ -155,15 +157,14 @@ Zen_OF_RouteGUICancel = {
 
 Zen_OF_RouteGUIAccept = {
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has closed manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
-    call Zen_CloseDialog;
-
     [0, Zen_OF_RouteGUICurrentDrone] call Zen_OF_DroneGUIApprove;
+
+    call Zen_CloseDialog;
     0 = [] spawn Zen_OF_DroneGUIInvoke;
 };
 
 Zen_OF_RouteGUIBack = {
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has closed manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + " and scrapped the planned route."], call)
-    call Zen_CloseDialog;
 
     _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
     _markers = _droneData select 8;
@@ -171,6 +172,8 @@ Zen_OF_RouteGUIBack = {
         deleteMarker _x;
     } forEach _markers;
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [], [], 0] call Zen_OF_UpdateDrone;
+
+    call Zen_CloseDialog;
     0 = [] spawn Zen_OF_DroneGUIInvoke;
 };
 
@@ -242,4 +245,4 @@ _buttonBack = ["Button",
 Zen_OF_RouteDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_RouteDialog, _x] call Zen_LinkControl;
-} forEach [Zen_OF_RouteGUIList, _buttonMove, _buttonNew, _buttonDelete, _buttonCancel, _buttonAccept, _buttonBack, _buttonInsert];
+} forEach [_background, _map, Zen_OF_RouteGUIList, _buttonMove, _buttonNew, _buttonDelete, _buttonCancel, _buttonAccept, _buttonBack, _buttonInsert];

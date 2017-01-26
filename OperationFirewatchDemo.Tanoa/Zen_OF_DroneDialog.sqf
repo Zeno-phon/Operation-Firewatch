@@ -63,7 +63,7 @@ Zen_OF_DroneGUIInvoke= {
     } forEach Zen_OF_Drones_Local;
 
     0 = [Zen_OF_DroneGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
-    0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX,safeZoneH - 1], true] call Zen_InvokeDialog;
+    0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX + 0.6,safeZoneH - 1], false] call Zen_InvokeDialog;
     0 = [Zen_OF_DroneGUIRefreshButton, "ActivationFunction"] spawn Zen_ExecuteEvent;
 };
 
@@ -191,7 +191,7 @@ Zen_OF_DroneGUIShow = {
         (_droneData select 6) setMarkerPos getPosATL (_droneData select 1);
     };
 
-    openMap [true, false];
+    // openMap [true, false];
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has plotted the position of " + _drone + " at " + str (getPosATL (_droneData select 1)) + " on the map."], call)
 };
 
@@ -201,7 +201,7 @@ Zen_OF_DroneGUIMove = {
     CHECK_FOR_DEAD
     CHECK_FOR_RTB
 
-    openMap [true, false];
+    // openMap [true, false];
     // call Zen_CloseDialog;
 
     // player groupChat str _droneData;
@@ -215,9 +215,9 @@ Zen_OF_DroneGUIMove = {
     };
 
     if !(Zen_OF_User_Is_Group_Two) exitWith {
-        call Zen_CloseDialog;
         Zen_OF_RouteGUICurrentDrone = _drone;
-        [_drone]  call Zen_OF_RouteGUIInvoke;
+        call Zen_CloseDialog;
+        [_drone] call Zen_OF_RouteGUIInvoke;
     };
 
     player sideChat "Click on the map to order the drone to Move.";
@@ -225,7 +225,7 @@ Zen_OF_DroneGUIMove = {
         _drone = _this select 0;
         _droneData = _this select 1;
         CHECK_FOR_DEAD
-        ZEN_STD_Code_SleepFrames(5)
+
         Zen_OF_DroneMovePos = 0;
         waitUntil {
             sleep 1;
@@ -519,9 +519,20 @@ _buttonClose = ["Button",
     ["ActivationFunction", "Zen_CloseDialog"]
 ] call Zen_CreateControl;
 
+_map = ["Map",
+    ["Position", [-88, -50]],
+    ["Size", [88,74]]
+] call Zen_CreateControl;
+
+_background = ["Picture",
+    ["Position", [0, -51]],
+    ["Size", [50,76]],
+    ["Picture", "images\blank.paa"]
+] call Zen_CreateControl;
+
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [Zen_OF_DroneGUIList, _buttonShow, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer];
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonShow, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer];
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;
