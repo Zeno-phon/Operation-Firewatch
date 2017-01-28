@@ -4,7 +4,7 @@
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
 _Zen_stack_Trace = ["Zen_OF_OrderDroneExecuteRoute", _this] call Zen_StackAdd;
-private ["_drone", "_path", "_droneData", "_isRTB", "_rr", "_markers"];
+private ["_drone", "_path", "_droneData", "_isRTB", "_rr", "_markers", "_speed", "_h_orbit"];
 
 if !([_this, [["STRING"], ["ARRAY"], ["ARRAY"], ["BOOL"], ["STRING"]], [[], ["ARRAY"], ["STRING"]], 3] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -19,17 +19,26 @@ ZEN_STD_Parse_GetArgumentDefault(_rr, 4, "")
 
 _droneData = [_drone] call Zen_OF_GetDroneData;
 
+_speed = [Zen_OF_Drone_Speeds, typeOf (_droneData select 1), 0] call Zen_ArrayGetNestedValue;
+
+if (count _speed == 0) exitWith {
+    ZEN_FMW_Code_ErrorExitValue("Zen_OF_FindDroneRouteData", "Given drone is of unknown type.", [])
+};
+
+_speed = _speed select 1;
+
 {
     (_droneData select 1) move _x;
 
     waitUntil {
-        sleep 5;
-        (unitReady (_droneData select 1)) || (((_droneData select 1) distance2D _x) < 25);
+        sleep 4;
+        (unitReady (_droneData select 1)) || (((_droneData select 1) distance2D _x) < (_speed * 2));
     };
     ZEN_FMW_MP_REServerOnly("A3log", [_drone + " passing checkpoint at " + str _x], call)
 } forEach _path;
 
-(_droneData select 1) move getPosATL (_droneData select 1);
+_h_orbit = [_drone, (_droneData select 1), 500] spawn Zen_OF_OrderDroneOrbit;
+0 = [_drone, "", "", "", "", 0, "", "", "", "", "", "", "", _h_orbit] call Zen_OF_UpdateDrone;
 
 if (_isRTB) then {
     ZEN_FMW_MP_REServerOnly("A3log", ["RTB order for " + _drone + " compete; standby repair/refuel."], call)

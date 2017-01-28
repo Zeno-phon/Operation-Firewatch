@@ -1,12 +1,11 @@
 Drones System
 
-Currently in the Alpha phase...
+Creates and manages drones, their movement, fuel, health, and the detection of fires.
 
 Zen_OF_FindDroneRoute
 
 Computes a set of paths from (1) to (2), sorted by cost.
-NOTE - Actual pathfinding algorithm not implemented
-The current code is a placeholder.
+NOTE - Current pathfinding algorithm is incomplete.
 Usage : Call
 Params: 1. String, drone id
         2. Array, group, object, string, the start
@@ -58,6 +57,7 @@ Return: Array
             12. Script handle, drone GUI event thread
             13. Script handle, drone GUI auto confirm countdown
             14. Scalar, time that the auto confirm countdown started
+            15. Script handle, drone orbit thread
 
 Zen_OF_InvokeDrone
 
@@ -73,16 +73,25 @@ Zen_OF_OrderDroneExecuteRoute
 Orders (1) to move through all (2) in order.  If (3), makes (1) repair and
 refuel at (4), assuming (4) is at the end of (2).
 Usage : Spawn
-Parmas: 1. String, drone id
+Params: 1. String, drone id
         2. Array of positions, waypoints
  (opt.) 3. Boolean, true if this is an RTB order, (default: false)
  (opt.) 4. String, repair and refuel identifier, (default: '')
 Return: Void
 
+Zen_OF_OrderDroneOrbit
+
+Orders (1) to move in a circular orbit of (2) at radius (3) forever.
+Usage : Spawn
+Params: 1. String, drone id
+        2. Array, group, object, string, the center
+        3. Scalar, the radius
+Return: Void
+
 Zen_OF_UpdateDrone
 
 Sets the data of (1) to (2,5).  Must be run local to the client
-that will manage this drone.  Use '' to skip (2,5) and (7,13), and 0 to skip (6).
+that will manage this drone.  Use '' to skip (2,5) and (7,14), and 0 to skip (6).
 Usage : Call
 Params: 1. String, drone identifier
         2. Scalar, sensor health
@@ -97,4 +106,5 @@ Params: 1. String, drone identifier
  (opt.) 11. Script handle, drone GUI event thread, (default: '')
  (opt.) 12. Script handle, drone GUI auto confirm countdown, (default: '')
  (opt.) 13. Scalar, time that the auto confirm countdown started, (default: '')
+ (opt.) 14. Script handle, drone orders thread, (default: '')
 Return: Void

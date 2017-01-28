@@ -21,6 +21,8 @@
         player sideChat (_drone + " is dead."); \
     };
 
+#define PARSE_WAYPOINT_INFO(A) (format["Distance: %1 m; ETA: %2 s; Fuel: %3 %4", A select 0, A select 1, (A select 2) * 100, "%"])
+
 Zen_OF_DroneGUIRefresh = {
     _list = [];
     _listData = [];
@@ -94,9 +96,9 @@ Zen_OF_DroneGUIDrawPath = {
     };
 
     if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
-        _markers pushBack ([_path select 0, str (_pathData select 0)] call Zen_SpawnMarker);
+        _markers pushBack ([_path select 0, PARSE_WAYPOINT_INFO(_pathData select 0)] call Zen_SpawnMarker);
     } else {
-        _markers pushBack ([_path select 0, str ((_pathData select 0) select 1)] call Zen_SpawnMarker);
+        _markers pushBack ([_path select 0, "ETA: " + str round ((_pathData select 0) select 1) + " s"] call Zen_SpawnMarker);
     };
 
     for "_i" from 0 to (count _path - 2) do {
@@ -105,9 +107,9 @@ Zen_OF_DroneGUIDrawPath = {
         _markers pushBack _mkr;
 
         if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
-            _markers pushBack ([_path select (_i + 1), str (_pathData select (_i + 1))] call Zen_SpawnMarker);
+            _markers pushBack ([_path select (_i + 1), PARSE_WAYPOINT_INFO(_pathData select (_i + 1))] call Zen_SpawnMarker);
         } else {
-            _markers pushBack ([_path select (_i + 1), str ((_pathData select (_i + 1)) select 1)] call Zen_SpawnMarker);
+            _markers pushBack ([_path select (_i + 1), "ETA: " + str round ((_pathData select (_i + 1)) select 1) + " s"] call Zen_SpawnMarker);
         };
     };
 
@@ -183,7 +185,7 @@ Zen_OF_DroneGUIShow = {
             _mkr = _this select 0;
             _drone = _this select 1;
             while {true} do {
-                sleep 5;
+                sleep 2;
                 _mkr setMarkerPos getPosATL _drone;
             };
         };
@@ -355,6 +357,9 @@ Zen_OF_DroneGUIApprove = {
     } else {
         player sideChat (_drone + " route approved.");
         ZEN_FMW_MP_REServerOnly("A3log", [name player + " has accepted path of " + _drone + " through " + str (_paths select _pathIndex) + "."], call)
+
+        player groupChat str (_droneData select 14);
+        terminate (_droneData select 14);
         _h_move = ([_drone, _paths select _pathIndex, _markers] + _RTBArgs) spawn Zen_OF_OrderDroneExecuteRoute;
         0 = [_drone, "", "", _h_move] call Zen_OF_UpdateDrone;
     };
@@ -417,7 +422,9 @@ Zen_OF_DroneGUIStop = {
         0 = [_drone, "", "", "", "", 0, [], [], 0] call Zen_OF_UpdateDrone;
     };
 
-    (_droneData select 1) move getPosATL (_droneData select 1);
+    _h_orbit = [_drone, (_droneData select 1), 500] spawn Zen_OF_OrderDroneOrbit;
+    0 = [_drone, "", "", "", "", 0, [], [], 0, "", "", "", "", _h_orbit] call Zen_OF_UpdateDrone;
+
     player sideChat (_drone + " stopping.");
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + _drone + " at " + str (getPosATL (_droneData select 1)) + " to stop."], call)
 };

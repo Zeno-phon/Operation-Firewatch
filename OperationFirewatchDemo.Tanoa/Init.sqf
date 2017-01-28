@@ -17,6 +17,10 @@ enableSaving [false, false];
 
 Zen_OF_Drone_Speeds = [["b_uav_01_f", 16], ["b_uav_02_f", 105]];
 
+for "_i" from 1 to 21 do {
+    ("AORLarge_" + str _i) setMarkerAlpha 0;
+};
+
 if (!isServer) exitWith {};
 sleep 1;
 
@@ -115,10 +119,6 @@ _cam9 = ["new", []] call OO_CAMERA;
 // debug
 // 0 = ["Charlie_1", "test_EmptyObjectForFireBig"] call Zen_SpawnVehicle;
 
-for "_i" from 1 to 21 do {
-    ("AORLarge_" + str _i) setMarkerAlpha 0;
-};
-
 {
     _type = _x select 0;
     _prefix = _x select 1;
@@ -139,7 +139,7 @@ for "_i" from 1 to 21 do {
 
 ZEN_FMW_MP_REAll("Zen_OF_ManageDrones", [], spawn)
 
-_drone = [player, "b_uav_02_f"] call Zen_OF_InvokeDrone;
+_drone = [player, Drone_Fixed_01] call Zen_OF_InvokeDrone;
 
 player sideChat "Player has been assigned 1 drone.";
 

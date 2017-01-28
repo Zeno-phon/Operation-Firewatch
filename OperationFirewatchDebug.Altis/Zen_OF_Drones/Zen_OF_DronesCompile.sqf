@@ -10,4 +10,5 @@ Zen_OF_GetDroneData = compileFinal preprocessFileLineNumbers "Zen_OF_Drones\Zen_
 Zen_OF_InvokeDrone = compileFinal preprocessFileLineNumbers "Zen_OF_Drones\Zen_OF_InvokeDrone.sqf";
 Zen_OF_ManageDrones = compileFinal preprocessFileLineNumbers "Zen_OF_Drones\Zen_OF_ManageDrones.sqf";
 Zen_OF_OrderDroneExecuteRoute = compileFinal preprocessFileLineNumbers "Zen_OF_Drones\Zen_OF_OrderDroneExecuteRoute.sqf";
+Zen_OF_OrderDroneOrbit = compileFinal preprocessFileLineNumbers "Zen_OF_Drones\Zen_OF_OrderDroneOrbit.sqf";
 Zen_OF_UpdateDrone = compileFinal preprocessFileLineNumbers "Zen_OF_Drones\Zen_OF_UpdateDrone.sqf";
