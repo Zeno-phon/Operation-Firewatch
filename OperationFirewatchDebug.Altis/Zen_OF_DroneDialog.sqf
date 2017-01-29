@@ -65,7 +65,7 @@ Zen_OF_DroneGUIInvoke= {
     } forEach Zen_OF_Drones_Local;
 
     0 = [Zen_OF_DroneGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
-    0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX + 0.6,safeZoneH - 1], false] call Zen_InvokeDialog;
+    0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false] call Zen_InvokeDialog;
     0 = [Zen_OF_DroneGUIRefreshButton, "ActivationFunction"] spawn Zen_ExecuteEvent;
 };
 
@@ -421,7 +421,11 @@ Zen_OF_DroneGUIStop = {
         0 = [_drone, "", "", "", "", 0, [], [], 0] call Zen_OF_UpdateDrone;
     };
 
-    _h_orbit = [_drone, (_droneData select 1), 500] spawn Zen_OF_OrderDroneOrbit;
+    _droneClassData = [(_droneData select 1)] call Zen_F_GetDroneClassData;
+    // _speed = _droneClassData select 0;
+    _orbitRadius = _droneClassData select 1;
+
+    _h_orbit = [_drone, (_droneData select 1), _orbitRadius] spawn Zen_OF_OrderDroneOrbit;
     0 = [_drone, "", "", "", "", 0, [], [], 0, "", "", "", "", _h_orbit] call Zen_OF_UpdateDrone;
 
     player sideChat (_drone + " stopping.");
@@ -536,9 +540,51 @@ _background = ["Picture",
     ["Picture", "images\blank.paa"]
 ] call Zen_CreateControl;
 
+_statusPicture = ["Picture",
+    ["Position", [0, -49]],
+    ["Size", [20,9]],
+    ["Picture", "images\Drone_Status_Fixed.paa"]
+] call Zen_CreateControl;
+
+_statusText = ["Text",
+    ["Position", [11.4, -46.1]],
+    ["Size", [5,2]],
+    ["FontColor", [0, 255, 0, 255]],
+    ["Text", "000"]
+] call Zen_CreateControl;
+
+_statusText1 = ["Text",
+    ["Position", [8.4, -44.55]],
+    ["Size", [5,2]],
+    ["FontColor", [0, 255, 0, 255]],
+    ["Text", "111"]
+] call Zen_CreateControl;
+
+_statusText2 = ["Text",
+    ["Position", [11.9, -42.5]],
+    ["Size", [5,2]],
+    ["FontColor", [0, 255, 0, 255]],
+    ["Text", "222"]
+] call Zen_CreateControl;
+
+_statusText3 = ["Text",
+    ["Position", [3.7, -42.55]],
+    ["Size", [5,2]],
+    ["FontColor", [0, 255, 0, 255]],
+    ["Text", "333"]
+] call Zen_CreateControl;
+
+_statusText4 = ["Text",
+    ["Position", [15.1, -48.2]],
+    ["Size", [5,2]],
+    ["FontSize", 23],
+    ["FontColor", [0, 255, 0, 255]],
+    ["Text", "4"]
+] call Zen_CreateControl;
+
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonShow, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer];
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonShow, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4];
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

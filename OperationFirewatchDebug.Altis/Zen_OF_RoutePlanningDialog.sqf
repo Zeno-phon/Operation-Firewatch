@@ -29,7 +29,7 @@ Zen_OF_RouteGUIInvoke= {
     0 = [Zen_OF_RouteGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
 
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has opened manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
-    0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX + 0.6,safeZoneH - 1], false] call Zen_InvokeDialog;
+    0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false] call Zen_InvokeDialog;
 };
 
 Zen_OF_RouteGUIMove = {

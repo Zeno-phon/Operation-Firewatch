@@ -13,7 +13,21 @@ call compileFinal preprocessFileLineNumbers "Zen_OF_Fires\Zen_OF_FiresCompile.sq
 // titleText ["Good Luck", "BLACK FADED", 0.2];
 enableSaving [false, false];
 
-Zen_OF_Drone_Speeds = [["b_uav_01_f", 16], ["b_uav_02_f", 105]];
+Zen_OF_Drone_Class_Data = [["b_uav_01_f", 16, 300], ["b_uav_02_f", 105, 300]];
+
+Zen_F_GetDroneClassData = {
+    private ["_droneObj", "_droneClassData"];
+
+    _droneObj = _this select 0;
+
+    _droneClassData = [Zen_OF_Drone_Class_Data, typeOf _droneObj, 0] call Zen_ArrayGetNestedValue;
+
+    if (count _droneClassData == 0) exitWith {
+        ZEN_FMW_Code_ErrorExitValue("Zen_OF_FindDroneRouteData", "Given drone is of unknown type.", [])
+    };
+
+    ([(_droneClassData select 1), (_droneClassData select 2)])
+};
 
 if (!isServer) exitWith {};
 sleep 1;

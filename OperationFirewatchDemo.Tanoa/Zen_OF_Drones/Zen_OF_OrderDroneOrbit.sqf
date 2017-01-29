@@ -4,7 +4,7 @@
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
 _Zen_stack_Trace = ["Zen_OF_OrderDroneOrbit", _this] call Zen_StackAdd;
-private ["_drone", "_center", "_radius", "_droneData", "_orbitPoints", "_dPhi", "_speed", "_i"];
+private ["_drone", "_center", "_radius", "_droneData", "_orbitPoints", "_dPhi", "_speed", "_i", "_droneClassData"];
 
 if !([_this, [["STRING"], ["VOID"], ["SCALAR"]], [], 3] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -25,13 +25,8 @@ for "_phi" from 0 to (360 - _dPhi) step _dPhi do {
     _orbitPoints pushBack ([_center, _radius, _phi] call Zen_ExtendVector);
 };
 
-_speed = [Zen_OF_Drone_Speeds, typeOf (_droneData select 1), 0] call Zen_ArrayGetNestedValue;
-
-if (count _speed == 0) exitWith {
-    ZEN_FMW_Code_ErrorExitValue("Zen_OF_FindDroneRouteData", "Given drone is of unknown type.", [])
-};
-
-_speed = _speed select 1;
+_droneClassData = [(_droneData select 1)] call Zen_F_GetDroneClassData;
+_speed = _droneClassData select 0;
 
 ZEN_FMW_MP_REServerOnly("A3log", [_drone + " is orbiting " + str _center + " with radius " + str _radius], call)
 _i = 0;

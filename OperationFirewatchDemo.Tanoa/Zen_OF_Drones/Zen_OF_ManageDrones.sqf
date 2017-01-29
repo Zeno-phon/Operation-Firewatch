@@ -165,6 +165,7 @@ while {true} do {
 
                                     if !(_droneCleared) then {
                                         _zoneViolationNew set [ALPHA_TO_NUMBER(_type), true];
+                                        player sideChat (_drone + " has tresspassed in zone " + (_x select 0) + " of type " + _type);
                                         ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has trespassed into zone " + (_x select 0) + " of type " + _type + " at " + str _newPos)], call)
 
                                         _x set [6, true];

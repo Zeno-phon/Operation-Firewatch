@@ -16,11 +16,11 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=115;
+		nextID=124;
 	};
 	class Camera
 	{
-		pos[]={2312.6582,50.898403,13375.273};
+		pos[]={2305.1191,52.05571,13369.811};
 		dir[]={0.75475848,-0.28641284,0.59019864};
 		up[]={0.22562787,0.958103,0.17643367};
 		aside[]={0.61600339,1.5471596e-007,-0.78775758};
@@ -647,7 +647,7 @@ class Mission
 				class Item0
 				{
 					dataType="Marker";
-					position[]={2594.4319,143.69579,12321.626};
+					position[]={2563.9202,59.376423,11985.998};
 					name="CHARLIE_1";
 					markerType="ELLIPSE";
 					type="ellipse";
@@ -4868,7 +4868,7 @@ class Mission
 					};
 					id=723;
 					type="Land_HelipadEmpty_F";
-					atlOffset=49.901337;
+					atlOffset=50;
 				};
 				class Item5
 				{
