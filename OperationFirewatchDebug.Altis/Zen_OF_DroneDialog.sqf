@@ -358,7 +358,6 @@ Zen_OF_DroneGUIApprove = {
         player sideChat (_drone + " route approved.");
         ZEN_FMW_MP_REServerOnly("A3log", [name player + " has accepted path of " + _drone + " through " + str (_paths select _pathIndex) + "."], call)
 
-        player groupChat str (_droneData select 14);
         terminate (_droneData select 14);
         _h_move = ([_drone, _paths select _pathIndex, _markers] + _RTBArgs) spawn Zen_OF_OrderDroneExecuteRoute;
         0 = [_drone, "", "", _h_move] call Zen_OF_UpdateDrone;

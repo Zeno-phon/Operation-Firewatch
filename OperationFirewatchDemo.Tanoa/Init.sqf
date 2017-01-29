@@ -140,6 +140,7 @@ _cam9 = ["new", []] call OO_CAMERA;
 ZEN_FMW_MP_REAll("Zen_OF_ManageDrones", [], spawn)
 
 _drone = [player, Drone_Fixed_01] call Zen_OF_InvokeDrone;
+0 = [_drone, "", "", "", +Zen_OF_Zone_Knowledge_Local] call Zen_OF_UpdateDrone;
 
 player sideChat "Player has been assigned 1 drone.";
 
