@@ -65,7 +65,7 @@ Zen_OF_DroneGUIInvoke= {
     } forEach Zen_OF_Drones_Local;
 
     0 = [Zen_OF_DroneGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
-    0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false] call Zen_InvokeDialog;
+    0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false, true] call Zen_InvokeDialog;
     0 = [Zen_OF_DroneGUIRefreshButton, "ActivationFunction"] spawn Zen_ExecuteEvent;
 };
 
@@ -585,6 +585,6 @@ _statusText4 = ["Text",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonShow, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4];
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4];
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

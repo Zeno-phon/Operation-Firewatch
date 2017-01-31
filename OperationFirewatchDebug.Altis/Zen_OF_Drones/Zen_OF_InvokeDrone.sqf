@@ -31,7 +31,7 @@ if (ZEN_STD_OBJ_ATLPositionZ(_obj) > 5) then {
     _h_orbit = [_nameString, _pos, _orbitRadius] spawn Zen_OF_OrderDroneOrbit;
 };
 
-Zen_OF_Drones_Local pushBack [_nameString, _obj, 1, 1, scriptNull, [], "", [], [], 0, [], scriptNull, scriptNull, 0, _h_orbit];
+Zen_OF_Drones_Local pushBack [_nameString, _obj, 1, 1, scriptNull, [], "", [], [], 0, [], scriptNull, scriptNull, 0, _h_orbit, []];
 publicVariable "Zen_OF_Drones_Local";
 
 call Zen_StackRemove;

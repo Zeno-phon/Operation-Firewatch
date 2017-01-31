@@ -128,6 +128,7 @@ _cam9 = ["new", []] call OO_CAMERA;
 ["----------Start----------"] call A3log;
 ["Operation Firewatch Demo"] call A3log;
 ["Running " + str productVersion] call A3log;
+["Running " + str productVersion, "Table"] call A3log;
 [name player + " is a member of Group #" + (if (Zen_OF_User_Is_Group_Two) then {("2")} else {("1")}) + "."] call A3log;
 
 // debug
@@ -155,6 +156,15 @@ ZEN_FMW_MP_REAll("Zen_OF_ManageDrones", [], spawn)
 
 _drone = [player, Drone_Fixed_01] call Zen_OF_InvokeDrone;
 0 = [_drone, "", "", "", +Zen_OF_Zone_Knowledge_Local] call Zen_OF_UpdateDrone;
+
+0 = [Drone_Fixed_01] spawn {
+    _drone = _this select 0;
+    ["Time, s     Speed, m/s,     Direction, deg", "Table"] call A3log;
+    while {true} do {
+        sleep 2;
+        [(str time + "      " + str (vectorMagnitude velocity _drone) + "        " + str getDir _drone), "Table"] call A3log;
+    };
+};
 
 player sideChat "Player has been assigned 1 drone.";
 
@@ -186,3 +196,4 @@ _rr = [player, 5] call Zen_OF_InvokeRepairRefuel;
     _fireArea = [[_aor] call Zen_FindGroundPosition, "", "colorBlack", [10,10], "ellipse", 0, 0] call Zen_SpawnMarker;
     0 = [[_fireArea]] call Zen_OF_InvokeFire;
 };
+

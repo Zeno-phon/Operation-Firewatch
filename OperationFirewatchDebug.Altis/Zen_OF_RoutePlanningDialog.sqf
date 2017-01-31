@@ -11,7 +11,7 @@ Zen_OF_RouteGUIRefresh = {
     _list = [];
     _listData = [];
     {
-        _list pushBack str (_forEachIndex + 1);
+        _list pushBack (str (_forEachIndex + 1) + "  (" + ((_droneData select 15) select _forEachIndex) + ")");
         _listData pushBack _forEachIndex;
     } forEach ((_droneData select 7) select 0);
 
@@ -29,7 +29,7 @@ Zen_OF_RouteGUIInvoke= {
     0 = [Zen_OF_RouteGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
 
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has opened manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
-    0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false] call Zen_InvokeDialog;
+    0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false, true] call Zen_InvokeDialog;
 };
 
 Zen_OF_RouteGUIMove = {
@@ -96,13 +96,15 @@ Zen_OF_RouteGUINew = {
 
         _path = (_droneData select 7) select 0;
         _markers = _droneData select 8;
+        _waypointTypes = _droneData select 15;
         {
             deleteMarker _x;
         } forEach _markers;
 
         _path pushBack _localMovePos;
+        _waypointTypes pushBack "Move";
 
-        0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0] call Zen_OF_UpdateDrone;
+        0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0, "", "", "", "", "", _waypointTypes] call Zen_OF_UpdateDrone;
         _markers = [Zen_OF_RouteGUICurrentDrone, true, SHOW_FULL_PATH_INFO_FOR_MANUAL] call Zen_OF_DroneGUIDrawPath;
 
         call Zen_OF_RouteGUIRefresh;
@@ -127,13 +129,15 @@ Zen_OF_RouteGUIDelete = {
 
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has deleted waypoint " + str _waypoint + " for " + Zen_OF_RouteGUICurrentDrone + "."], call)
     _markers = _droneData select 8;
+    _waypointTypes = _droneData select 15;
     {
         deleteMarker _x;
     } forEach _markers;
 
     0 = [_path, _waypoint] call Zen_ArrayRemoveIndex;
+    0 = [_waypointTypes, _waypoint] call Zen_ArrayRemoveIndex;
 
-    0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0] call Zen_OF_UpdateDrone;
+    0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [_path], _markers, 0, "", "", "", "", "", _waypointTypes] call Zen_OF_UpdateDrone;
 
     if (count _path > 0) then {
         _markers = [Zen_OF_RouteGUICurrentDrone, true, SHOW_FULL_PATH_INFO_FOR_MANUAL] call Zen_OF_DroneGUIDrawPath;
@@ -175,6 +179,23 @@ Zen_OF_RouteGUIBack = {
 
     call Zen_CloseDialog;
     0 = [] spawn Zen_OF_DroneGUIInvoke;
+};
+
+Zen_OF_RouteGUIWaypointList = {
+    // player groupChat str _this;
+    if (count _this < 2) exitWith {
+        player sideChat str "There are no waypoints to modify.";
+    };
+
+    _waypointType = _this select 0;
+    _waypoint = _this select 1;
+
+    _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+    _waypointTypes = _droneData select 15;
+
+    _waypointTypes set [_waypoint, _waypointType];
+    0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, "", "", "", "", "", "", "", "", _waypointTypes] call Zen_OF_UpdateDrone;
+    call Zen_OF_RouteGUIRefresh;
 };
 
 Zen_OF_RouteGUIList = ["List",
@@ -242,7 +263,16 @@ _buttonBack = ["Button",
     // ["LinksTo", [Zen_OF_RouteGUIList]]
 ] call Zen_CreateControl;
 
+_waypointTypeList = ["DropList",
+    ["List", ["Move", "Land"]],
+    ["ListData", ["Move", "Land"]],
+    ["Position", [5, 14]],
+    ["Size", [5,2]],
+    ["LinksTo", [Zen_OF_RouteGUIList]],
+    ["SelectionFunction", "Zen_OF_RouteGUIWaypointList"]
+] call Zen_CreateControl;
+
 Zen_OF_RouteDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_RouteDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_RouteGUIList, _buttonMove, _buttonNew, _buttonDelete, _buttonCancel, _buttonAccept, _buttonBack, _buttonInsert];
+} forEach [_background, _map, Zen_OF_RouteGUIList, _buttonMove, _buttonNew, _buttonDelete, _buttonCancel, _buttonAccept, _buttonBack, _buttonInsert, _waypointTypeList];

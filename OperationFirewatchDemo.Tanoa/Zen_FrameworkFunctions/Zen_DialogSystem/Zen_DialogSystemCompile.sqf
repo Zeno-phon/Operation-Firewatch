@@ -28,6 +28,7 @@ Zen_UpdateControl = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunctio
 
 Zen_CloseDialog = {
     uiNamespace setVariable ["Zen_Dialog_Object_Local", ["", [], [0,0]]];
+    (findDisplay 76) displayRemoveAllEventHandlers "KeyDown";
     (findDisplay 76) closeDisplay 0;
     closeDialog 0;
     if (true) exitWith {};
@@ -55,7 +56,7 @@ Zen_RefreshDialog = {
                 };
             };
         } forEach Zen_Active_Dialog_Control_Data;
-        0 = [Zen_Active_Dialog, Zen_Active_Dialog_Position, false, _controlsToRepeat] spawn Zen_InvokeDialog;
+        0 = [Zen_Active_Dialog, Zen_Active_Dialog_Position, false, false, _controlsToRepeat] spawn Zen_InvokeDialog;
     };
 
     if (true) exitWith {};

@@ -52,7 +52,7 @@ Zen_OF_FindDroneRoute
         split the corner of the diamond into another diamond
 
 Zen_OF_FindFire
-    use fire object geometry to evaluate probability of detection
+    ?? use fire object geometry to evaluate probability of detection
 
 // Zen_OF_ManageDrones
     fuel as function of time
@@ -95,7 +95,7 @@ Zen_OF_FindFire
 Data
     // string, id
     // array of markers, fire coverage
-    array of arrays
+    ?? array of arrays
         Scalar, X coordinate
         Scalar, Y coordinate
 
@@ -103,10 +103,10 @@ Data
     // visible fire
 // Zen_OF_GetFireData
 
-Zen_OF_FindDistToFire
+?? Zen_OF_FindDistToFire
     generate shortest distances to fire area at discrete angles
 
-Zen_OF_FindFireCrossSection
+?? Zen_OF_FindFireCrossSection
     Compute the angular sector occupied by the fire in a circular sweep from a point
 
 ////////////////////////////////////////////////
@@ -157,17 +157,19 @@ take control of drone camera
     set camera target on possible fire
     attachTo drone
 
-stop esc exit
-remove health/fuel bars
-remove RTB button
+// stop esc exit
+// remove RTB button
 
 refueling countdown timer
+// always run tracking
+    // integrate to Zen_OF_ManageDrones
 
 drone overview
     // textures
     // text fields
     data formatting and updating
     duplicate for each drone
+    remove health/fuel bars
 
 // Zen_OF_DroneGUIListSelect
 // Zen_OF_DroneGUIRefresh
@@ -224,11 +226,11 @@ move map to selected zone
 // log enter and exit of dialog
 // remove back button
     // force accept or scrap all
-    esc key scraps
-add name of current drone at top
+    // esc key does nothing
+?? add name of current drone at top
 
-type of waypoint
-    use for waypoint types in auto pathing
+// types of waypoint
+verion for waypoint types in auto pathing
 
 ////////////////////////////////////////////////
 // Global functions
@@ -246,14 +248,15 @@ Zen_OF_GenerateFire
     // predefined AORs on the server
     // assign AORs to clients
 
-better definition of marker areas
+// sample table log
+
+?? better definition of marker areas
 
 ////////////////////////////////////////////////
 // Changelog
 ////////////////////////////////////////////////
 
-1. Added: Example status screen for a drone
-2. Improved: Drone entry into zones now sends a message to the player
-3. Improved: Drone orbit radius is defined for each type of drone
-4. Tweaked: Drone does not take off automatically on mission start
-5. Tweaked: Drone repair/refuel duration set to 120 seconds
+1. Added: Sample log table
+2. Added: Waypoint type droplist to route planning GUI
+3. Improved: Esc key no longer exits dialogs
+4. Improved: Drone tracking is always active

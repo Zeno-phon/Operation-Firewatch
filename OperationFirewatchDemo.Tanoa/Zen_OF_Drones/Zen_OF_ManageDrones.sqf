@@ -17,7 +17,7 @@ while {true} do {
     } forEach Zen_OF_Zones_Global;
 
     {
-        sleep 5;
+        sleep 2;
         _drone = _x select 0;
         _droneData = _x;
         _dataArray = [];
@@ -30,8 +30,11 @@ while {true} do {
 
         if (count _dataArray == 0) then {
             Zen_OF_DroneManagerData pushBack [_drone, getPosATL (_droneData select 1), false, (_droneData select 3), time, [false, false, false], [0,0,0], [0,0,0], (_droneData select 2), []];
+            _mkr = [_droneData select 1, _drone] call Zen_SpawnMarker;
+            0 = [_drone, "", "", "", "", _mkr] call Zen_OF_UpdateDrone;
         } else {
             if (alive (_droneData select 1)) then {
+                (_droneData select 6) setMarkerPos getPosATL (_droneData select 1);
                 _isRTB = _dataArray select 2;
 
                 _newPos = getPosATL (_droneData select 1);

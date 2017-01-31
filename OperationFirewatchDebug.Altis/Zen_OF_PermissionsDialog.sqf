@@ -29,7 +29,7 @@ Zen_OF_PermissionGUIRefresh = {
 
 Zen_OF_PermissionGUIInvoke= {
     REFRESH_LISTS
-    0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX + 0.4,safeZoneH - 1], false] call Zen_InvokeDialog;
+    0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX + 0.4,safeZoneH - 1], false, true] call Zen_InvokeDialog;
 };
 
 Zen_OF_PermissionGUIDroneList = ["List",

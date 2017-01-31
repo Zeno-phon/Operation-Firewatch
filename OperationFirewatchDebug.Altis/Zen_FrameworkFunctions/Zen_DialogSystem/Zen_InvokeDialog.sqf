@@ -7,7 +7,7 @@ disableSerialization;
 #include "..\Zen_StandardLibrary.sqf"
 
 _Zen_stack_Trace = ["Zen_InvokeDialog", _this] call Zen_StackAdd;
-private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset"];
+private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc"];
 
 if !([_this, [["STRING"], ["ARRAY"], ["BOOL"]], [[], ["SCALAR"]], 1] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -17,10 +17,11 @@ _dialogID = _this select 0;
 _offset = [0,0];
 ZEN_STD_Parse_GetArgument(_offset, 1)
 ZEN_STD_Parse_GetArgumentDefault(_allowActions, 2, false)
+ZEN_STD_Parse_GetArgumentDefault(_disableEsc, 3, false)
 
-if (count _this > 3) then {
+if (count _this > 4) then {
     _doRefresh = true;
-    _controlsArray = _this select 3;
+    _controlsArray = _this select 4;
 } else {
     _doRefresh = false;
     _controlsArray = [_dialogID] call Zen_GetDialogControls;
@@ -40,6 +41,12 @@ if !(_doRefresh) then {
     _display = (findDisplay 46) createDisplay "Zen_Dialog";
     if !(_allowActions) then {
         createDialog "Zen_Dialog";
+    };
+
+    if (_disableEsc) then {
+        (findDisplay 76) displayAddEventHandler ["KeyDown", {
+            ((_this select 1) == 1)
+        }];
     };
 } else {
     _display = (findDisplay 76);
