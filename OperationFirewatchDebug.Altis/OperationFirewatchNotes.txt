@@ -230,7 +230,8 @@ move map to selected zone
 ?? add name of current drone at top
 
 // types of waypoint
-verion for waypoint types in auto pathing
+    log types and type change
+version for waypoint types in auto pathing
 
 ////////////////////////////////////////////////
 // Global functions
@@ -249,6 +250,7 @@ Zen_OF_GenerateFire
     // assign AORs to clients
 
 // sample table log
+// init comments
 
 ?? better definition of marker areas
 
@@ -256,7 +258,4 @@ Zen_OF_GenerateFire
 // Changelog
 ////////////////////////////////////////////////
 
-1. Added: Sample log table
-2. Added: Waypoint type droplist to route planning GUI
-3. Improved: Esc key no longer exits dialogs
-4. Improved: Drone tracking is always active
+1. Added: Comments to the init file (Demo version)
