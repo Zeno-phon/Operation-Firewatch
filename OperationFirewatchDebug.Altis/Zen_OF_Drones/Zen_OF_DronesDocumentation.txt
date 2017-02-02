@@ -53,7 +53,7 @@ Return: Array
             8. Array of arrays, pathfinding solutions
             9. Array of markers, current path markers
             10. Scalar, current path index
-            11. Array, RTB arguments for Zen_OF_OrderDroneExecuteRoute
+            11. Array, RTB values from Zen_OF_OrderDroneExecuteRoute
             12. Script handle, drone GUI event thread
             13. Script handle, drone GUI auto confirm countdown
             14. Scalar, time that the auto confirm countdown started
@@ -103,7 +103,7 @@ Params: 1. String, drone identifier
  (opt.) 7. Array of arrays, pathfinding solutions, (default: '')
  (opt.) 8. Array of markers, current path markers, (default: '')
  (opt.) 9. Scalar, current path index, (default: '')
- (opt.) 10. Array, RTB arguments for Zen_OF_OrderDroneExecuteRoute, (default: '')
+ (opt.) 10. Array, RTB values from Zen_OF_OrderDroneExecuteRoute, (default: '')
  (opt.) 11. Script handle, drone GUI event thread, (default: '')
  (opt.) 12. Script handle, drone GUI auto confirm countdown, (default: '')
  (opt.) 13. Scalar, time that the auto confirm countdown started, (default: '')

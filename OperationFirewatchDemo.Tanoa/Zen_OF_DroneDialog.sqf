@@ -248,7 +248,7 @@ Zen_OF_DroneGUIMove = {
         _paths = [_drone, (_droneData select 1), _localMovePos] call Zen_OF_FindDroneRoute;
         _path = _paths select 0;
 
-        0 = [_drone, "", "", "", "", 0, _paths, _markers, 0] call Zen_OF_UpdateDrone;
+        0 = [_drone, "", "", "", "", 0, _paths, _markers, 0, "", "", "", "", "", ["MOVE", "MOVE", "MOVE", "MOVE"]] call Zen_OF_UpdateDrone;
         _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
 
         // for group #2
@@ -272,7 +272,7 @@ Zen_OF_DroneGUIMove = {
     0 = [_drone, "", "", "", "", 0, "", "", "", "", _h_event] call Zen_OF_UpdateDrone;
 };
 
-Zen_OF_DroneGUIRTB = {
+Zen_OF_DroneGUIWaypointTypes = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
     CHECK_FOR_DEAD
@@ -286,55 +286,9 @@ Zen_OF_DroneGUIRTB = {
         player sideChat (_drone + " is carrying out a previous move order; use the stop button.");
     };
 
-    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has ordered " + _drone + " at " + str (getPosATL (_droneData select 1)) + " with health " + str (_droneData select 2) + " and fuel " + str (_droneData select 3) + " to RTB."], call)
-    _nearest = [Zen_OF_RepairRefuel_Global, compile format["
-        _pos = _this select 1;
-        _dronePos = %1;
-
-        (if ((_this select 3) == (_this select 2)) then {
-            (1)
-        } else {
-            -1 * (_dronePos distanceSqr _pos)
-        })
-    ", getPosATL (_droneData select 1)]] call Zen_ArrayFindExtremum;
-
-    if ((_nearest select 3) == (_nearest select 2)) then {
-        player sideChat "No space available at any repair or refuel points.";
-        ZEN_FMW_MP_REServerOnly("A3log", ["RTB order for " + _drone + " has no solution."], call)
-    } else {
-        ZEN_FMW_MP_REServerOnly("A3log", ["RTB order for " + _drone + " has computed paths to " + (_nearest select 0) + " at " + str (_nearest select 1) + "."], call)
-        player sideChat str ("Click the approve button to confirm the path of " + _drone + ".");
-
-        // terminate (_droneData select 4);
-
-        _markers = _droneData select 8;
-        {
-            deleteMarker _x;
-        } forEach _markers;
-
-        _paths = [_drone, (_droneData select 1), (_nearest select 1)] call Zen_OF_FindDroneRoute;
-        _path = _paths select 0;
-
-        0 = [_drone, "", "", "", "", 0, _paths, _markers, 0, [true, (_nearest select 0)]] call Zen_OF_UpdateDrone;
-        _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
-
-        // for group #2
-        if (Zen_OF_User_Is_Group_Two) then {
-            terminate (_droneData select 12);
-            _h_wait = [_drone, _paths] spawn {
-                _drone = _this select 0;
-                _paths = _this select 1;
-                _droneData = [_drone] call Zen_OF_GetDroneData;
-
-                _pathIndex = _droneData select 9;
-                sleep DRONE_AUTO_CONFIRM_TIMER;
-                player sideChat (_drone + " route auto-confirmed");
-                ZEN_FMW_MP_REServerOnly("A3log", [name player + " has run out of time; path of " + _drone + " through " + str (_paths select _pathIndex) + " is auto-confirmed."], call)
-                [0, _drone] call Zen_OF_DroneGUIApprove;
-            };
-            0 = [_drone, "", "", "", "", 0, "", "", "", "", "", _h_wait, time] call Zen_OF_UpdateDrone;
-        };
-    };
+    Zen_OF_RouteGUICurrentDrone = _drone;
+    call Zen_CloseDialog;
+    [_drone] call Zen_OF_RouteGUIInvokeAuto;
 };
 
 Zen_OF_DroneGUIApprove = {
@@ -350,7 +304,7 @@ Zen_OF_DroneGUIApprove = {
     _paths = _droneData select 7;
     _markers = _droneData select 8;
     _pathIndex = _droneData select 9;
-    _RTBArgs = _droneData select 10;
+    // _RTBArgs = _droneData select 10;
 
     if (count _paths == 0) then {
         player sideChat (_drone + " has no destination.");
@@ -359,7 +313,7 @@ Zen_OF_DroneGUIApprove = {
         ZEN_FMW_MP_REServerOnly("A3log", [name player + " has accepted path of " + _drone + " through " + str (_paths select _pathIndex) + "."], call)
 
         terminate (_droneData select 14);
-        _h_move = ([_drone, _paths select _pathIndex, _markers] + _RTBArgs) spawn Zen_OF_OrderDroneExecuteRoute;
+        _h_move = ([_drone, _paths select _pathIndex, _markers]) spawn Zen_OF_OrderDroneExecuteRoute;
         0 = [_drone, "", "", _h_move] call Zen_OF_UpdateDrone;
     };
 };
@@ -465,11 +419,11 @@ _buttonMove = ["Button",
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
-_buttonRTB = ["Button",
-    ["Text", "RTB"],
+_buttonWaypointTypes = ["Button",
+    ["Text", "Waypoint Types"],
     ["Position", [0, 4]],
     ["Size", [5,2]],
-    ["ActivationFunction", "Zen_OF_DroneGUIRTB"],
+    ["ActivationFunction", "Zen_OF_DroneGUIWaypointTypes"],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
@@ -585,6 +539,6 @@ _statusText4 = ["Text",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonMove, _buttonRTB, _buttonRecalc, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4];
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (if (Zen_OF_User_Is_Group_Two) then {[_buttonWaypointTypes, _buttonRecalc]} else {[]});
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

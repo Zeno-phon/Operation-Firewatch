@@ -8,6 +8,7 @@ Creates a new repair and refuel point at (1) with (2) maximum occupants.
 Usage: Call
 Params: 1. Array, group, object, string, position
         2. Scalar, max occupancy
+ (opt.) 3. Boolean, true if (1) is an airfield, (default: true)
 Return: String
 
 Zen_OF_GetRepairRefuelData

@@ -16,10 +16,15 @@ while {true} do {
         _x set [6, false];
     } forEach Zen_OF_Zones_Global;
 
+    _drones = [];
+    {
+        _drones pushBack (_x select 0);
+    } forEach Zen_OF_Drones_Local;
+
     {
         sleep 2;
-        _drone = _x select 0;
-        _droneData = _x;
+        _drone = _x;
+        _droneData = [_x] call Zen_OF_GetDroneData;
         _dataArray = [];
 
         {
@@ -34,17 +39,18 @@ while {true} do {
             0 = [_drone, "", "", "", "", _mkr] call Zen_OF_UpdateDrone;
         } else {
             if (alive (_droneData select 1)) then {
-                (_droneData select 6) setMarkerPos getPosATL (_droneData select 1);
+                _newPos = getPosATL (_droneData select 1);
+                (_droneData select 6) setMarkerPos _newPos;
+
                 _isRTB = _dataArray select 2;
 
-                _newPos = getPosATL (_droneData select 1);
                 _distance = (_dataArray select 1) distance2D _newPos;
                 _dataArray set [1, _newPos];
 
                 // Fuel warning and auto RTB
-                _oldFuel = _dataArray select 3;
+                _oldFuel = _droneData select 3;
                 _newFuel = _oldFuel - _distance * FUEL_FRACTION_PER_METER;
-                _dataArray set [3, _newFuel];
+                // _dataArray set [3, _newFuel];
                 0 = [_drone, "", _newFuel] call Zen_OF_UpdateDrone;
 
                 if (_newFuel <= 0.) then {
@@ -58,10 +64,10 @@ while {true} do {
                     0 = [Zen_OF_DroneManagerData, (_indexes select 0)] call Zen_ArrayRemoveIndex;
                 } else {
                     // Scanning for fires and sensor health
-                    _oldHealth = _dataArray select 8;
+                    _oldHealth = _droneData select 2;
                     _newHealth = _oldHealth - SENSOR_DAMAGE_PER_SCAN;
                     0 = [_drone, _newHealth] call Zen_OF_UpdateDrone;
-                    _dataArray set [8, _newHealth];
+                    // _dataArray set [8, _newHealth];
 
                     _oldFires = _dataArray select 9;
                     _newFires = [_drone] call Zen_OF_FindFire;
@@ -129,12 +135,13 @@ while {true} do {
                                 _newPos = _this select 2;
                                 _nearest = _this select 3;
 
-                                _h_move = [_drone, [_newPos, (_nearest select 1)], [], true, (_nearest select 0)] spawn Zen_OF_OrderDroneExecuteRoute;
+                                0 = [_drone, "", "", "", "", 0, "", "", "", "", "", "", "", "", ["MOVE", "LAND"]] call Zen_OF_UpdateDrone;
+                                _h_move = [_drone, [_newPos, (_nearest select 1)], []] spawn Zen_OF_OrderDroneExecuteRoute;
                                 0 = [_drone, "", "", _h_move] call Zen_OF_UpdateDrone;
                                 ZEN_STD_Code_WaitScript(_h_move)
                                 _dataArray set [2, false];
-                                _dataArray set [3, 1];
-                                _dataArray set [8, 1];
+                                // _dataArray set [3, 1];
+                                // _dataArray set [8, 1];
                             };
                         };
                     };
@@ -221,7 +228,7 @@ while {true} do {
                 0 = [Zen_OF_DroneManagerData, (_indexes select 0)] call Zen_ArrayRemoveIndex;
             };
         };
-    } forEach +Zen_OF_Drones_Local;
+    } forEach _drones;
 
     {
         if (!(_x select 6) && {((_x select 1) == "C")} && {((_x select 3) != "")}) then {

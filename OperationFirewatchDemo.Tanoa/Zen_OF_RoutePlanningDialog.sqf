@@ -13,16 +13,16 @@ Zen_OF_RouteGUIRefresh = {
     {
         _list pushBack (str (_forEachIndex + 1) + "  (" + ((_droneData select 15) select _forEachIndex) + ")");
         _listData pushBack _forEachIndex;
-    } forEach ((_droneData select 7) select 0);
+    } forEach ((_droneData select 7) select (_droneData select 9));
 
     // player sideChat str _list;
     0 = [Zen_OF_RouteGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
     call Zen_RefreshDialog;
 };
 
-Zen_OF_RouteGUIInvoke= {
+Zen_OF_RouteGUIInvoke = {
     _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
-    0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [[]]] call Zen_OF_UpdateDrone;
+    0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [[]], [], 0] call Zen_OF_UpdateDrone;
 
     _list = [];
     _listData = [];
@@ -30,6 +30,20 @@ Zen_OF_RouteGUIInvoke= {
 
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has opened manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
     0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false, true] call Zen_InvokeDialog;
+};
+
+Zen_OF_RouteGUIInvokeAuto = {
+    _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+    // 0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [[]]] call Zen_OF_UpdateDrone;
+
+    // _list = [];
+    // _listData = [];
+    // 0 = [Zen_OF_RouteGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
+
+    call Zen_OF_RouteGUIRefresh;
+
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has opened manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
+    0 = [Zen_OF_RouteDialogAuto, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false, true] call Zen_InvokeDialog;
 };
 
 Zen_OF_RouteGUIMove = {
@@ -167,6 +181,13 @@ Zen_OF_RouteGUIAccept = {
     0 = [] spawn Zen_OF_DroneGUIInvoke;
 };
 
+Zen_OF_RouteGUISave = {
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has closed manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
+
+    call Zen_CloseDialog;
+    0 = [] spawn Zen_OF_DroneGUIInvoke;
+};
+
 Zen_OF_RouteGUIBack = {
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has closed manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + " and scrapped the planned route."], call)
 
@@ -182,7 +203,6 @@ Zen_OF_RouteGUIBack = {
 };
 
 Zen_OF_RouteGUIWaypointList = {
-    // player groupChat str _this;
     if (count _this < 2) exitWith {
         player sideChat str "There are no waypoints to modify.";
     };
@@ -194,6 +214,8 @@ Zen_OF_RouteGUIWaypointList = {
     _waypointTypes = _droneData select 15;
 
     _waypointTypes set [_waypoint, _waypointType];
+
+    ZEN_FMW_MP_REServerOnly("A3log", [name player + " has changed the type of waypoint " + str _waypoint + " to " + _waypointType], call)
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, "", "", "", "", "", "", "", "", _waypointTypes] call Zen_OF_UpdateDrone;
     call Zen_OF_RouteGUIRefresh;
 };
@@ -255,6 +277,14 @@ _buttonAccept = ["Button",
     // ["LinksTo", [Zen_OF_RouteGUIList]]
 ] call Zen_CreateControl;
 
+_buttonSave = ["Button",
+    ["Text", "Save Route"],
+    ["Position", [0, 10]],
+    ["Size", [5,2]],
+    ["ActivationFunction", "Zen_OF_RouteGUISave"]
+    // ["LinksTo", [Zen_OF_RouteGUIList]]
+] call Zen_CreateControl;
+
 _buttonBack = ["Button",
     ["Text", "Scrap Route"],
     ["Position", [0, 12]],
@@ -264,8 +294,8 @@ _buttonBack = ["Button",
 ] call Zen_CreateControl;
 
 _waypointTypeList = ["DropList",
-    ["List", ["Move", "Land"]],
-    ["ListData", ["Move", "Land"]],
+    ["List", ["MOVE", "LAND"]],
+    ["ListData", ["MOVE", "LAND"]],
     ["Position", [5, 14]],
     ["Size", [5,2]],
     ["LinksTo", [Zen_OF_RouteGUIList]],
@@ -276,3 +306,8 @@ Zen_OF_RouteDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_RouteDialog, _x] call Zen_LinkControl;
 } forEach [_background, _map, Zen_OF_RouteGUIList, _buttonMove, _buttonNew, _buttonDelete, _buttonCancel, _buttonAccept, _buttonBack, _buttonInsert, _waypointTypeList];
+
+Zen_OF_RouteDialogAuto = [] call Zen_CreateDialog;
+{
+    0 = [Zen_OF_RouteDialogAuto, _x] call Zen_LinkControl;
+} forEach [_background, _map, Zen_OF_RouteGUIList, _buttonSave, _waypointTypeList];

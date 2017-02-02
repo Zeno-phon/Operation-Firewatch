@@ -17,11 +17,16 @@
 // Zen_OF_GetDroneData
 // Zen_OF_UpdateDrone
 Zen_OF_OrderDroneExecuteRoute
-    refueling countdown timer
     waypoints types
-        land - landAt
-        loiter
-        move
+        // move
+        land
+            // select nearest RR
+            ?? Zen_ArraySort to divert when RR is full
+            // account for non-airfields
+            // find nearest airfield
+            // landAt
+            // refueling countdown timer
+        ?? loiter
 
 Zen_OF_FindDroneRoute
     // get end point from user
@@ -50,6 +55,10 @@ Zen_OF_FindDroneRoute
         // split the corner of the diamond into a straight line
     Recursive diamond
         split the corner of the diamond into another diamond
+    Ringed diamond
+        choose an open ring along a circle with radius at fraction of distance
+        apply diamond to reach area, keeping only 1 solution
+        repeat at random angles until within 1 circle radius of destination
 
 Zen_OF_FindFire
     ?? use fire object geometry to evaluate probability of detection
@@ -160,7 +169,6 @@ take control of drone camera
 // stop esc exit
 // remove RTB button
 
-refueling countdown timer
 // always run tracking
     // integrate to Zen_OF_ManageDrones
 
@@ -168,6 +176,7 @@ drone overview
     // textures
     // text fields
     data formatting and updating
+        refueling countdown timer
     duplicate for each drone
     remove health/fuel bars
 
@@ -230,8 +239,8 @@ move map to selected zone
 ?? add name of current drone at top
 
 // types of waypoint
-    log types and type change
-version for waypoint types in auto pathing
+    // log types and type change
+// version for waypoint types in auto pathing
 
 ////////////////////////////////////////////////
 // Global functions
@@ -258,4 +267,9 @@ Zen_OF_GenerateFire
 // Changelog
 ////////////////////////////////////////////////
 
-1. Added: Comments to the init file (Demo version)
+1. Fixed: Repair/Refuel did not update the drones properly
+2. Fixed: Manual route planning hides Recalc button
+3. Added: Zen_OF_InvokeRepairRefuel argument for airfield
+4. Added: Drones now land for that waypoint type
+5. Added: Waypoint type selection for auto route planning
+6. Removed: Drone GUI RTB button

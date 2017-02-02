@@ -16,6 +16,9 @@ call compileFinal preprocessFileLineNumbers "oo_camera.sqf";
 // titleText ["Good Luck", "BLACK FADED", 0.2];
 enableSaving [false, false];
 
+// Airfield positions and landAt codes for Zen_OF_OrderDroneExecuteRoute to use
+Zen_OF_Airfield_LandAt_Codes = [[[7137.6,7380.44,0.00143886], 0], [[2140.71,13350.6,17.8909], 1], [[11610.1,3158.68,0.00149488], 2], [[2200.59,3543.36,0.00143909], 3], [[11845,13163.9,0.00143909], 4]];
+
 /**  Each drone is listed by classname along with their straight line cruise speed (m/s) and their loiter radius (m). */
 Zen_OF_Drone_Class_Data = [["b_uav_01_f", 16, 300], ["b_uav_02_f", 105, 300]];
 
