@@ -6,7 +6,7 @@
 #define REFUEL_TIME 60*2
 
 _Zen_stack_Trace = ["Zen_OF_OrderDroneExecuteRoute", _this] call Zen_StackAdd;
-private ["_drone", "_path", "_droneData", "_markers", "_speed", "_h_orbit", "_droneClassData", "_orbitRadius", "_nearestRR", "_waypointTypes", "_droneObj", "_nearestRRData", "_nearestAirfield"];
+private ["_drone", "_path", "_droneData", "_markers", "_speed", "_h_orbit", "_droneClassData", "_orbitRadius", "_nearestRR", "_waypointTypes", "_droneObj", "_nearestRRData", "_nearestAirfield", "_height"];
 
 if !([_this, [["STRING"], ["ARRAY"], ["ARRAY"], ["BOOL"], ["STRING"]], [[], ["ARRAY"], ["STRING"]], 3] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -21,11 +21,13 @@ _droneData = [_drone] call Zen_OF_GetDroneData;
 _droneClassData = [(_droneData select 1)] call Zen_F_GetDroneClassData;
 _speed = _droneClassData select 0;
 _orbitRadius = _droneClassData select 1;
+_height = _droneClassData select 2;
 
 _waypointTypes = _droneData select 15;
 _droneObj = _droneData select 1;
 {
     _droneObj move _x;
+    (_droneData select 1) flyInHeight _height;
 
     waitUntil {
         sleep 4;

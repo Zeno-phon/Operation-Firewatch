@@ -23,6 +23,8 @@
 
 #define PARSE_WAYPOINT_INFO(A) (format["Distance: %1 m; ETA: %2 s; Fuel: %3 %4", A select 0, A select 1, (A select 2) * 100, "%"])
 
+ZEN_OF_DroneDialog_Camera = "camera" camCreate [0,0,0];
+
 Zen_OF_DroneGUIRefresh = {
     _list = [];
     _listData = [];
@@ -403,11 +405,53 @@ Zen_OF_DroneGUICancel = {
     ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " is no longer waiting for destination.")], call)
 };
 
-_buttonShow = ["Button",
-    ["Text", "Show"],
+Zen_OF_DroneGUICamera = {
+    _drone = _this select 1;
+    _droneData = [_drone] call Zen_OF_GetDroneData;
+    CHECK_FOR_DEAD
+
+    _center = getPosATL player;
+    if (count Zen_OF_Fires_Detected_Local == 0) then {
+        player sideChat (_drone + " has not detected any fires.");
+        player commandChat "For debug purposes, the player has been selected as the camera's target.";
+    } else {
+        _nearestFire = [Zen_OF_Fires_Detected_Local, compile format["
+            (-1 * ((%1) distanceSqr ([([_this] call Zen_OF_GetFireData) select 1] call Zen_FindCenterPosition)))
+        ", _droneData select 1]] call Zen_ArrayFindExtremum;
+
+        _center = [([_nearestFire] call Zen_OF_GetFireData) select 1] call Zen_FindCenterPosition;
+
+        ZEN_FMW_MP_REServerOnly("A3log", [name player + " has entered camera view of " + _drone + " and is viewing fire " + (_nearestFire select 0)], call)
+    };
+
+    ZEN_OF_DroneDialog_Camera cameraEffect ["internal","back"];
+    ZEN_OF_DroneDialog_Camera camSetTarget _center;
+    ZEN_OF_DroneDialog_Camera camSetRelPos ((getPosATL (_droneData select 1)) vectorDiff _center);
+    ZEN_OF_DroneDialog_Camera camCommit 0;
+    showCinemaBorder false;
+
+    detach ZEN_OF_DroneDialog_Camera;
+    ZEN_OF_DroneDialog_Camera attachTo [(_droneData select 1), [0, 0, -1.25]];
+
+    call Zen_CloseDialog;
+    player sideChat "Press any key to exit camera view.";
+    _EH = (findDisplay 46) displayAddEventHandler ["KeyDown", {
+        0 = [] spawn {
+            player switchCamera "INTERNAL";
+            player cameraEffect ["terminate","back"];
+            (findDisplay 46) displayRemoveAllEventHandlers "KeyDown";
+            call Zen_OF_DroneGUIInvoke;
+        };
+
+        (false)
+    }];
+};
+
+_buttonCamera = ["Button",
+    ["Text", "Camera"],
     ["Position", [0, 0]],
     ["Size", [5,2]],
-    ["ActivationFunction", "Zen_OF_DroneGUIShow"],
+    ["ActivationFunction", "Zen_OF_DroneGUICamera"],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
@@ -539,6 +583,6 @@ _statusText4 = ["Text",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (if (Zen_OF_User_Is_Group_Two) then {[_buttonWaypointTypes, _buttonRecalc]} else {[]});
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (if (Zen_OF_User_Is_Group_Two) then {[_buttonWaypointTypes, _buttonRecalc]} else {[]});
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

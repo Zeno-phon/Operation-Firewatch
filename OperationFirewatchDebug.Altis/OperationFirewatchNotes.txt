@@ -162,9 +162,9 @@ Recalculate route button
 // Timer text field for auto-confirm
 Report fire button
     type in location or false alarm
-take control of drone camera
-    set camera target on possible fire
-    attachTo drone
+// drone camera
+    // set camera target on possible fire
+    // attachTo drone
 
 // stop esc exit
 // remove RTB button
@@ -267,9 +267,5 @@ Zen_OF_GenerateFire
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Repair/Refuel did not update the drones properly
-2. Fixed: Manual route planning hides Recalc button
-3. Added: Zen_OF_InvokeRepairRefuel argument for airfield
-4. Added: Drones now land for that waypoint type
-5. Added: Waypoint type selection for auto route planning
-6. Removed: Drone GUI RTB button
+1. Added: Altitude value for each drone class
+2. Added: Drone camera view

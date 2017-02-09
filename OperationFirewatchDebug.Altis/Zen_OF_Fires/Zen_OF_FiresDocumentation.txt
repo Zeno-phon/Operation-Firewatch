@@ -9,11 +9,11 @@ Usage : Call
 Params: 1. Array of strings, coverage markers
 Return: String
 
-Zen_OF_GetZoneData
+Zen_OF_GetFireData
 
 Returns a copy of the data of (1).
 Usage : Call
 Params: 1. String, fire id
 Return: Array
             1. String, fire id
-            2. Array of string, fire markers
+            2. Array of strings, fire markers
