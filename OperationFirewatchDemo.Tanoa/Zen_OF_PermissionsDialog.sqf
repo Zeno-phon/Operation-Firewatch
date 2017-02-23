@@ -32,12 +32,29 @@ Zen_OF_PermissionGUIInvoke= {
     0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX + 0.4,safeZoneH - 1], false, true] call Zen_InvokeDialog;
 };
 
+Zen_OF_PermissionGUIMapMove = {
+    _type = (_this select 0) select 0;
+    _map = (_this select 0) select 1;
+
+    if (_type == "Drone") then {
+        _drone = _this select 1;
+        _droneData = [_drone] call Zen_OF_GetDroneData;
+        0 = [_map, ["MapPosition", (getPosATL (_droneData select 1)) vectorAdd [random 5, 0, 0]]] call Zen_UpdateControl;
+    } else {
+        _zone = _this select 1;
+        _zoneData = [_zone] call Zen_OF_GetZoneData;
+        0 = [_map, ["MapPosition", (_zoneData select 4) vectorAdd [random 5, 0, 0]]] call Zen_UpdateControl;
+    };
+
+    call Zen_RefreshDialog;
+};
+
 Zen_OF_PermissionGUIDroneList = ["List",
     ["ListData", []],
     ["Position", [8, 0]],
     ["Size", [32,11.5]],
-    // ["SelectionFunction", ""],
-    // ["Data", []]
+    ["SelectionFunction", "Zen_OF_PermissionGUIMapMove"],
+    ["Data", ["Drone", _map]],
     ["List", []]
 ] call Zen_CreateControl;
 
@@ -45,8 +62,8 @@ Zen_OF_PermissionGUIZoneList = ["List",
     ["ListData", []],
     ["Position", [8, 12]],
     ["Size", [32,11.5]],
-    // ["SelectionFunction", ""],
-    // ["Data", []]
+    ["SelectionFunction", "Zen_OF_PermissionGUIMapMove"],
+    ["Data", ["Zone", _map]],
     ["List", []]
 ] call Zen_CreateControl;
 
@@ -73,11 +90,12 @@ Zen_OF_PermissionGUIShow = {
 };
 
 Zen_OF_PermissionGUIRequestPermission = {
-    _drone = _this select 0;
+    player commandChat str _this;
+    _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
     CHECK_FOR_DEAD
 
-    _zone = _this select 1;
+    _zone = _this select 3;
     _zoneData = [_zone] call Zen_OF_GetZoneData;
 
     Zen_OF_Zone_Permissions_Local pushBack [_drone, _zone, time];
@@ -121,4 +139,4 @@ _buttonClose = ["Button",
 Zen_OF_PermissionGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_PermissionGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_PermissionGUIDroneList, Zen_OF_PermissionGUIZoneList, _buttonShow, _buttonRefresh, _buttonClose, _buttonRequestPermission];
+} forEach [_background, _map, Zen_OF_PermissionGUIDroneList, Zen_OF_PermissionGUIZoneList, _buttonRefresh, _buttonClose, _buttonRequestPermission];

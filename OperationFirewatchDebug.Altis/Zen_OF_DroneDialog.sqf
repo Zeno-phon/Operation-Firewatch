@@ -28,14 +28,16 @@ ZEN_OF_DroneDialog_Camera = "camera" camCreate [0,0,0];
 Zen_OF_DroneGUIRefresh = {
     _list = [];
     _listData = [];
-    {
-        _list pushBack (_x select 0);
-        _listData pushBack (_x select 0);
-    } forEach Zen_OF_Drones_Local;
+    if ((typeName (_this select 1) == "BOOL" && {(_this select 1)}) || typeName (_this select 1) != "BOOL") then {
+        {
+            _list pushBack (_x select 0);
+            _listData pushBack (_x select 0);
+        } forEach Zen_OF_Drones_Local;
 
-    0 = [Zen_OF_DroneGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
+        0 = [Zen_OF_DroneGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
+    };
 
-    if (count _listData > 0) then {
+    if ((count _listData > 0) || (typeName (_this select 1) == "BOOL")) then {
         _bars = _this select 0;
         _drone = _this select 2;
         _droneData = [_drone] call Zen_OF_GetDroneData;
@@ -44,6 +46,7 @@ Zen_OF_DroneGUIRefresh = {
 
         0 = [_bars select 0, ["Progress", (_droneData select 2) * 100]] call Zen_UpdateControl;
         0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
+        0 = [_bars select 3, ["MapPosition", (getPosATL (_droneData select 1)) vectorAdd [random 5, 0, 0]]] call Zen_UpdateControl;
 
         if (Zen_OF_User_Is_Group_Two) then {
             _timer = _droneData select 13;
@@ -53,9 +56,9 @@ Zen_OF_DroneGUIRefresh = {
                 0 = [_bars select 2, ["Text", ""]] call Zen_UpdateControl;
             };
         };
-
-        call Zen_RefreshDialog;
     };
+
+    call Zen_RefreshDialog;
 };
 
 Zen_OF_DroneGUIInvoke= {
@@ -72,7 +75,7 @@ Zen_OF_DroneGUIInvoke= {
 };
 
 Zen_OF_DroneGUIListSelect = {
-    0 = [(_this select 0), Zen_OF_DroneGUIList, (_this select 1)] call Zen_OF_DroneGUIRefresh;
+    0 = [(_this select 0), false, (_this select 1)] call Zen_OF_DroneGUIRefresh;
 };
 
 Zen_OF_DroneGUIDrawPath = {
@@ -118,6 +121,11 @@ Zen_OF_DroneGUIDrawPath = {
     0 = [_drone, "", "", "", "", 0, "", _markers, ""] call Zen_OF_UpdateDrone;
     (_markers)
 };
+
+_map = ["Map",
+    ["Position", [-78, -50]],
+    ["Size", [78,74]]
+] call Zen_CreateControl;
 
 _textTimer = ["Text",
     ["Text", ""],
@@ -171,7 +179,7 @@ Zen_OF_DroneGUIList = ["List",
     ["Position", [5, 0]],
     ["Size", [35,11.5]],
     ["SelectionFunction", "Zen_OF_DroneGUIListSelect"],
-    ["Data", [_barHealth, _barFuel, _textTimer]]
+    ["Data", [_barHealth, _barFuel, _textTimer, _map]]
 ] call Zen_CreateControl;
 
 Zen_OF_DroneGUIShow = {
@@ -516,7 +524,7 @@ Zen_OF_DroneGUIRefreshButton = ["Button",
     ["Position", [0, 16]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_OF_DroneGUIRefresh"],
-    ["Data", [_barHealth, _barFuel, _textTimer]],
+    ["Data", [_barHealth, _barFuel, _textTimer, _map]],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
@@ -525,11 +533,6 @@ _buttonClose = ["Button",
     ["Position", [0, 18]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_CloseDialog"]
-] call Zen_CreateControl;
-
-_map = ["Map",
-    ["Position", [-88, -50]],
-    ["Size", [88,74]]
 ] call Zen_CreateControl;
 
 _background = ["Picture",

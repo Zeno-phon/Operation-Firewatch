@@ -44,19 +44,23 @@ Zen_RefreshDialog = {
 
     if (Zen_Active_Dialog != "") then {
         _dialogControls = [Zen_Active_Dialog] call Zen_GetDialogControls;
+        _controlIDsToRepeat = [];
         _controlsToRepeat = [];
+        _hashes = [];
         {
             _oldHash = _x select 2;
 
             if ((_x select 0) in _dialogControls) then {
                 _newHash = [_x select 0] call Zen_HashControlData;
                 if ((_newHash != "") && {_oldHash != _newHash}) then {
-                    _controlsToRepeat pushBack (_x select 0);
-                    ctrlDelete (_x select 1);
+                    _controlIDsToRepeat pushBack (_x select 0);
+                    _controlsToRepeat pushBack (_x select 1);
+                    _hashes pushBack _newHash;
+                    // ctrlDelete (_x select 1);
                 };
             };
         } forEach Zen_Active_Dialog_Control_Data;
-        0 = [Zen_Active_Dialog, Zen_Active_Dialog_Position, false, false, _controlsToRepeat] spawn Zen_InvokeDialog;
+        0 = [Zen_Active_Dialog, Zen_Active_Dialog_Position, false, false, _controlIDsToRepeat, _controlsToRepeat, _hashes] spawn Zen_InvokeDialog;
     };
 
     if (true) exitWith {};
@@ -78,7 +82,7 @@ Zen_HashControlData = {
         } else {
             _return = switch (typeName _this) do {
                 case "SCALAR": {
-                    (str round (_this % 10^6));
+                    (str _this);
                 };
                 case "STRING": {
                     _hash = "";

@@ -7,7 +7,7 @@ disableSerialization;
 #include "..\Zen_StandardLibrary.sqf"
 
 _Zen_stack_Trace = ["Zen_InvokeDialog", _this] call Zen_StackAdd;
-private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc"];
+private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc", "_mapPos", "_element", "_maxElement", "_controlIDsArray", "_hashes"];
 
 if !([_this, [["STRING"], ["ARRAY"], ["BOOL"]], [[], ["SCALAR"]], 1] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -21,10 +21,12 @@ ZEN_STD_Parse_GetArgumentDefault(_disableEsc, 3, false)
 
 if (count _this > 4) then {
     _doRefresh = true;
-    _controlsArray = _this select 4;
+    _controlIDsArray = _this select 4;
+    _controlsArray = _this select 5;
+    _hashes = _this select 6;
 } else {
     _doRefresh = false;
-    _controlsArray = [_dialogID] call Zen_GetDialogControls;
+    _controlIDsArray = [_dialogID] call Zen_GetDialogControls;
 };
 
 _Zen_Dialog_Controls_Local = [];
@@ -76,41 +78,81 @@ if !(_doRefresh) then {
         };
 
         if (_controlInstanClass != "") then {
-            _control = _display ctrlCreate [_controlInstanClass, NEXT_IDC
-            _Zen_Dialog_Controls_Local pushBack [_controlID, _control, ([_controlID] call Zen_HashControlData)];
+
+            _control = objNull;
+            if (_doRefresh) then {
+                _control = _controlsArray select _forEachIndex;
+                _Zen_Dialog_Controls_Local pushBack [_controlID, _control, _hashes select _forEachIndex];
+            } else {
+                _control = _display ctrlCreate [_controlInstanClass, NEXT_IDC
+                _Zen_Dialog_Controls_Local pushBack [_controlID, _control, ([_controlID] call Zen_HashControlData)];
+            };
 
             if ((toUpper _controlType) in ["LIST","DROPLIST"]) then {
+                _element = 0;
+                if (_doRefresh) then {
+                    _element = lbCurSel _control;
+                    lbClear _control;
+                };
+
                 {
                     if ((toUpper (_x select 0)) == "LIST") then {
                         {
                             _control lbAdd _x;
                         } forEach (_x select 1);
+                        _maxElement = (count (_x select 1)) - 1;
                     };
                 } forEach _controlBlocks;
+
+                _control lbSetCurSel (_element min _maxElement);
             };
 
-            if (toUpper _controlType in ["LIST","DROPLIST"]) then {
-                _control lbSetCurSel 0;
-            };
+            if !(_doRefresh) then {
+                if (toUpper _controlType in ["SLIDER"]) then {
+                    _control sliderSetPosition 0;
+                    _control sliderSetSpeed [1, 5];
+                };
 
-            if (toUpper _controlType in ["SLIDER"]) then {
-                _control sliderSetPosition 0;
-                _control sliderSetSpeed [1, 5];
-            };
-
-            if (toUpper _controlType in ["PROGRESSBAR"]) then {
-                _control progressSetPosition 0;
+                if (toUpper _controlType in ["PROGRESSBAR"]) then {
+                    _control progressSetPosition 0;
+                };
             };
 
             {
                 _blockID = _x select 0;
                 _data = _x select 1;
                 switch (toUpper _blockID) do {
+                    case "ACTIVATIONFUNCTION": {
+                        switch (toUpper _controlType) do {
+                            case "BUTTON": {
+                                _control buttonSetAction (format ["['%1', 'ActivationFunction'] spawn Zen_ExecuteEvent", _controlID]);
+                            };
+                            case "LIST": {
+                                _control ctrlSetEventHandler ["LBDblClick", (format ["['%1', 'ActivationFunction'] spawn Zen_ExecuteEvent", _controlID])]
+                            };
+                        };
+                    };
                     case "ANGLE": {
                         _control ctrlSetAngle _data;
                     };
-                    case "PROGRESS": {
-                        _control progressSetPosition (((_data max 0) min 255) / 255);
+                    case "BACKGROUNDCOLOR": {
+                        _control ctrlSetBackgroundColor [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP];
+                    };
+                    case "FONT": {
+                        _control ctrlSetFont _data;
+                    };
+                    case "FONTSIZE": {
+                        _control ctrlSetFontHeight _data / FONT_DIVISION;
+                    };
+
+                    case "FONTCOLOR": {
+                        if ((toUpper _controlType) in ["LIST","DROPLIST"]) then {
+                            for "_i" from 0 to (lbSize _control - 1) do {
+                                _control lbSetColor [_i, [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP]];
+                            };
+                        } else {
+                            _control ctrlSetTextColor [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP];
+                        };
                     };
                     case "FONTCOLORSELECTED": {
                         if ((toUpper _controlType) in ["LIST","DROPLIST"]) then {
@@ -120,6 +162,27 @@ if !(_doRefresh) then {
                         } else {
                             _control ctrlSetActiveColor [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP];
                         };
+                    };
+                    case "FOREGROUNDCOLOR": {
+                        _control ctrlSetForegroundColor [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP];
+                    };
+                    case "LISTTOOLTIP": {
+                        if ((toUpper _controlType) in ["LIST"]) then {
+                            for "_i" from 0 to (lbSize _control - 1) do {
+                                _control lbSetTooltip [_i, _data select _i];
+                            };
+                        };
+                    };
+                    case "MAPPOSITION": {
+                        ctrlMapAnimClear _control;
+                        _control ctrlMapAnimAdd [1, ctrlMapScale _control, ([_data] call Zen_ConvertToPosition)];
+                        ctrlMapAnimCommit _control;
+                    };
+                    case "MAPZOOM": {
+                        ctrlMapAnimClear _control;
+                        _mapPos = ctrlPosition _control;
+                        _control ctrlMapAnimAdd [1, _data, _control ctrlMapScreenToWorld ([(_mapPos select 0) + (_mapPos select 2) / 2, (_mapPos select 1) + (_mapPos select 3) / 2])];
+                        ctrlMapAnimCommit _control;
                     };
                     case "PICTURE": {
                         if ((toUpper _controlType) in ["LIST","DROPLIST"]) then {
@@ -146,14 +209,30 @@ if !(_doRefresh) then {
                             };
                         };
                     };
-                    case "FOREGROUNDCOLOR": {
-                        _control ctrlSetForegroundColor [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP];
+                    case "POSITION": {
+                        _control ctrlSetPosition [(_data select 0) * GRID_DIVISION + (_offset select 0), (_data select 1) * GRID_DIVISION + (_offset select 1)];
+                    };
+                    case "PROGRESS": {
+                        _control progressSetPosition (((_data max 0) min 255) / 255);
+                    };
+                    case "SELECTIONFUNCTION": {
+                        if ((toUpper _controlType) in ["LIST", "DROPLIST"]) then {
+                            _control ctrlSetEventHandler ["LBSelChanged", (format ["['%1', 'SelectionFunction'] spawn Zen_ExecuteEvent", _controlID])];
+                        };
+
+                        if ((toUpper _controlType) in ["SLIDER"]) then {
+                            _control ctrlSetEventHandler ["SliderPosChanged", (format ["['%1', 'SelectionFunction'] spawn Zen_ExecuteEvent", _controlID])];
+                        };
+                    };
+                    case "SIZE": {
+                        _oldPos = ctrlPosition _control;
+                        _control ctrlSetPosition (([_oldPos, 0, 1] call Zen_ArrayGetIndexedSlice) + [(_data select 0) * GRID_DIVISION, (_data select 1) * GRID_DIVISION]);
                     };
                     case "SLIDERPOSITIONS": {
                         _control sliderSetRange [0, _data max 1];
                     };
-                    case "BACKGROUNDCOLOR": {
-                        _control ctrlSetBackgroundColor [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP];
+                    case "TEXT": {
+                        _control ctrlSetText _data;
                     };
                     case "TOOLTIPFONTCOLOR": {
                         _control ctrlSetTooltipColorText [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP];
@@ -167,57 +246,6 @@ if !(_doRefresh) then {
                     case "TOOLTIP": {
                         _control ctrlSetTooltip _data;
                     };
-                    case "LISTTOOLTIP": {
-                        if ((toUpper _controlType) in ["LIST"]) then {
-                            for "_i" from 0 to (lbSize _control - 1) do {
-                                _control lbSetTooltip [_i, _data select _i];
-                            };
-                        };
-                    };
-                    case "TEXT": {
-                        _control ctrlSetText _data;
-                    };
-                    case "FONT": {
-                        _control ctrlSetFont _data;
-                    };
-                    case "FONTSIZE": {
-                        _control ctrlSetFontHeight _data / FONT_DIVISION;
-                    };
-                    case "FONTCOLOR": {
-                        if ((toUpper _controlType) in ["LIST","DROPLIST"]) then {
-                            for "_i" from 0 to (lbSize _control - 1) do {
-                                _control lbSetColor [_i, [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP]];
-                            };
-                        } else {
-                            _control ctrlSetTextColor [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP];
-                        };
-                    };
-                    case "POSITION": {
-                        _control ctrlSetPosition [(_data select 0) * GRID_DIVISION + (_offset select 0), (_data select 1) * GRID_DIVISION + (_offset select 1)];
-                    };
-                    case "SIZE": {
-                        _oldPos = ctrlPosition _control;
-                        _control ctrlSetPosition (([_oldPos, 0, 1] call Zen_ArrayGetIndexedSlice) + [(_data select 0) * GRID_DIVISION, (_data select 1) * GRID_DIVISION]);
-                    };
-                    case "ACTIVATIONFUNCTION": {
-                        switch (toUpper _controlType) do {
-                            case "BUTTON": {
-                                _control buttonSetAction (format ["['%1', 'ActivationFunction'] spawn Zen_ExecuteEvent", _controlID]);
-                            };
-                            case "LIST": {
-                                _control ctrlSetEventHandler ["LBDblClick", (format ["['%1', 'ActivationFunction'] spawn Zen_ExecuteEvent", _controlID])]
-                            };
-                        };
-                    };
-                    case "SELECTIONFUNCTION": {
-                        if ((toUpper _controlType) in ["LIST", "DROPLIST"]) then {
-                            _control ctrlSetEventHandler ["LBSelChanged", (format ["['%1', 'SelectionFunction'] spawn Zen_ExecuteEvent", _controlID])];
-                        };
-
-                        if ((toUpper _controlType) in ["SLIDER"]) then {
-                            _control ctrlSetEventHandler ["SliderPosChanged", (format ["['%1', 'SelectionFunction'] spawn Zen_ExecuteEvent", _controlID])];
-                        };
-                    };
                     default {};
                 };
                 _control ctrlCommit 0;
@@ -226,7 +254,7 @@ if !(_doRefresh) then {
             _control ctrlCommit 0;
         };
     };
-} forEach _controlsArray;
+} forEach _controlIDsArray;
 
 if !(_doRefresh) then {
     uiNamespace setVariable ["Zen_Dialog_Object_Local", [_dialogID, _Zen_Dialog_Controls_Local, _offset]];

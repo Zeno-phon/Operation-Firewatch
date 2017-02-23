@@ -220,12 +220,24 @@ Zen_OF_RouteGUIWaypointList = {
     call Zen_OF_RouteGUIRefresh;
 };
 
+Zen_OF_RouteGUIListSelect = {
+    if (count _this < 2) exitWith {};
+
+    _map = (_this select 0) select 0;
+    _waypoint = _this select 1;
+
+    _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+
+    0 = [_map, ["MapPosition", (((_droneData select 7) select (_droneData select 9)) select _waypoint) vectorAdd [random 5, 0, 0]]] call Zen_UpdateControl;
+    call Zen_RefreshDialog;
+};
+
 Zen_OF_RouteGUIList = ["List",
     ["List", []],
     ["ListData", []],
     ["Position", [5, 0]],
-    // ["SelectionFunction", "Zen_OF_DroneGUIListSelect"],
-    // ["Data", [_barHealth, _barFuel, _textTimer]],
+    ["SelectionFunction", "Zen_OF_RouteGUIListSelect"],
+    ["Data", [_map]],
     ["Size", [35,11.5]]
 ] call Zen_CreateControl;
 

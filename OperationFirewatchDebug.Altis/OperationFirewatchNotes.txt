@@ -20,6 +20,7 @@ Zen_OF_OrderDroneExecuteRoute
     waypoints types
         // move
         land
+            check for permissions
             // select nearest RR
             ?? Zen_ArraySort to divert when RR is full
             // account for non-airfields
@@ -140,6 +141,7 @@ Data
 ////////////////////////////////////////////////
 
 // List of drones
+    // move map to selected drone
 // Sensor health bar
 // Fuel bar
 // Show drone button
@@ -199,7 +201,9 @@ drone overview
 
 // GUI elements
     // list of all drones
+        // move map to selected drone
     // list of all A zones
+        // move map to selected zone
     // refresh button
     // close button
     // show drone and zone button
@@ -213,13 +217,12 @@ drone overview
 // Zen_OF_PermissionGUIShow
 // Zen_OF_PermissionGUIRequestPermission
 
-move map to selected zone
-
 ////////////////////////////////////////////////
 // Route planning GUI
 ////////////////////////////////////////////////
 
 // List of all waypoints
+    // move map to selected waypoint
 // move waypoint button
     // sets waypoint position to clicked position
 // new waypoint button
@@ -267,5 +270,8 @@ Zen_OF_GenerateFire
 // Changelog
 ////////////////////////////////////////////////
 
-1. Added: Altitude value for each drone class
-2. Added: Drone camera view
+1. Fixed: Map control is centered in its part of the dialogs
+2. Improved: Dialog refresh flickers less
+3. Improved: Drone Dialog moves map to selected drone
+4. Improved: Drone Route Dialog moves map to selected waypoint
+5. Improved: Zone Permissions Dialog moves map to selected drone or zone
