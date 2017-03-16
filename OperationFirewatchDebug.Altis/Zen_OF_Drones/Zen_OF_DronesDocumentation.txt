@@ -58,7 +58,8 @@ Return: Array
             13. Script handle, drone GUI auto confirm countdown
             14. Scalar, time that the auto confirm countdown started
             15. Script handle, drone orbit thread
-            16. Array of string, waypoint types
+            16. Array of strings, waypoint types
+            17. Array of strings, permitted zones
 
 Zen_OF_InvokeDrone
 
@@ -109,4 +110,5 @@ Params: 1. String, drone identifier
  (opt.) 13. Scalar, time that the auto confirm countdown started, (default: '')
  (opt.) 14. Script handle, drone orders thread, (default: '')
  (opt.) 15. Array of strings, waypoint types, (default: '')
+ (opt.) 16. Array of strings, permitted zones, (default: '')
 Return: Void

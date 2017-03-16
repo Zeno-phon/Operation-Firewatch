@@ -18,19 +18,19 @@
 // Zen_OF_UpdateDrone
 Zen_OF_OrderDroneExecuteRoute
     waypoints types
-        // move
+        // move/loiter
         land
-            check for permissions
+            ?? check for permissions
             // select nearest RR
             ?? Zen_ArraySort to divert when RR is full
             // account for non-airfields
             // find nearest airfield
             // landAt
             // refueling countdown timer
-        ?? loiter
 
 Zen_OF_FindDroneRoute
     // get end point from user
+    use line-ellipse intersection as heuristic
     diamond algorithm
         // choose angle and distance by Gaussian random (centered at half distance, and double Gaussian at +-45 deg)
             // draw a line from the destination at an angle and radius
@@ -61,12 +61,10 @@ Zen_OF_FindDroneRoute
         apply diamond to reach area, keeping only 1 solution
         repeat at random angles until within 1 circle radius of destination
 
-Zen_OF_FindFire
-    ?? use fire object geometry to evaluate probability of detection
+// Zen_OF_FindFire
+    // random time/dist function detection
 
-// Zen_OF_ManageDrones
-    fuel as function of time
-        use straight line speed and max range to compute fuel/time
+Zen_OF_ManageDrones
     // deplete fuel (as function of velocity/acceleration)
     // print fuel level alerts at 10% steps
     // if 30% fuel or 70% health, force RTB
@@ -77,12 +75,18 @@ Zen_OF_FindFire
         // count out->in event as 1 violation
         // count in->in event as 1 timescale
         // count out->in and in->out event as 0.5 timescale
-        Spawn AAA in C zone
-            cache AAA when drones leaves or is killed
+        // Spawn AAA in C zone
+            ?? cache AAA when drones leaves or is killed
         // account for zone permissions
     // scan for fires
         // only spam update fire location when it actually moves
     // deplete sensor health (as function of usage)
+    // points
+        // in AOR/20s +1
+        // RR +5
+        // violate A -5
+        // violate B -10
+        // violate C -20
 
 // Zen_OF_OrderDroneOrbit
 
@@ -102,22 +106,13 @@ Zen_OF_FindFire
 ////////////////////////////////////////////////
 // Fires
 ////////////////////////////////////////////////
-Data
+// Data
     // string, id
     // array of markers, fire coverage
-    ?? array of arrays
-        Scalar, X coordinate
-        Scalar, Y coordinate
 
 // Zen_OF_InvokeFire
     // visible fire
 // Zen_OF_GetFireData
-
-?? Zen_OF_FindDistToFire
-    generate shortest distances to fire area at discrete angles
-
-?? Zen_OF_FindFireCrossSection
-    Compute the angular sector occupied by the fire in a circular sweep from a point
 
 ////////////////////////////////////////////////
 // Airspace Zone
@@ -151,12 +146,14 @@ Recalculate route button
     // distance, time, fuel remaining
     // measure average straight path nominal velocity
     display
-        // distance
-        // travel time
-        // fuel
-        time before refuel needed
-        time to travel to nearest refuel point (from end of route)
-    ?? run algorithm again
+        manual
+            // ETA for each waypoint
+        light
+            3 routes
+            // ETA and fuel remaining for each waypoint
+        heavy
+            1 route
+            ETA, fuel remaining, time before refuel for final waypoint
 // Approve route button
 // RTB button
 // Refresh GUI button
@@ -164,9 +161,16 @@ Recalculate route button
 // Timer text field for auto-confirm
 Report fire button
     type in location or false alarm
-// drone camera
+drone camera
     // set camera target on possible fire
     // attachTo drone
+    panning/zoom for manual
+    pointer vector to target for doa-l
+    joystick inputAction
+        fixed texture method
+        46 method
+    lock fire button
+    get coord button
 
 // stop esc exit
 // remove RTB button
@@ -181,6 +185,7 @@ drone overview
         refueling countdown timer
     duplicate for each drone
     remove health/fuel bars
+    sorting/repositions of cards
 
 // Zen_OF_DroneGUIListSelect
 // Zen_OF_DroneGUIRefresh
@@ -216,6 +221,8 @@ drone overview
 // Zen_OF_PermissionGUIInvoke
 // Zen_OF_PermissionGUIShow
 // Zen_OF_PermissionGUIRequestPermission
+
+// flag zones on map
 
 ////////////////////////////////////////////////
 // Route planning GUI
@@ -255,7 +262,7 @@ Zen_OF_GenerateFire
     // thread for the random starting of fires
     // random point in any AOR with a drone in it
     // log creation
-    5 min timer
+    // 5 min timer
 
 // AORs
     // predefined AORs on the server
@@ -266,12 +273,26 @@ Zen_OF_GenerateFire
 
 ?? better definition of marker areas
 
+// 3 groups (index/bool...)
+    // manual
+    // light automation
+    // heavy automation
+
+// ctrlSetFade
+// ctrlCommit time
+
+demographics and user consent GUI
+    need text
+
 ////////////////////////////////////////////////
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Map control is centered in its part of the dialogs
-2. Improved: Dialog refresh flickers less
-3. Improved: Drone Dialog moves map to selected drone
-4. Improved: Drone Route Dialog moves map to selected waypoint
-5. Improved: Zone Permissions Dialog moves map to selected drone or zone
+1. Fixed: Error with drone type data
+2. Added: Fire generator now runs in a loop
+3. Added: Point systems for drones
+4. Added: 3 automation groups structure
+5. Added: Map marker flags for zone permissions
+6. Improved: Fire detection now uses random time based upon distance to fire
+7. Improved: Zone permissions management
+8. Improved: Frequency of drone manager increased

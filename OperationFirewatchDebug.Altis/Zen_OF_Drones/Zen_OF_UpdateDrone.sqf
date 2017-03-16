@@ -4,9 +4,9 @@
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
 _Zen_stack_Trace = ["Zen_OF_UpdateDrone", _this] call Zen_StackAdd;
-private ["_nameString", "_health", "_fuel", "_dataArray", "_zones", "_script", "_marker", "_pathMarkers", "_paths", "_currentPath", "_RTBArgs", "_GUIScript", "_autoConfirmScript", "_timer", "_orbitThread", "_waypoints"];
+private ["_nameString", "_health", "_fuel", "_dataArray", "_zonesKnown", "_script", "_marker", "_pathMarkers", "_paths", "_currentPath", "_RTBArgs", "_GUIScript", "_autoConfirmScript", "_timer", "_orbitThread", "_waypoints", "_zonesPermitted"];
 
-if !([_this, [["STRING"], ["STRING", "SCALAR"], ["STRING", "SCALAR"], ["SCRIPT", "STRING"], ["ARRAY", "STRING"], ["SCALAR", "STRING"], ["ARRAY", "STRING"], ["ARRAY", "STRING"], ["SCALAR", "STRING"], ["ARRAY", "STRING"], ["SCRIPT", "STRING"], ["SCRIPT", "STRING"], ["SCALAR", "STRING"], ["SCRIPT", "STRING"]], [[], [], [], [], ["STRING"], [], ["ARRAY"], ["STRING"]], 2] call Zen_CheckArguments) exitWith {
+if !([_this, [["STRING"], ["STRING", "SCALAR"], ["STRING", "SCALAR"], ["SCRIPT", "STRING"], ["ARRAY", "STRING"], ["SCALAR", "STRING"], ["ARRAY", "STRING"], ["ARRAY", "STRING"], ["SCALAR", "STRING"], ["ARRAY", "STRING"], ["SCRIPT", "STRING"], ["SCRIPT", "STRING"], ["SCALAR", "STRING"], ["SCRIPT", "STRING"], ["ARRAY", "STRING"]], [[], [], [], [], ["STRING"], [], ["ARRAY"], ["STRING"]], 2] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
 };
 
@@ -15,7 +15,7 @@ _health = _this select 1;
 
 ZEN_STD_Parse_GetArgumentDefault(_fuel, 2, "")
 ZEN_STD_Parse_GetArgumentDefault(_script, 3, "");
-ZEN_STD_Parse_GetArgumentDefault(_zones, 4, "")
+ZEN_STD_Parse_GetArgumentDefault(_zonesKnown, 4, "")
 ZEN_STD_Parse_GetArgumentDefault(_marker, 5, 0)
 ZEN_STD_Parse_GetArgumentDefault(_paths, 6, "")
 ZEN_STD_Parse_GetArgumentDefault(_pathMarkers, 7, "")
@@ -26,6 +26,7 @@ ZEN_STD_Parse_GetArgumentDefault(_autoConfirmScript, 11, "")
 ZEN_STD_Parse_GetArgumentDefault(_timer, 12, "")
 ZEN_STD_Parse_GetArgumentDefault(_orbitThread, 13, "")
 ZEN_STD_Parse_GetArgumentDefault(_waypoints, 14, "")
+ZEN_STD_Parse_GetArgumentDefault(_zonesPermitted, 15, "")
 
 _dataArray = [];
 
@@ -51,8 +52,8 @@ if (typeName _script == "SCRIPT") then {
     _dataArray set [4, _script];
 };
 
-if (typeName _zones == "ARRAY") then {
-    _dataArray set [5, _zones];
+if (typeName _zonesKnown == "ARRAY") then {
+    _dataArray set [5, _zonesKnown];
 };
 
 if (typeName _marker == "STRING") then {
@@ -93,6 +94,10 @@ if (typeName _orbitThread == "SCRIPT") then {
 
 if (typeName _waypoints == "ARRAY") then {
     _dataArray set [15, _waypoints];
+};
+
+if (typeName _zonesPermitted == "ARRAY") then {
+    _dataArray set [16, _zonesPermitted];
 };
 
 call Zen_StackRemove;

@@ -38,7 +38,7 @@ Zen_F_GetDroneClassData = {
         ZEN_FMW_Code_ErrorExitValue("Zen_OF_FindDroneRouteData", "Given drone is of unknown type.", [])
     };
 
-    ([(_droneClassData select 1), (_droneClassData select 2)])
+    ([_droneClassData, 1] call Zen_ArrayGetIndexedSlice)
 };
 
 // This will make the markers invisible during the briefing
@@ -129,9 +129,10 @@ _cam9 = ["new", []] call OO_CAMERA;
     ["setPipEffect", [0]] call _cam9;
 //*/
 
-// if (random 1 > 0.5) then {
-    Zen_OF_User_Is_Group_Two = false;
-// };
+// 0 - manual
+// 1 - DOA-L
+// 2 - DOA-H
+Zen_OF_User_Group_Index = 0;
 
 /**  Throughout the code, I will make ample use of the preprocessor.  SQF's preprocessor is very similar to C/C++; it is a copy-paste tool that prevents repeating blocks of code without having to make a new function.  It can also be used to copy-paste values that cannot be passed to a function.  These lines will copy-paste the entire contents of the files into this file, making them part of the init.sqf; this is handy for organizing long definitions of functions and variables into separate files. */
 #include "Zen_OF_DroneDialog.sqf"
@@ -144,7 +145,7 @@ _cam9 = ["new", []] call OO_CAMERA;
 ["Operation Firewatch Demo"] call A3log;
 ["Running " + str productVersion] call A3log;
 ["Running " + str productVersion, "Table"] call A3log;
-[name player + " is a member of Group #" + (if (Zen_OF_User_Is_Group_Two) then {("2")} else {("1")}) + "."] call A3log;
+[name player + " is a member of Group #" + str Zen_OF_User_Group_Index + "."] call A3log;
 
 // debug
 // 0 = ["Charlie_1", "test_EmptyObjectForFireBig"] call Zen_SpawnVehicle;
@@ -169,25 +170,25 @@ _cam9 = ["new", []] call OO_CAMERA;
     Zen_OF_Zone_Knowledge_Local pushBack (_x select 0);
 } forEach Zen_OF_Zones_Global;
 
+/**  Here the first drone is created.  In this usage we give an existing object, Drone_Fixed_01, so the spawn point (player) isn't used.  We can also give the classname of a new vehicle to spawn.  Zen_OF_InvokeDrone always creates a drone (i.e. the data of the drone; the abstract drone object) local to the client that it was run on.  In SP this doesn't matter, but in MP Zen_OF_InvokeDrone must be run on the correct client's machine. */
+_drone = [player, Drone_Fixed_01] call Zen_OF_InvokeDrone;
+
 // The drone manager is started on all machines
 // It will wait for drones to be created and automatically manage their fuel, fire scanning, etc.
 ZEN_FMW_MP_REAll("Zen_OF_ManageDrones", [], spawn)
-
-/**  Here the first drone is created.  In this usage we give an existing object, Drone_Fixed_01, so the spawn point (player) isn't used.  We can also give the classname of a new vehicle to spawn.  Zen_OF_InvokeDrone always creates a drone (i.e. the data of the drone; the abstract drone object) local to the client that it was run on.  In SP this doesn't matter, but in MP Zen_OF_InvokeDrone must be run on the correct client's machine. */
-_drone = [player, Drone_Fixed_01] call Zen_OF_InvokeDrone;
 
 /**  Drones pathfind using their personal knowledge of zones; thus, the initial zone data must be copied to them as well. */
 0 = [_drone, "", "", "", +Zen_OF_Zone_Knowledge_Local] call Zen_OF_UpdateDrone;
 
 /**  This is the generation of the sample tabular data log file.  I 'spawn' a new thread so that will run in parallel (it's not simultaneous, but close enough) so the init can continue after this.. */
-0 = [Drone_Fixed_01] spawn {
-    _drone = _this select 0;
-    ["Time, s     Speed, m/s,     Direction, deg", "Table"] call A3log;
-    while {true} do {
-        sleep 2;
-        [(str time + "      " + str (vectorMagnitude velocity _drone) + "        " + str getDir _drone), "Table"] call A3log;
-    };
-};
+// 0 = [Drone_Fixed_01] spawn {
+    // _drone = _this select 0;
+    // ["Time, s     Speed, m/s,     Direction, deg", "Table"] call A3log;
+    // while {true} do {
+        // sleep 2;
+        // [(str time + "      " + str (vectorMagnitude velocity _drone) + "        " + str getDir _drone), "Table"] call A3log;
+    // };
+// };
 
 player sideChat "Player has been assigned 1 drone.";
 
@@ -203,34 +204,48 @@ player addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
 // This may be changed to assist with the drones' landing procedures
 _rr = [player, 5] call Zen_OF_InvokeRepairRefuel;
 
-/**  This block will assign an AOR and generate a fire within it.  I have left it as a spawn because it will need to be generalized to support multiple drones and continuous creation of fires. */
+// A test of the fire detection randomness
+// for "_i" from 0 to 10 do {
+    // _dist = 100 * _i;
+    // _timeScale = 0.5 * 6;
+    // _detectionProb = 1. / 2 - (1. / 2 - 1. / 60) * _dist / 1000.;
+
+    // player sideChat str ((1. - _detectionProb) ^ _timeScale);
+// };
+
+/**  This block will assign an AOR and generate a fire within it every 10 minutes. */
 0 = [] spawn {
-    // We select an AOR at random and display it on the map
-    _index = [1, 21, true] call Zen_FindInRange;
-    _aor = "AORLarge_" + str _index;
-    _aor setMarkerAlpha 1;
+    while {true} do {
+        // We select an AOR at random and display it on the map
+        _index = [1, 21, true] call Zen_FindInRange;
+        _aor = "AORLarge_" + str _index;
+        _aor setMarkerAlpha 1;
 
-    // This icon highlights the AOR for the user
-    player sideChat ("Player has been assigned AOR " + str _index);
-    _icon = [_aor, "AOR " + str _index, "colorBlack", [1,1], "mil_marker"] call Zen_SpawnMarker;
+        // This icon highlights the AOR for the user
+        player sideChat ("Player has been assigned AOR " + str _index);
+        _icon = [_aor, "AOR " + str _index, "colorBlack", [1,1], "mil_marker"] call Zen_SpawnMarker;
 
-    // Here I have already provided some generalization
-    // We are waiting for any drone to be inside the AOR
-    waitUntil {
-        _droneObjs = [];
+        // Here I have already provided some generalization
+        // We are waiting for any drone to be inside the AOR
+        waitUntil {
+            _droneObjs = [];
 
-        /**  Notice that I use Zen_OF_Drones_Local directly here, but what that variable is and how to use it does not appear in the documentation.  Normally, particularly with my framework, internal variables are private and should never be used directly; the framework provides public functions that make that unnecessary.  However, in a project like this, I will use internal variables wherever it is expedient, since all of the systems are tied together very closely to make the mission work. */
-        {
-            _droneObjs pushBack (_x select 1);
-        } forEach Zen_OF_Drones_Local;
+            /**  Notice that I use Zen_OF_Drones_Local directly here, but what that variable is and how to use it does not appear in the documentation.  Normally, particularly with my framework, internal variables are private and should never be used directly; the framework provides public functions that make that unnecessary.  However, in a project like this, I will use internal variables wherever it is expedient, since all of the systems are tied together very closely to make the mission work. */
+            {
+                _droneObjs pushBack (_x select 1);
+            } forEach Zen_OF_Drones_Local;
 
-        // ! Zen_AreNotInArea has become a staple of the framework, despite being confusing at first
-        !([_droneObjs, _aor] call Zen_AreNotInArea)
+            // ! Zen_AreNotInArea has become a staple of the framework, despite being confusing at first
+            !([_droneObjs, _aor] call Zen_AreNotInArea)
+        };
+
+        // Since fires are defined by area markers, we create one at a random position within the AOR
+        // This is the first use of Zen_FindGroundPosition, which is a very powerful tool
+        // Here we are just using it to ensure that the fire is on land and not water
+        _fireArea = [[_aor] call Zen_FindGroundPosition, "", "colorBlack", [10,10], "ellipse", 0, 0] call Zen_SpawnMarker;
+        0 = [[_fireArea]] call Zen_OF_InvokeFire;
+
+        // 10 minutes between fires
+        sleep 60*10;
     };
-
-    // Since fires are defined by area markers, we create one at a random position within the AOR
-    // This is the first use of Zen_FindGroundPosition, which is a very powerful tool
-    // Here we are just using it to ensure that the fire is on land and not water
-    _fireArea = [[_aor] call Zen_FindGroundPosition, "", "colorBlack", [10,10], "ellipse", 0, 0] call Zen_SpawnMarker;
-    0 = [[_fireArea]] call Zen_OF_InvokeFire;
 };

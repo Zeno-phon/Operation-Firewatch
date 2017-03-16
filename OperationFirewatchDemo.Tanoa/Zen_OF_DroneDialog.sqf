@@ -21,7 +21,8 @@
         player sideChat (_drone + " is dead."); \
     };
 
-#define PARSE_WAYPOINT_INFO(A) (format["Distance: %1 m; ETA: %2 s; Fuel: %3 %4", A select 0, A select 1, (A select 2) * 100, "%"])
+#define PARSE_WAYPOINT_INFO_L(A) (format["ETA: %1 s; Fuel: %2 %3", A select 1, (A select 2) * 100, "%"])
+#define PARSE_WAYPOINT_INFO_H(A) (format["ETA: %1 s; Fuel: %2 %3; Time Remaining: TODO", A select 1, (A select 2) * 100, "%"])
 
 ZEN_OF_DroneDialog_Camera = "camera" camCreate [0,0,0];
 
@@ -48,7 +49,7 @@ Zen_OF_DroneGUIRefresh = {
         0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
         0 = [_bars select 3, ["MapPosition", (getPosATL (_droneData select 1)) vectorAdd [random 5, 0, 0]]] call Zen_UpdateControl;
 
-        if (Zen_OF_User_Is_Group_Two) then {
+        if (Zen_OF_User_Group_Index == 2) then {
             _timer = _droneData select 13;
             if (((_timer > 0) && (time - _timer < DRONE_AUTO_CONFIRM_TIMER)) && {(scriptDone (_droneData select 4)) && (scriptDone (_droneData select 11))}) then {
                 0 = [_bars select 2, ["Text", "Auto-Confirming Orders in: " + str round (_timer - time + 60) + " seconds"]] call Zen_UpdateControl;
@@ -58,7 +59,7 @@ Zen_OF_DroneGUIRefresh = {
         };
     };
 
-    call Zen_RefreshDialog;
+    [] call Zen_RefreshDialog;
 };
 
 Zen_OF_DroneGUIInvoke= {
@@ -88,9 +89,7 @@ Zen_OF_DroneGUIDrawPath = {
     _droneData = [_drone] call Zen_OF_GetDroneData;
     _path = (_droneData select 7) select (_droneData select 9);
 
-    // if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
-        _pathData = [_drone] call Zen_OF_FindDroneRouteData;
-    // };
+    _pathData = [_drone] call Zen_OF_FindDroneRouteData;
 
     _markers = [];
     if (_markDrone) then {
@@ -100,10 +99,16 @@ Zen_OF_DroneGUIDrawPath = {
         _markers pushBack _mkr;
     };
 
-    if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
-        _markers pushBack ([_path select 0, PARSE_WAYPOINT_INFO(_pathData select 0)] call Zen_SpawnMarker);
-    } else {
-        _markers pushBack ([_path select 0, "ETA: " + str round ((_pathData select 0) select 1) + " s"] call Zen_SpawnMarker);
+    switch (Zen_OF_User_Group_Index) do {
+        case 0:{
+            _markers pushBack ([_path select 0, "ETA: " + str round ((_pathData select 0) select 1) + " s"] call Zen_SpawnMarker);
+        };
+        case 1: {
+            _markers pushBack ([_path select 0, PARSE_WAYPOINT_INFO_L(_pathData select 0)] call Zen_SpawnMarker);
+        };
+        case 2: {
+            _markers pushBack ([_path select 0, PARSE_WAYPOINT_INFO_H(_pathData select 0)] call Zen_SpawnMarker);
+        };
     };
 
     for "_i" from 0 to (count _path - 2) do {
@@ -111,10 +116,16 @@ Zen_OF_DroneGUIDrawPath = {
         _mkr = [_half, "", "colorBlack", [((_path select _i) distance2D (_path select (_i + 1))) / 2, 5], "rectangle", 180-([(_path select _i), (_path select (_i + 1))] call Zen_FindDirection), 1] call Zen_SpawnMarker;
         _markers pushBack _mkr;
 
-        if (Zen_OF_User_Is_Group_Two || _infoOverride) then {
-            _markers pushBack ([_path select (_i + 1), PARSE_WAYPOINT_INFO(_pathData select (_i + 1))] call Zen_SpawnMarker);
-        } else {
-            _markers pushBack ([_path select (_i + 1), "ETA: " + str round ((_pathData select (_i + 1)) select 1) + " s"] call Zen_SpawnMarker);
+        switch (Zen_OF_User_Group_Index) do {
+            case 0:{
+                _markers pushBack ([_path select (_i + 1), "ETA: " + str round ((_pathData select (_i + 1)) select 1) + " s"] call Zen_SpawnMarker);
+            };
+            case 1: {
+                _markers pushBack ([_path select (_i + 1), PARSE_WAYPOINT_INFO_L(_pathData select (_i + 1))] call Zen_SpawnMarker);
+            };
+            case 2: {
+                _markers pushBack ([_path select (_i + 1), PARSE_WAYPOINT_INFO_H(_pathData select (_i + 1))] call Zen_SpawnMarker);
+            };
         };
     };
 
@@ -226,7 +237,7 @@ Zen_OF_DroneGUIMove = {
         player sideChat (_drone + " is carrying out a previous move order; use the stop button.");
     };
 
-    if !(Zen_OF_User_Is_Group_Two) exitWith {
+    if (Zen_OF_User_Group_Index == 0) exitWith {
         Zen_OF_RouteGUICurrentDrone = _drone;
         call Zen_CloseDialog;
         [_drone] call Zen_OF_RouteGUIInvoke;
@@ -261,8 +272,7 @@ Zen_OF_DroneGUIMove = {
         0 = [_drone, "", "", "", "", 0, _paths, _markers, 0, "", "", "", "", "", ["MOVE", "MOVE", "MOVE", "MOVE"]] call Zen_OF_UpdateDrone;
         _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
 
-        // for group #2
-        if (Zen_OF_User_Is_Group_Two) then {
+        if (Zen_OF_User_Group_Index == 2) then {
             terminate (_droneData select 12);
             _h_wait = [_drone, _paths] spawn {
                 _drone = _this select 0;
@@ -329,8 +339,8 @@ Zen_OF_DroneGUIApprove = {
 };
 
 Zen_OF_DroneGUIRecalc = {
-    if !(Zen_OF_User_Is_Group_Two) exitWith {
-        player commandChat str "Recalc has no function for group #1.";
+    if (Zen_OF_User_Group_Index == 0) exitWith {
+        player commandChat str "Recalc has no function for manual group.";
     };
 
     _drone = _this select 1;
@@ -429,7 +439,7 @@ Zen_OF_DroneGUICamera = {
 
         _center = [([_nearestFire] call Zen_OF_GetFireData) select 1] call Zen_FindCenterPosition;
 
-        ZEN_FMW_MP_REServerOnly("A3log", [name player + " has entered camera view of " + _drone + " and is viewing fire " + (_nearestFire select 0)], call)
+        ZEN_FMW_MP_REServerOnly("A3log", [name player + " has entered camera view of " + _drone + " and is viewing fire " + (_nearestFire select 0) + " at " + str _center], call)
     };
 
     ZEN_OF_DroneDialog_Camera cameraEffect ["internal","back"];
@@ -586,6 +596,6 @@ _statusText4 = ["Text",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (if (Zen_OF_User_Is_Group_Two) then {[_buttonWaypointTypes, _buttonRecalc]} else {[]});
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (if (Zen_OF_User_Group_Index > 0) then {[_buttonWaypointTypes, _buttonRecalc]} else {[]});
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

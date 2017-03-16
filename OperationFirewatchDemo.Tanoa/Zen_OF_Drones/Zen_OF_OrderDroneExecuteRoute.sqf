@@ -6,7 +6,7 @@
 #define REFUEL_TIME 60*2
 
 _Zen_stack_Trace = ["Zen_OF_OrderDroneExecuteRoute", _this] call Zen_StackAdd;
-private ["_drone", "_path", "_droneData", "_markers", "_speed", "_h_orbit", "_droneClassData", "_orbitRadius", "_nearestRR", "_waypointTypes", "_droneObj", "_nearestRRData", "_nearestAirfield", "_height"];
+private ["_drone", "_path", "_droneData", "_markers", "_speed", "_h_orbit", "_droneClassData", "_orbitRadius", "_nearestRR", "_waypointTypes", "_droneObj", "_nearestRRData", "_nearestAirfield", "_height", "_dataArray"];
 
 if !([_this, [["STRING"], ["ARRAY"], ["ARRAY"], ["BOOL"], ["STRING"]], [[], ["ARRAY"], ["STRING"]], 3] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -36,7 +36,6 @@ _droneObj = _droneData select 1;
     ZEN_FMW_MP_REServerOnly("A3log", [_drone + " passing checkpoint at " + str _x], call)
 
     if ((toUpper (_waypointTypes select _forEachIndex)) == "LAND") then {
-
         _nearestRRData = [Zen_OF_RepairRefuel_Global, compile format["
             _pos = _this select 1;
             _dronePos = %1;
@@ -81,6 +80,15 @@ _droneObj = _droneData select 1;
         player sideChat (_drone + " repair and refueling complete.");
         ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " repair and refueling complete.")], call)
         0 = [_nearestRR, "", (([_nearestRR] call Zen_OF_GetRepairRefuelData) select 3) - 1] call Zen_OF_UpdateRepairRefuel;
+
+        _dataArray = [];
+        {
+            if ([(_x select 0), _drone] call Zen_ValuesAreEqual) exitWith {
+                _dataArray = _x;
+            };
+        } forEach Zen_OF_DroneManagerData;
+
+        _dataArray set [10, 5 + (_dataArray select 10)];
     };
 } forEach _path;
 

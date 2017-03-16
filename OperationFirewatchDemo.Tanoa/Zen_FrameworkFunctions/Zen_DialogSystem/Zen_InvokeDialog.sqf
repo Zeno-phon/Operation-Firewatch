@@ -7,7 +7,7 @@ disableSerialization;
 #include "..\Zen_StandardLibrary.sqf"
 
 _Zen_stack_Trace = ["Zen_InvokeDialog", _this] call Zen_StackAdd;
-private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc", "_mapPos", "_element", "_maxElement", "_controlIDsArray", "_hashes"];
+private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc", "_mapPos", "_element", "_maxElement", "_controlIDsArray", "_hashes", "__time", "_mapTime"];
 
 if !([_this, [["STRING"], ["ARRAY"], ["BOOL"]], [[], ["SCALAR"]], 1] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -19,11 +19,17 @@ ZEN_STD_Parse_GetArgument(_offset, 1)
 ZEN_STD_Parse_GetArgumentDefault(_allowActions, 2, false)
 ZEN_STD_Parse_GetArgumentDefault(_disableEsc, 3, false)
 
+__time = 0;
+_mapTime= 1;
 if (count _this > 4) then {
     _doRefresh = true;
     _controlIDsArray = _this select 4;
     _controlsArray = _this select 5;
     _hashes = _this select 6;
+    __time = _this select 7;
+    if (__time > 0) then {
+        _mapTime = __time;
+    };
 } else {
     _doRefresh = false;
     _controlIDsArray = [_dialogID] call Zen_GetDialogControls;
@@ -175,13 +181,13 @@ if !(_doRefresh) then {
                     };
                     case "MAPPOSITION": {
                         ctrlMapAnimClear _control;
-                        _control ctrlMapAnimAdd [1, ctrlMapScale _control, ([_data] call Zen_ConvertToPosition)];
+                        _control ctrlMapAnimAdd [_mapTime, ctrlMapScale _control, ([_data] call Zen_ConvertToPosition)];
                         ctrlMapAnimCommit _control;
                     };
                     case "MAPZOOM": {
                         ctrlMapAnimClear _control;
                         _mapPos = ctrlPosition _control;
-                        _control ctrlMapAnimAdd [1, _data, _control ctrlMapScreenToWorld ([(_mapPos select 0) + (_mapPos select 2) / 2, (_mapPos select 1) + (_mapPos select 3) / 2])];
+                        _control ctrlMapAnimAdd [_mapTime, _data, _control ctrlMapScreenToWorld ([(_mapPos select 0) + (_mapPos select 2) / 2, (_mapPos select 1) + (_mapPos select 3) / 2])];
                         ctrlMapAnimCommit _control;
                     };
                     case "PICTURE": {
@@ -246,12 +252,15 @@ if !(_doRefresh) then {
                     case "TOOLTIP": {
                         _control ctrlSetTooltip _data;
                     };
+                    case "TRANSPARENCY": {
+                        _control ctrlSetFade _data;
+                    };
                     default {};
                 };
-                _control ctrlCommit 0;
+                _control ctrlCommit __time;
             } forEach _controlBlocks;
 
-            _control ctrlCommit 0;
+            // _control ctrlCommit __time;
         };
     };
 } forEach _controlIDsArray;

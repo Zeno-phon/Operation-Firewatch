@@ -20,8 +20,15 @@ _fires = [];
     _markers = _x select 1;
     _center = [_markers] call Zen_FindCenterPosition;
 
-    if (((_droneData select 1) distance2D _center) < 300) then {
-        _fires pushBack [(_x select 0), _center];
+    _dist = (_droneData select 1) distance2D _center;
+
+    if (_dist <= 1000) then {
+        _timeScale = 0.5 * count Zen_OF_Drones_Local;
+        _detectionProb = 1. / 2 - (1. / 2 - 1. / 60) * _dist / 1000.;
+
+        if (random 1 >= (1. - _detectionProb) ^ _timeScale) then {
+            _fires pushBack [_x select 0, _center];
+        };
     };
 } forEach Zen_OF_Fires_Global;
 

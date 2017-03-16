@@ -35,6 +35,9 @@ Zen_CloseDialog = {
 };
 
 Zen_RefreshDialog = {
+    __time = 0;
+    ZEN_STD_Parse_GetArgumentDefault(__time, 0, 0)
+
     disableSerialization;
     with uiNamespace do {
         missionNamespace setVariable ["Zen_Active_Dialog", Zen_Dialog_Object_Local select 0];
@@ -56,11 +59,13 @@ Zen_RefreshDialog = {
                     _controlIDsToRepeat pushBack (_x select 0);
                     _controlsToRepeat pushBack (_x select 1);
                     _hashes pushBack _newHash;
-                    // ctrlDelete (_x select 1);
                 };
+            } else {
+                ctrlDelete (_x select 1);
             };
         } forEach Zen_Active_Dialog_Control_Data;
-        0 = [Zen_Active_Dialog, Zen_Active_Dialog_Position, false, false, _controlIDsToRepeat, _controlsToRepeat, _hashes] spawn Zen_InvokeDialog;
+
+        0 = [Zen_Active_Dialog, Zen_Active_Dialog_Position, false, false, _controlIDsToRepeat, _controlsToRepeat, _hashes, __time] spawn Zen_InvokeDialog;
     };
 
     if (true) exitWith {};

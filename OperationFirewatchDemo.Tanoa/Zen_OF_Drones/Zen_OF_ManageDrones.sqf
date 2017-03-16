@@ -4,7 +4,7 @@
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
 #define FUEL_FRACTION_PER_METER (1. / 100000.)
-#define SENSOR_DAMAGE_PER_SCAN (1. / 1000.)
+#define SENSOR_DAMAGE_PER_SCAN (1. / 5000.)
 #define ALPHA_TO_NUMBER(A) (switch (toUpper A) do {case "A": {(0)}; case "B":{(1)}; case "C": {(2)};})
 
 if (isDedicated && isServer) exitWith {};
@@ -22,7 +22,7 @@ while {true} do {
     } forEach Zen_OF_Drones_Local;
 
     {
-        sleep 2;
+        sleep 0.3;
         _drone = _x;
         _droneData = [_x] call Zen_OF_GetDroneData;
         _dataArray = [];
@@ -34,7 +34,7 @@ while {true} do {
         } forEach Zen_OF_DroneManagerData;
 
         if (count _dataArray == 0) then {
-            Zen_OF_DroneManagerData pushBack [_drone, getPosATL (_droneData select 1), false, (_droneData select 3), time, [false, false, false], [0,0,0], [0,0,0], (_droneData select 2), []];
+            Zen_OF_DroneManagerData pushBack [_drone, getPosATL (_droneData select 1), false, (_droneData select 3), time, [false, false, false], [0,0,0], [0,0,0], (_droneData select 2), [], 0];
             _mkr = [_droneData select 1, _drone] call Zen_SpawnMarker;
             0 = [_drone, "", "", "", "", _mkr] call Zen_OF_UpdateDrone;
         } else {
@@ -163,34 +163,35 @@ while {true} do {
                             _isIn = [_newPos, _x select 0] call Zen_OF_IsInZone;
 
                             if (_isIn) then {
-                                _indexes = [Zen_OF_Zone_Permissions_Local, (_x select 0), 1] call Zen_ArrayGetNestedIndex;
-                                if (count _indexes == 0) then {
+                                if !(_x in (_droneData select 16)) then {
+                                    _zoneViolationNew set [ALPHA_TO_NUMBER(_type), true];
+                                    player sideChat (_drone + " has tresspassed in zone " + (_x select 0) + " of type " + _type);
+                                    ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has trespassed into zone " + (_x select 0) + " of type " + _type + " at " + str _newPos)], call)
 
-                                    _droneCleared = false;
-                                    {
-                                        if ([((Zen_OF_Zone_Permissions_Local select _x) select 0), _drone] call Zen_ValuesAreEqual) exitWith {
-                                        _droneCleared = true;
+                                    _x set [6, true];
+
+                                    switch (ALPHA_TO_NUMBER(_type)) do {
+                                        case 0: {
+                                            _dataArray set [10, -5 + (_dataArray select 10)];
                                         };
-                                    } forEach _indexes;
-
-                                    if !(_droneCleared) then {
-                                        _zoneViolationNew set [ALPHA_TO_NUMBER(_type), true];
-                                        player sideChat (_drone + " has tresspassed in zone " + (_x select 0) + " of type " + _type);
-                                        ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has trespassed into zone " + (_x select 0) + " of type " + _type + " at " + str _newPos)], call)
-
-                                        _x set [6, true];
-
-                                        if (ALPHA_TO_NUMBER(_type) == 2) then {
-                                            (_droneData select 1) allowDamage true;
-                                            _zoneAAA = _x select 3;
-                                            0 = [_zoneAAA] call Zen_UnCache;
-                                            _AAAObjs = [_zoneAAA] call Zen_GetCachedUnits;
-                                            {
-                                                _x reveal (_droneData select 1);
-                                            } forEach ([_AAAObjs] call Zen_ConvertToObjectArray);
-
-                                            ZEN_FMW_MP_REServerOnly("A3log", ["AAA has been uncached in " + (_x select 0) + " in response to trespass by " + _drone], call)
+                                        case 1: {
+                                            _dataArray set [10, -10 + (_dataArray select 10)];
                                         };
+                                        case 2: {
+                                            _dataArray set [10, -20 + (_dataArray select 10)];
+                                        };
+                                    };
+
+                                    if (ALPHA_TO_NUMBER(_type) == 2) then {
+                                        (_droneData select 1) allowDamage true;
+                                        _zoneAAA = _x select 3;
+                                        0 = [_zoneAAA] call Zen_UnCache;
+                                        _AAAObjs = [_zoneAAA] call Zen_GetCachedUnits;
+                                        {
+                                            _x reveal (_droneData select 1);
+                                        } forEach ([_AAAObjs] call Zen_ConvertToObjectArray);
+
+                                        ZEN_FMW_MP_REServerOnly("A3log", ["AAA has been uncached in " + (_x select 0) + " in response to trespass by " + _drone], call)
                                     };
                                 };
                             };
@@ -216,6 +217,22 @@ while {true} do {
                     } forEach [0, 1, 2];
 
                     _dataArray set [5, _zoneViolationNew];
+                };
+
+                _AORs = [];
+                for "_i" from 1 to 21 do {
+                    _AORs pushBack ("AORLarge_" + str _i);
+                };
+                _inAOR = false;
+                {
+                    if ([(_droneData select 1), _x] call Zen_IsPointInPoly) exitWith {
+                        _inAOR = true;
+                    };
+                } forEach _AORs;
+
+                if (_inAOR) then {
+                    _dt = time - (_dataArray select 4);
+                    _dataArray set [10, _dt / 20 + (_dataArray select 10)];
                 };
             } else {
                 // Drone death

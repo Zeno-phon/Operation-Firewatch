@@ -23,6 +23,7 @@ Return: Array
             5. Array, heuristic coverage center
             6. Scalar, heuristic coverage radius
             7. Boolean, if there is a drone in this zone
+            8. String, flag marker
 
 Zen_OF_IsInZone
 

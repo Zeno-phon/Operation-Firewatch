@@ -16,6 +16,7 @@ Zen_OF_PermissionGUIRefresh = {
         { \
             _data = [_x] call Zen_OF_GetZoneData; \
             if ((_data select 1) == "A") then { \
+                (_data select 7) setMarkerAlpha 1; \
                 _listZones pushBack _x; \
                 _listZonesData pushBack _x; \
             }; \
@@ -24,12 +25,25 @@ Zen_OF_PermissionGUIRefresh = {
         0 = [Zen_OF_PermissionGUIZoneList, ["List", _listZones], ["ListData", _listZonesData]] call Zen_UpdateControl;
 
     REFRESH_LISTS
-    call Zen_RefreshDialog;
+    [] call Zen_RefreshDialog;
 };
 
 Zen_OF_PermissionGUIInvoke= {
     REFRESH_LISTS
     0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX + 0.4,safeZoneH - 1], false, true] call Zen_InvokeDialog;
+
+    {
+        _data = [_x] call Zen_OF_GetZoneData;
+        if ((_data select 1) == "A") then {
+            (_data select 7) setMarkerColor "colorRed";
+        };
+    } forEach Zen_OF_Zone_Knowledge_Local;
+
+    _droneData = [_listDronesData select 0] call Zen_OF_GetDroneData;
+    {
+        _data = [_x] call Zen_OF_GetZoneData;
+        (_data select 7) setMarkerColor "colorGreen";
+    } forEach (_droneData select 16);
 };
 
 Zen_OF_PermissionGUIMapMove = {
@@ -46,7 +60,7 @@ Zen_OF_PermissionGUIMapMove = {
         0 = [_map, ["MapPosition", (_zoneData select 4) vectorAdd [random 5, 0, 0]]] call Zen_UpdateControl;
     };
 
-    call Zen_RefreshDialog;
+    [] call Zen_RefreshDialog;
 };
 
 Zen_OF_PermissionGUIDroneList = ["List",
@@ -98,10 +112,32 @@ Zen_OF_PermissionGUIRequestPermission = {
     _zone = _this select 3;
     _zoneData = [_zone] call Zen_OF_GetZoneData;
 
-    Zen_OF_Zone_Permissions_Local pushBack [_drone, _zone, time];
-
+    0 = [_drone, "", "", "", "", 0, "", "", "", "", "", "", "", "", "", (_droneData select 16) + [_zone]] call Zen_OF_UpdateDrone;
     player sideChat (_drone + " has been granted permission to cross " + _zone);
     ZEN_FMW_MP_REServerOnly("A3log", [_drone + " at " + str getPosATL (_droneData select 1) + " has been granted permission to cross " + _zone + " at about " + str (_zoneData select 4) + " with radius " + str (_zoneData select 5)], call)
+
+    {
+        _data = [_x] call Zen_OF_GetZoneData;
+        if ((_data select 1) == "A") then {
+            (_data select 7) setMarkerColor "colorRed";
+        };
+    } forEach Zen_OF_Zone_Knowledge_Local;
+
+    {
+        _data = [_x] call Zen_OF_GetZoneData;
+        (_data select 7) setMarkerColor "colorGreen";
+    } forEach ((_droneData select 16) + [_zone]);
+};
+
+Zen_OF_PermissionGUIClose = {
+    call Zen_CloseDialog;
+
+    {
+        _data = [_x] call Zen_OF_GetZoneData;
+        if ((_data select 1) == "A") then {
+            (_data select 7) setMarkerAlpha 0;
+        };
+    } forEach Zen_OF_Zone_Knowledge_Local;
 };
 
 _buttonShow = ["Button",
@@ -133,7 +169,7 @@ _buttonClose = ["Button",
     ["Text", "Close"],
     ["Position", [0, 6]],
     ["Size", [8,2]],
-    ["ActivationFunction", "Zen_CloseDialog"]
+    ["ActivationFunction", "Zen_OF_PermissionGUIClose"]
 ] call Zen_CreateControl;
 
 Zen_OF_PermissionGUIDialog = [] call Zen_CreateDialog;

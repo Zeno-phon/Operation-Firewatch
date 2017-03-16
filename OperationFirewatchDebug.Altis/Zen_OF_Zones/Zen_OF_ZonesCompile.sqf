@@ -2,7 +2,6 @@
 
 Zen_OF_Zones_Global = [];
 Zen_OF_Zone_Knowledge_Local = [];
-Zen_OF_Zone_Permissions_Local = [];
 
 Zen_OF_GenerateZoneHeuristic = compileFinal preprocessFileLineNumbers "Zen_OF_Zones\Zen_OF_GenerateZoneHeuristic.sqf";
 Zen_OF_InvokeZone = compileFinal preprocessFileLineNumbers "Zen_OF_Zones\Zen_OF_InvokeZone.sqf";

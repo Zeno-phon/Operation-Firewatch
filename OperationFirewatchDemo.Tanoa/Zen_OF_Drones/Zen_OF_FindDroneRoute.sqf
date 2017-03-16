@@ -70,7 +70,7 @@ _F_CheckCollision = {
     (_hasCollision)
 };
 
-if (Zen_OF_User_Is_Group_Two) then {
+if (Zen_OF_User_Group_Index > 0) then {
     _pathsArray = [];
     _zones = _droneData select 5;
 

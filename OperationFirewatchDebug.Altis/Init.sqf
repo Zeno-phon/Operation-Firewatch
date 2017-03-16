@@ -13,33 +13,35 @@ call compileFinal preprocessFileLineNumbers "Zen_OF_Fires\Zen_OF_FiresCompile.sq
 // titleText ["Good Luck", "BLACK FADED", 0.2];
 enableSaving [false, false];
 
-Zen_OF_Drone_Class_Data = [["b_uav_01_f", 16, 300], ["b_uav_02_f", 105, 300]];
+Zen_OF_Airfield_LandAt_Codes = [[[7137.6,7380.44,0.00143886], 0], [[2140.71,13350.6,17.8909], 1], [[11610.1,3158.68,0.00149488], 2], [[2200.59,3543.36,0.00143909], 3], [[11845,13163.9,0.00143909], 4]];
+Zen_OF_Drone_Class_Data = [["b_uav_01_f", 16, 300, 100], ["b_uav_02_f", 105, 300, 400]];
 
 Zen_F_GetDroneClassData = {
     private ["_droneObj", "_droneClassData"];
 
     _droneObj = _this select 0;
-
-    _droneClassData = [Zen_OF_Drone_Class_Data, typeOf _droneObj, 0] call Zen_ArrayGetNestedValue;
+   _droneClassData = [Zen_OF_Drone_Class_Data, typeOf _droneObj, 0] call Zen_ArrayGetNestedValue;
 
     if (count _droneClassData == 0) exitWith {
         ZEN_FMW_Code_ErrorExitValue("Zen_OF_FindDroneRouteData", "Given drone is of unknown type.", [])
     };
 
-    ([(_droneClassData select 1), (_droneClassData select 2)])
+    ([_droneClassData, 1] call Zen_ArrayGetIndexedSlice)
 };
 
 if (!isServer) exitWith {};
 sleep 1;
 
-// if (random 1 > 0.5) then {
-    Zen_OF_User_Is_Group_Two = false;
-// };
+// 0 - manual
+// 1 - DOA-L
+// 2 - DOA-H
+Zen_OF_User_Group_Index = 0;
 
 ["----------Start----------"] call A3log;
 ["Operation Firewatch Debug"] call A3log;
 ["Running " + str productVersion] call A3log;
-[name player + " is a member of Group #" + (if (Zen_OF_User_Is_Group_Two) then {("2")} else {("1")}) + "."] call A3log;
+// ["Running " + str productVersion, "Table"] call A3log;
+[name player + " is a member of Group #" + str Zen_OF_User_Group_Index + "."] call A3log;
 
 // Test creating a zone with one marker
 _zone = ["A", ["mkTest"]] call Zen_OF_InvokeZone;

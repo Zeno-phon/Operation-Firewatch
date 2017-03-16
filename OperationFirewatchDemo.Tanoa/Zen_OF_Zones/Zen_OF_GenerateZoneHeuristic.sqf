@@ -49,8 +49,11 @@ if (count _markers == 1) then {
     };
 };
 
+_flag = [_center, "", "colorRed", [1, 1], "mil_flag", 0, 0] call Zen_SpawnMarker;
+
 _dataArray set [4, _center];
 _dataArray set [5, _maxRadius];
+_dataArray set [7, _flag];
 
 // publicVariable "Zen_OF_Zones_Global";
 

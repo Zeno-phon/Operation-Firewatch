@@ -17,7 +17,7 @@ Zen_OF_RouteGUIRefresh = {
 
     // player sideChat str _list;
     0 = [Zen_OF_RouteGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
-    call Zen_RefreshDialog;
+    [] call Zen_RefreshDialog;
 };
 
 Zen_OF_RouteGUIInvoke = {
@@ -229,7 +229,7 @@ Zen_OF_RouteGUIListSelect = {
     _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
 
     0 = [_map, ["MapPosition", (((_droneData select 7) select (_droneData select 9)) select _waypoint) vectorAdd [random 5, 0, 0]]] call Zen_UpdateControl;
-    call Zen_RefreshDialog;
+    [] call Zen_RefreshDialog;
 };
 
 Zen_OF_RouteGUIList = ["List",
