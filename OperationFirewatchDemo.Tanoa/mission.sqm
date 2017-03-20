@@ -5,25 +5,25 @@ class EditorData
 	angleGridStep=0.017453292;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=1;
+	toggles=1025;
 	class ItemIDProvider
 	{
-		nextID=740;
+		nextID=744;
 	};
 	class MarkerIDProvider
 	{
-		nextID=148;
+		nextID=149;
 	};
 	class LayerIndexProvider
 	{
-		nextID=169;
+		nextID=196;
 	};
 	class Camera
 	{
-		pos[]={2224.283,67.716095,13290.771};
-		dir[]={-0.37725928,-0.45295382,0.80780876};
-		up[]={-0.19166836,0.89152604,0.41041136};
-		aside[]={0.90607679,-1.9441359e-008,0.42315236};
+		pos[]={2249.5535,75.208755,13411.358};
+		dir[]={0.27526784,-0.45091778,0.84908766};
+		up[]={0.13906181,0.89255786,0.4289476};
+		aside[]={0.95127785,-4.6507921e-008,-0.30839649};
 	};
 };
 binarizationWanted=0;
@@ -190,7 +190,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=80;
+		items=84;
 		class Item0
 		{
 			dataType="Layer";
@@ -627,15 +627,15 @@ class Mission
 				class Item25
 				{
 					dataType="Marker";
-					position[]={2990.5879,125.82429,13059.234};
+					position[]={3008.6038,116.16016,13052.76};
 					name="marker_58";
 					type="hd_destroy";
 					id=166;
-					atlOffset=-0.032958984;
+					atlOffset=-1.4762115;
 				};
 			};
 			id=161;
-			atlOffset=84.552109;
+			atlOffset=80.444748;
 		};
 		class Item2
 		{
@@ -647,7 +647,7 @@ class Mission
 				class Item0
 				{
 					dataType="Marker";
-					position[]={2563.9202,59.376423,11985.998};
+					position[]={2563.9199,5.4902629e+017,11985.998};
 					name="CHARLIE_1";
 					markerType="ELLIPSE";
 					type="ellipse";
@@ -655,8 +655,9 @@ class Mission
 					fillName="DiagGrid";
 					a=800;
 					b=250;
-					angle=143.20496;
+					angle=142.99995;
 					id=0;
+					atlOffset=5.4902629e+017;
 				};
 				class Item1
 				{
@@ -720,7 +721,7 @@ class Mission
 				};
 			};
 			id=162;
-			atlOffset=7.7140029e+019;
+			atlOffset=7.7174343e+019;
 		};
 		class Item3
 		{
@@ -5015,6 +5016,60 @@ class Mission
 			id=739;
 			type="SignAd_Sponsor_ARMEX_F";
 			atlOffset=2.2053547;
+		};
+		class Item80
+		{
+			dataType="Marker";
+			position[]={-503.32999,1.6154317e+016,7723.7837};
+			name="BRAVO_14";
+			markerType="RECTANGLE";
+			type="rectangle";
+			alpha=0;
+			a=515.45502;
+			b=7730;
+			id=740;
+			atlOffset=1.6154317e+016;
+		};
+		class Item81
+		{
+			dataType="Marker";
+			position[]={15936.743,6.6618487e+036,7595.1001};
+			name="BRAVO_15";
+			markerType="RECTANGLE";
+			type="rectangle";
+			alpha=0;
+			a=515.45502;
+			b=7730;
+			id=741;
+			atlOffset=6.6618487e+036;
+		};
+		class Item82
+		{
+			dataType="Marker";
+			position[]={7713.7129,3.0740112e+029,-375.81};
+			name="BRAVO_16";
+			markerType="RECTANGLE";
+			type="rectangle";
+			alpha=0;
+			a=515.45502;
+			b=7730;
+			angle=90;
+			id=742;
+			atlOffset=3.0740112e+029;
+		};
+		class Item83
+		{
+			dataType="Marker";
+			position[]={7713.7139,-4.811892e-033,15779.345};
+			name="BRAVO_17";
+			markerType="RECTANGLE";
+			type="rectangle";
+			alpha=0;
+			a=515.45502;
+			b=7730;
+			angle=90;
+			id=743;
+			atlOffset=66.481049;
 		};
 	};
 };

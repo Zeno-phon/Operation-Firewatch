@@ -80,6 +80,7 @@ if !(_doRefresh) then {
             case "DROPLIST": {("RscCombo")};
             case "PROGRESSBAR": {("RscProgress")};
             case "MAP": {("RscMapControl")};
+            case "STRUCTUREDTEXT": {("RscStructuredText")};
             default {("")};
         };
 
@@ -238,7 +239,11 @@ if !(_doRefresh) then {
                         _control sliderSetRange [0, _data max 1];
                     };
                     case "TEXT": {
-                        _control ctrlSetText _data;
+                        if ((toUpper _controlType) == "STRUCTUREDTEXT") then {
+                            _control ctrlSetStructuredText parseText _data;
+                        } else {
+                            _control ctrlSetText _data;
+                        };
                     };
                     case "TOOLTIPFONTCOLOR": {
                         _control ctrlSetTooltipColorText [(_data select 0) / COLOR_STEP, (_data select 1) / COLOR_STEP, (_data select 2) / COLOR_STEP, (_data select 3) / COLOR_STEP];

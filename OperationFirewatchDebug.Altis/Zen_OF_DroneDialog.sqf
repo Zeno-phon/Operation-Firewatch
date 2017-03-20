@@ -1,7 +1,7 @@
 //
 
-#include "Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
-#include "Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
+// #include "Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
+// #include "Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
 #define DRONE_AUTO_CONFIRM_TIMER 60
 
@@ -95,7 +95,7 @@ Zen_OF_DroneGUIDrawPath = {
     if (_markDrone) then {
         _markers pushBack ([_droneData select 1, "Drone: " + str (_droneData select 0)] call Zen_SpawnMarker);
         _half = ([(_droneData select 1), ((_droneData select 1) distance2D (_path select 0)) / 2, [(_droneData select 1), (_path select 0)] call Zen_FindDirection, "trig"] call Zen_ExtendVector);
-        _mkr = [_half, "", "colorBlack", [((_droneData select 1) distance2D (_path select 0)) / 2, 5], "rectangle", 180-([(_droneData select 1), (_path select 0)] call Zen_FindDirection), 1] call Zen_SpawnMarker;
+        _mkr = [_half, "", "colorBlack", [((_droneData select 1) distance2D (_path select 0)) / 2, 10], "rectangle", 180-([(_droneData select 1), (_path select 0)] call Zen_FindDirection), 1] call Zen_SpawnMarker;
         _markers pushBack _mkr;
     };
 
@@ -113,7 +113,7 @@ Zen_OF_DroneGUIDrawPath = {
 
     for "_i" from 0 to (count _path - 2) do {
         _half = ([(_path select _i), ((_path select _i) distance2D (_path select (_i + 1))) / 2, [(_path select _i), (_path select (_i + 1))] call Zen_FindDirection, "trig"] call Zen_ExtendVector);
-        _mkr = [_half, "", "colorBlack", [((_path select _i) distance2D (_path select (_i + 1))) / 2, 5], "rectangle", 180-([(_path select _i), (_path select (_i + 1))] call Zen_FindDirection), 1] call Zen_SpawnMarker;
+        _mkr = [_half, "", "colorBlack", [((_path select _i) distance2D (_path select (_i + 1))) / 2, 10], "rectangle", 180-([(_path select _i), (_path select (_i + 1))] call Zen_FindDirection), 1] call Zen_SpawnMarker;
         _markers pushBack _mkr;
 
         switch (Zen_OF_User_Group_Index) do {
@@ -596,6 +596,6 @@ _statusText4 = ["Text",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (if (Zen_OF_User_Group_Index > 0) then {[_buttonWaypointTypes, _buttonRecalc]} else {[]});
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonFire, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[_buttonRecalc, _buttonWaypointTypes]}; case 2: {[_buttonWaypointTypes]}; });
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

@@ -2,3 +2,10 @@
 class CfgNotifications {
     #include "Zen_FrameworkFunctions\Zen_TaskSystem\Zen_TaskNotifications.hpp"
 };
+
+class CfgDebriefing {
+    class EndConsentDecline {
+        title = "Consent Terms Declined.";
+        description = "You have not accepted the experiment participation consent agreement.";
+    };
+};

@@ -13,7 +13,7 @@ if !([_this, [["STRING"], ["ARRAY"], ["ARRAY"], ["ARRAY"], ["ARRAY"], ["ARRAY"],
 };
 
 _controlID = _this select 0;
-_controlTypes = ["Button","List","Text", "BACKGROUND", "DROPLIST", "SLIDER", "PICTURE", "CHECKBOXES", "RADIOBUTTONS", "TEXTFIELD", "PROGRESSBAR"];
+_controlTypes = ["Button","List","Text", "BACKGROUND", "DROPLIST", "SLIDER", "PICTURE", "CHECKBOXES", "RADIOBUTTONS", "TEXTFIELD", "PROGRESSBAR", "MAP", "STRUCTUREDTEXT"];
 _dataTypes = ["LinksTo","Text","FontColor","Position","Size","ActivationFunction", "SelectionFunction","List","ListData","Data","FontSize", "Font", "FontColorSelected", "ListTooltip", "ForegroundColor", "BackgroundColor", "Tooltip", "TooltipFontColor", "TooltipBackgroundColor", "TooltipBorderColor", "Picture", "PictureColor", "PictureColorSelected", "SliderPositions", "Progress", "Angle", "MapPosition", "MapZoom", "Transparency"];
 
 _index = [Zen_Control_Classes_Global, _controlID, 0] call Zen_ArrayGetNestedIndex;

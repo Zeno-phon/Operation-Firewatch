@@ -30,7 +30,10 @@ Zen_OF_OrderDroneExecuteRoute
 
 Zen_OF_FindDroneRoute
     // get end point from user
-    use line-ellipse intersection as heuristic
+    // use line-ellipse intersection as heuristic
+    confine to within the map
+    account for start or end being inside zone
+    account for zone permissions
     diamond algorithm
         // choose angle and distance by Gaussian random (centered at half distance, and double Gaussian at +-45 deg)
             // draw a line from the destination at an angle and radius
@@ -39,9 +42,6 @@ Zen_OF_FindDroneRoute
                 // if that line does not intersect a zone
                     // add to the list of solutions (cutoff at X solutions)
         // sort by min overall distance
-        account for start or end being inside zone
-        account for zone permissions
-        confine to within the map
     diamond tunneling algorithm
         choose angle and distance by Gaussian random (centered at half distance, and double Gaussian at +-45 deg)
             draw a line from the destination at an angle and radius
@@ -60,6 +60,10 @@ Zen_OF_FindDroneRoute
         choose an open ring along a circle with radius at fraction of distance
         apply diamond to reach area, keeping only 1 solution
         repeat at random angles until within 1 circle radius of destination
+    Line snapping
+        quantize points on line
+        check from start along each point of next line
+        step backwards from 2 points ahead
 
 // Zen_OF_FindFire
     // random time/dist function detection
@@ -281,18 +285,22 @@ Zen_OF_GenerateFire
 // ctrlSetFade
 // ctrlCommit time
 
-demographics and user consent GUI
+demographics GUI
     need text
+    sliders
+
+// user consent GUI
+    // need text
+    // format text
+    // controls
+        // decline to endMission
 
 ////////////////////////////////////////////////
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Error with drone type data
-2. Added: Fire generator now runs in a loop
-3. Added: Point systems for drones
-4. Added: 3 automation groups structure
-5. Added: Map marker flags for zone permissions
-6. Improved: Fire detection now uses random time based upon distance to fire
-7. Improved: Zone permissions management
-8. Improved: Frequency of drone manager increased
+1. Fixed: Permission flags did not update on selecting a new drone from the list
+2. Added: Consent GUI
+3. Improved: Pathfinding accuracy and optimization
+4. Improved: Recalc button removed for DOA-H
+

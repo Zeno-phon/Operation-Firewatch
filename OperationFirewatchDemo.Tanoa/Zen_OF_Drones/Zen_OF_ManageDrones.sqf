@@ -156,7 +156,7 @@ while {true} do {
                     _totalViolations = _dataArray select 7;
                     {
                         _center = _x select 4;
-                        _radius = _x select 5;
+                        _radius = ((_x select 5) select 0) max ((_x select 5) select 1);
 
                         if ((_newPos distance2D _center) < _radius) then {
                             _type = _x select 1;

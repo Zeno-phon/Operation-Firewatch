@@ -3,6 +3,9 @@
 #include "..\Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
+#define SQRT_2 1.4142135623730951
+#define BUFFER_SCALE 1.01
+
 _Zen_stack_Trace = ["Zen_OF_GenerateZoneHeuristic", _this] call Zen_StackAdd;
 private ["_nameString", "_center", "_markers", "_dataArray", "_isIn", "_maxRadius"];
 
@@ -30,9 +33,9 @@ if (count _markers == 1) then {
     _size = markerSize _mkr;
     _center = markerPos _mkr;
     if (markerShape _mkr == "RECTANGLE") then {
-        _maxRadius = sqrt((_size select 0)^2 + (_size select 1)^2)
+        _maxRadius = [SQRT_2 * (_size select 0) * BUFFER_SCALE, SQRT_2 * (_size select 1) * BUFFER_SCALE, markerDir _mkr];
     } else {
-        _maxRadius = (_size select 0) max (_size select 1);
+        _maxRadius = [(_size select 0) * BUFFER_SCALE, (_size select 1) * BUFFER_SCALE, markerDir _mkr];
     };
 } else {
     _center = [_markers] call Zen_FindCenterPosition;
@@ -44,7 +47,7 @@ if (count _markers == 1) then {
             };
         };
         if !(_isIn) exitWith {
-            _maxRadius = _r;
+            _maxRadius = [_r * BUFFER_SCALE, _r * BUFFER_SCALE, 0];
         };
     };
 };

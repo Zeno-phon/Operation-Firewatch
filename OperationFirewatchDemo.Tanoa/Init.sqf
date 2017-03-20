@@ -13,7 +13,7 @@ call compileFinal preprocessFileLineNumbers "Zen_OF_Fires\Zen_OF_FiresCompile.sq
 
 call compileFinal preprocessFileLineNumbers "oo_camera.sqf";
 
-// titleText ["Good Luck", "BLACK FADED", 0.2];
+titleText ["Standby", "BLACK FADED", 0.4];
 enableSaving [false, false];
 
 // Airfield positions and landAt codes for Zen_OF_OrderDroneExecuteRoute to use
@@ -132,12 +132,7 @@ _cam9 = ["new", []] call OO_CAMERA;
 // 0 - manual
 // 1 - DOA-L
 // 2 - DOA-H
-Zen_OF_User_Group_Index = 0;
-
-/**  Throughout the code, I will make ample use of the preprocessor.  SQF's preprocessor is very similar to C/C++; it is a copy-paste tool that prevents repeating blocks of code without having to make a new function.  It can also be used to copy-paste values that cannot be passed to a function.  These lines will copy-paste the entire contents of the files into this file, making them part of the init.sqf; this is handy for organizing long definitions of functions and variables into separate files. */
-#include "Zen_OF_DroneDialog.sqf"
-#include "Zen_OF_PermissionsDialog.sqf"
-#include "Zen_OF_RoutePlanningDialog.sqf"
+Zen_OF_User_Group_Index = 1;
 
 // Here we have the start of the log files
 // The second argument is which log file to print to, with the default being the generic A3Log
@@ -146,6 +141,14 @@ Zen_OF_User_Group_Index = 0;
 ["Running " + str productVersion] call A3log;
 ["Running " + str productVersion, "Table"] call A3log;
 [name player + " is a member of Group #" + str Zen_OF_User_Group_Index + "."] call A3log;
+
+#include "Zen_OF_ConsentDialog.sqf"
+titleText ["", "BLACK FADED", 0.001];
+
+/**  Throughout the code, I will make ample use of the preprocessor.  SQF's preprocessor is very similar to C/C++; it is a copy-paste tool that prevents repeating blocks of code without having to make a new function.  It can also be used to copy-paste values that cannot be passed to a function.  These lines will copy-paste the entire contents of the files into this file, making them part of the init.sqf; this is handy for organizing long definitions of functions and variables into separate files. */
+#include "Zen_OF_DroneDialog.sqf"
+#include "Zen_OF_PermissionsDialog.sqf"
+#include "Zen_OF_RoutePlanningDialog.sqf"
 
 // debug
 // 0 = ["Charlie_1", "test_EmptyObjectForFireBig"] call Zen_SpawnVehicle;
