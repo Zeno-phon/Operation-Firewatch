@@ -149,6 +149,7 @@ titleText ["", "BLACK FADED", 0.001];
 #include "Zen_OF_DroneDialog.sqf"
 #include "Zen_OF_PermissionsDialog.sqf"
 #include "Zen_OF_RoutePlanningDialog.sqf"
+#include "Zen_OF_CameraGUI.sqf"
 
 // debug
 // 0 = ["Charlie_1", "test_EmptyObjectForFireBig"] call Zen_SpawnVehicle;

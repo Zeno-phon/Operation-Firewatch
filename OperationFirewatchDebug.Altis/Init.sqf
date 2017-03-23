@@ -128,3 +128,5 @@ player commandChat "Permissions GUI added";
 #include "Zen_OF_RoutePlanningDialog.sqf"
 // player addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
 player commandChat "Route Planning GUI added";
+
+#include "Zen_OF_CameraGUI.sqf"

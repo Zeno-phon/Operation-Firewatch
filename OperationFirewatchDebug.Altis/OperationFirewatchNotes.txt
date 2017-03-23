@@ -153,28 +153,16 @@ Recalculate route button
         manual
             // ETA for each waypoint
         light
-            3 routes
+            // 3 routes
             // ETA and fuel remaining for each waypoint
         heavy
-            1 route
+            // 1 route
             ETA, fuel remaining, time before refuel for final waypoint
 // Approve route button
 // RTB button
 // Refresh GUI button
 // Close GUI button
 // Timer text field for auto-confirm
-Report fire button
-    type in location or false alarm
-drone camera
-    // set camera target on possible fire
-    // attachTo drone
-    panning/zoom for manual
-    pointer vector to target for doa-l
-    joystick inputAction
-        fixed texture method
-        46 method
-    lock fire button
-    get coord button
 
 // stop esc exit
 // remove RTB button
@@ -257,10 +245,32 @@ drone overview
 // version for waypoint types in auto pathing
 
 ////////////////////////////////////////////////
+// Camera GUI
+////////////////////////////////////////////////
+
+Coordinate result box
+Crosshair texture
+Coordinate entry field
+Report fire button
+Cancel button
+Camera controls
+    // set camera target on possible fire for DOA-H
+    set default camera target for manual
+    // attachTo drone
+    // get coord button
+        show coord at start for DOA-H
+    // panning/zoom for manual
+        ?? reset default FOV
+    pointer vector to target for doa-l
+    joystick inputAction
+        fixed texture method
+        46 method
+
+////////////////////////////////////////////////
 // Global functions
 ////////////////////////////////////////////////
 
-// split players into groups #1 and #2
+// split players into 3 groups
 
 Zen_OF_GenerateFire
     // thread for the random starting of fires
@@ -299,8 +309,5 @@ demographics GUI
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Permission flags did not update on selecting a new drone from the list
-2. Added: Consent GUI
-3. Improved: Pathfinding accuracy and optimization
-4. Improved: Recalc button removed for DOA-H
-
+1. Added: Moving drone camera for Manual and DOA-L
+2. Removed: Drone GUI report fire button
