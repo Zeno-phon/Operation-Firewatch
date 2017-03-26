@@ -4,7 +4,7 @@
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
 #define FUEL_FRACTION_PER_METER (1. / 100000.)
-#define SENSOR_DAMAGE_PER_SCAN (1. / 5000.)
+#define SENSOR_DAMAGE_PER_SCAN (1. / 10000.)
 #define ALPHA_TO_NUMBER(A) (switch (toUpper A) do {case "A": {(0)}; case "B":{(1)}; case "C": {(2)};})
 
 if (isDedicated && isServer) exitWith {};
@@ -86,8 +86,8 @@ while {true} do {
                             player sideChat (_drone + " has detected a new fire at about " + str (_x select 1) + ".");
                             ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has detected new fire " + (_x select 0) + " at about " + str (_x select 1) + ".")], call)
 
-                            if !((_x select 0) in Zen_OF_Fires_Detected_Local) then {
-                                Zen_OF_Fires_Detected_Local pushBack (_x select 0);
+                            if !(([(_x select 0), false] in Zen_OF_Fires_Detected_Local) || ([(_x select 0), true] in Zen_OF_Fires_Detected_Local)) then {
+                                Zen_OF_Fires_Detected_Local pushBack [(_x select 0), false];
                             };
 
                             _mkr = [_x select 1, _x select 0] call Zen_SpawnMarker;

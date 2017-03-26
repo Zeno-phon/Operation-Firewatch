@@ -1,12 +1,12 @@
 Fires System
 
-Creates and evolves fires detectable by drones
+Creates fires detectable by drones.
 
 Zen_OF_InvokeFire
 
 Creates a new fire covering (1).
 Usage : Call
-Params: 1. Array of strings, coverage markers
+Params: 1. Array, group, object, string, the fire center
 Return: String
 
 Zen_OF_GetFireData
@@ -16,4 +16,4 @@ Usage : Call
 Params: 1. String, fire id
 Return: Array
             1. String, fire id
-            2. Array of strings, fire markers
+            2. Array, group, object, string, the fire center

@@ -429,18 +429,15 @@ Zen_OF_DroneGUICamera = {
     _droneData = [_drone] call Zen_OF_GetDroneData;
     CHECK_FOR_DEAD
 
-    _center = getPosATL player;
-    if (count Zen_OF_Fires_Detected_Local == 0) then {
+    _center = getPosATL (_droneData select 1);
+    _center set [2, 0];
+    if (({(_x select 1)} count Zen_OF_Fires_Detected_Local == 0) || Zen_OF_User_Group_Index < 2) then {
         player sideChat (_drone + " has not detected any fires.");
-        player commandChat "For debug purposes, the player has been selected as the camera's target.";
     } else {
-        _nearestFire = [Zen_OF_Fires_Detected_Local, compile format["
-            (-1 * ((%1) distanceSqr ([([_this] call Zen_OF_GetFireData) select 1] call Zen_FindCenterPosition)))
-        ", _droneData select 1]] call Zen_ArrayFindExtremum;
+        _nearestFire = ([Zen_OF_Fires_Detected_Local, compile format [" (-1 * ((%1) distanceSqr (([_this select 0] call Zen_OF_GetFireData) select 1))) ", _droneData select 1]] call Zen_ArrayFindExtremum) select 0;
+        _center = ([_nearestFire] call Zen_OF_GetFireData) select 1;
 
-        _center = [([_nearestFire] call Zen_OF_GetFireData) select 1] call Zen_FindCenterPosition;
-
-        ZEN_FMW_MP_REServerOnly("A3log", [name player + " has entered camera view of " + _drone + " and is viewing fire " + (_nearestFire select 0) + " at " + str _center], call)
+        ZEN_FMW_MP_REServerOnly("A3log", [name player + " has entered camera view of " + _drone + " and is viewing fire " + _nearestFire + " at " + str _center], call)
     };
 
     ZEN_OF_DroneDialog_Camera cameraEffect ["internal","back"];

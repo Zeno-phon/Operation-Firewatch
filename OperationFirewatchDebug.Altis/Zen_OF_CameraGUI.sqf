@@ -17,15 +17,15 @@
 #define CAMERA_DOWN_RIGHT 81
 #define CAMERA_ZOOM_IN 78
 #define CAMERA_ZOOM_OUT 74
-#define CAMERA_LASE 156
+#define CAMERA_LASE 83
 #define CAMERA_EXIT 82
 
 #define CAMERA_SLEW_TIME 0.1
 #define CAMERA_SLEW_FRACTION 15
-#define CAMERA_SLEW_ZOOM_STEP 0.1
+#define CAMERA_SLEW_ZOOM_STEP 0.025
 
-Zen_OF_CameraGUIInvoke= {
-    0 = [Zen_OF_CameraGUIDialog, [0, 0], false, true] call Zen_InvokeDialog;
+Zen_OF_CameraGUIInvoke = {
+    0 = [Zen_OF_CameraGUIDialog, [0, 0], false] call Zen_InvokeDialog;
 
     player sideChat "Press Numpad 0 to exit camera view.";
     (findDisplay 76) displayAddEventHandler ["KeyDown", {
@@ -38,7 +38,7 @@ Zen_OF_CameraGUIInvoke= {
         (false)
     }];
 
-    player sideChat "Press Numpad Enter to obtain target coordinates.";
+    player sideChat "Press Numpad del to obtain target coordinates.";
     (findDisplay 76) displayAddEventHandler ["KeyDown", {
         0 = _this spawn {
             if ((_this select 1) == CAMERA_LASE) then {
@@ -96,7 +96,9 @@ Zen_OF_CameraGUIInvoke= {
 };
 
 Zen_OF_CameraGUICoord = {
-    player sideChat str (screenToWorld [0.5, 0.5]);
+    _coords = screenToWorld [0.5, 0.5];
+    0 = [Zen_OF_CameraGUICoordText, ["Text", (str round (_coords select 0) + ", " + str round (_coords select 1))]] call Zen_UpdateControl;
+    [] call Zen_RefreshDialog;
 };
 
 Zen_OF_CameraGUIClose = {
@@ -107,10 +109,138 @@ Zen_OF_CameraGUIClose = {
     call Zen_OF_DroneGUIInvoke;
 };
 
+Zen_OF_CameraGUIReportFire = {
+    _xString = _this select 0;
+    _yString = _this select 1;
+
+    if ((count toArray _xString == 0) || (count toArray _yString == 0)) exitWith {
+        player sideChat "No coordinates entered in one or more fields.";
+    };
+
+    _xCoord = call compile ([_xString] call Zen_StringRemoveWhiteSpace);
+    _yCoord = call compile ([_yString] call Zen_StringRemoveWhiteSpace);
+
+    _pos = [_xCoord, _yCoord, 0];
+    _unconfirmedFires = [Zen_OF_Fires_Detected_Local, {(_this select 1)}] call Zen_ArrayFilterCondition;
+
+    if (count _unconfirmedFires == 0) exitWith {
+        player sideChat "There are no detected fires waiting to be confirmed.";
+    };
+
+    _fire = ([_unconfirmedFires, compile format ["(-1 * ((%1) distanceSqr (([_this select 0] call Zen_OF_GetFireData) select 1)))", _pos]] call Zen_ArrayFindExtremum) select 0;
+    _firePos = ([_fire] call Zen_OF_GetFireData) select 1;
+
+    if ((vectorMagnitude (_pos vectorDiff _firePos)) < 100) then {
+        player sideChat "Fire confirmed and reported.";
+        0 = [Zen_OF_Fires_Detected_Local, [_fire, false], [_fire, true]] call Zen_ArrayReplaceValue;
+        ZEN_FMW_MP_REServerOnly("A3log", [name player + " has confirmed the detection of a fire at " + str _pos + " which corresponds to fire " + _fire + " at " + str _firePos], call)
+    } else {
+        player sideChat "There are no detected fires within 100m of those coordinates.";
+    };
+};
+
+Zen_OF_CameraGUIReportFalse = {
+    _xString = _this select 0;
+    _yString = _this select 1;
+
+    if ((count toArray _xString == 0) || (count toArray _yString == 0)) exitWith {
+        player sideChat "No coordinates entered in one or more fields.";
+    };
+
+    _xCoord = call compile ([_xString] call Zen_StringRemoveWhiteSpace);
+    _yCoord = call compile ([_yString] call Zen_StringRemoveWhiteSpace);
+
+    _pos = [_xCoord, _yCoord, 0];
+    _unconfirmedFires = [Zen_OF_Fires_Detected_Local, {(_this select 1)}] call Zen_ArrayFilterCondition;
+
+    if (count _unconfirmedFires == 0) exitWith {
+        player sideChat "There are no detected fires waiting to be confirmed.";
+    };
+
+    _fire = ([_unconfirmedFires, compile format ["(-1 * ((%1) distanceSqr (([_this select 0] call Zen_OF_GetFireData) select 1)))", _pos]] call Zen_ArrayFindExtremum) select 0;
+    _firePos = ([_fire] call Zen_OF_GetFireData) select 1;
+
+    if ((vectorMagnitude (_pos vectorDiff _firePos)) < 100) then {
+        player sideChat "Fire ignored as false alarm.";
+        0 = [Zen_OF_Fires_Detected_Local, [_fire, false], [_fire, true]] call Zen_ArrayReplaceValue;
+        ZEN_FMW_MP_REServerOnly("A3log", [name player + " has reported the detection of a fire at " + str _pos + " is a false alarm."], call)
+    } else {
+        player sideChat "There are no detected fires within 100m of those coordinates.";
+    };
+};
+
+_crosshair = ["Text",
+    ["Position", [19, 20]],
+    ["Size", [2,2]],
+    ["FontSize", 20],
+    ["Text", "+"]
+] call Zen_CreateControl;
+
+_coordEntryX = ["TextField",
+    ["Position", [16, 40]],
+    ["Size", [4,2]]
+    // ["FontSize", 20],
+    // ["Text", ""]
+] call Zen_CreateControl;
+
+_coordEntryY = ["TextField",
+    ["Position", [21, 40]],
+    ["Size", [4,2]]
+    // ["FontSize", 20],
+    // ["Text", ""]
+] call Zen_CreateControl;
+
+_coordEntryComma = ["Text",
+    ["Position", [20, 40]],
+    ["Size", [1,2]],
+    // ["FontSize", 20],
+    ["Text", ","]
+] call Zen_CreateControl;
+
+_coordEntryText = ["Text",
+    ["Position", [9, 40]],
+    ["Size", [7,2]],
+    // ["FontSize", 20],
+    ["Text", "Enter Coordinates: "]
+] call Zen_CreateControl;
+
+_reportButton = ["Button",
+    ["Position", [26, 40]],
+    ["Size", [9,2]],
+    // ["FontSize", 20],
+    ["ActivationFunction", "Zen_OF_CameraGUIReportFire"],
+    ["Text", "Report Fire"],
+    ["LinksTo", [_coordEntryX, _coordEntryY]]
+] call Zen_CreateControl;
+
+_falseAlarmbutton = ["Button",
+    ["Position", [26, 42]],
+    ["Size", [9,2]],
+    // ["FontSize", 20],
+    ["ActivationFunction", "Zen_OF_CameraGUIReportFalse"],
+    ["Text", "Report False Alarm"],
+    ["LinksTo", [_coordEntryX, _coordEntryY]]
+] call Zen_CreateControl;
+
+_closeButton = ["Button",
+    ["Position", [26, 44]],
+    ["Size", [9,2]],
+    // ["FontSize", 20],
+    ["ActivationFunction", "Zen_OF_CameraGUIClose"],
+    ["Text", "Close"]
+] call Zen_CreateControl;
+
+Zen_OF_CameraGUICoordText = ["Text",
+    ["Position", [17, 22]],
+    ["Size", [6,2]],
+    // ["FontSize", 20],
+    ["Text", ""]
+] call Zen_CreateControl;
+
 Zen_OF_CameraGUIDialog = [] call Zen_CreateDialog;
-// {
-    // 0 = [Zen_OF_CameraGUIDialog, _x] call Zen_LinkControl;
-// } forEach [];
+{
+    0 = [Zen_OF_CameraGUIDialog, _x] call Zen_LinkControl;
+} forEach [_crosshair, Zen_OF_CameraGUICoordText, _coordEntryX, _coordEntryY, _coordEntryComma, _reportButton, _falseAlarmbutton, _coordEntryText, _closeButton];
 
 // (findDisplay 46) displayAddEventHandler ["KeyDown", {
     // player commandChat str _this;

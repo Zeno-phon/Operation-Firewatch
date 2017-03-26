@@ -112,11 +112,13 @@ Zen_OF_ManageDrones
 ////////////////////////////////////////////////
 // Data
     // string, id
-    // array of markers, fire coverage
+    // array, fire position
 
 // Zen_OF_InvokeFire
     // visible fire
 // Zen_OF_GetFireData
+
+// change to point fires
 
 ////////////////////////////////////////////////
 // Airspace Zone
@@ -169,6 +171,9 @@ Recalculate route button
 
 // always run tracking
     // integrate to Zen_OF_ManageDrones
+
+show fire coord for DOA-H
+allow fire reporting from map
 
 drone overview
     // textures
@@ -248,19 +253,17 @@ drone overview
 // Camera GUI
 ////////////////////////////////////////////////
 
-Coordinate result box
-Crosshair texture
-Coordinate entry field
-Report fire button
-Cancel button
+// Coordinate result box
+// Crosshair texture
+// Coordinate entry field
+// Report fire button
+// Cancel button
 Camera controls
     // set camera target on possible fire for DOA-H
-    set default camera target for manual
+    // set default camera target for manual
     // attachTo drone
     // get coord button
-        show coord at start for DOA-H
     // panning/zoom for manual
-        ?? reset default FOV
     pointer vector to target for doa-l
     joystick inputAction
         fixed texture method
@@ -309,5 +312,6 @@ demographics GUI
 // Changelog
 ////////////////////////////////////////////////
 
-1. Added: Moving drone camera for Manual and DOA-L
-2. Removed: Drone GUI report fire button
+1. Fixed: Drone camera automatic fire targeting for DOA-H
+2. Added: Drone camera GUI fire reporting
+3. Improved: Fires are now treated as points

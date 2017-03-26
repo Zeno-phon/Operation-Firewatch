@@ -229,12 +229,14 @@ _rr = [player, 5] call Zen_OF_InvokeRepairRefuel;
         player sideChat ("Player has been assigned AOR " + str _index);
         _icon = [_aor, "AOR " + str _index, "colorBlack", [1,1], "mil_marker"] call Zen_SpawnMarker;
 
+        // /**
         // Here I have already provided some generalization
         // We are waiting for any drone to be inside the AOR
         waitUntil {
             _droneObjs = [];
 
-            /**  Notice that I use Zen_OF_Drones_Local directly here, but what that variable is and how to use it does not appear in the documentation.  Normally, particularly with my framework, internal variables are private and should never be used directly; the framework provides public functions that make that unnecessary.  However, in a project like this, I will use internal variables wherever it is expedient, since all of the systems are tied together very closely to make the mission work. */
+            /**  Notice that I use Zen_OF_Drones_Local directly here, but what that variable is and how to use it does not appear in the documentation.  Normally, particularly with my framework, internal variables are private and should never be used directly; the framework provides public functions that make that unnecessary.  However, in a project like this, I will use internal variables wherever it is expedient, since all of the systems are tied together very closely to make the mission work. //*/
+            // /**
             {
                 _droneObjs pushBack (_x select 1);
             } forEach Zen_OF_Drones_Local;
@@ -242,12 +244,12 @@ _rr = [player, 5] call Zen_OF_InvokeRepairRefuel;
             // ! Zen_AreNotInArea has become a staple of the framework, despite being confusing at first
             !([_droneObjs, _aor] call Zen_AreNotInArea)
         };
+        // */
 
         // Since fires are defined by area markers, we create one at a random position within the AOR
         // This is the first use of Zen_FindGroundPosition, which is a very powerful tool
         // Here we are just using it to ensure that the fire is on land and not water
-        _fireArea = [[_aor] call Zen_FindGroundPosition, "", "colorBlack", [10,10], "ellipse", 0, 0] call Zen_SpawnMarker;
-        0 = [[_fireArea]] call Zen_OF_InvokeFire;
+        0 = [[_aor] call Zen_FindGroundPosition] call Zen_OF_InvokeFire;
 
         // 10 minutes between fires
         sleep 60*10;
