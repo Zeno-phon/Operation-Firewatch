@@ -21,8 +21,8 @@
         player sideChat (_drone + " is dead."); \
     };
 
-#define PARSE_WAYPOINT_INFO_L(A) (format["ETA: %1 s; Fuel: %2 %3", A select 1, (A select 2) * 100, "%"])
-#define PARSE_WAYPOINT_INFO_H(A) (format["ETA: %1 s; Fuel: %2 %3; Time Remaining: TODO", A select 1, (A select 2) * 100, "%"])
+#define PARSE_WAYPOINT_INFO_L(A) (format["ETA: %1 s; Fuel: %2 %3", A select 1, (A select 2), "%"])
+#define PARSE_WAYPOINT_INFO_H(A) (format["ETA: %1 s; Fuel: %2 %3; Time On Station: %4 min", A select 1, (A select 2), "%", (A select 3)])
 
 ZEN_OF_DroneDialog_Camera = "camera" camCreate [0,0,0];
 ZEN_OF_DroneDialog_Camera camSetFovRange [0.01, 1];
@@ -46,7 +46,7 @@ Zen_OF_DroneGUIRefresh = {
 
         CHECK_FOR_DEAD
 
-        0 = [_bars select 0, ["Progress", (_droneData select 2) * 100]] call Zen_UpdateControl;
+        // 0 = [_bars select 0, ["Progress", (_droneData select 2) * 100]] call Zen_UpdateControl;
         0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
         0 = [_bars select 3, ["MapPosition", (getPosATL (_droneData select 1)) vectorAdd [random 5, 0, 0]]] call Zen_UpdateControl;
 
@@ -584,6 +584,6 @@ _statusText4 = ["Text",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textHealth, _textFuel, _barHealthBackGround, _barFuelBackGround, _barHealth, _barFuel, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[_buttonRecalc, _buttonWaypointTypes]}; case 2: {[_buttonWaypointTypes]}; });
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textFuel, _barFuelBackGround, _barFuel, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[_buttonRecalc, _buttonWaypointTypes]}; case 2: {[_buttonWaypointTypes]}; });
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

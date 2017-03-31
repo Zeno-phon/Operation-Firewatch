@@ -3,7 +3,8 @@
 #include "..\Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
-#define FUEL_FRACTION_PER_METER (1. / 10000.)
+// #define FUEL_FRACTION_PER_METER (1. / 100000.)
+#define FUEL_FRACTION_PER_SEC (1. / 60. / 60. / 1.)
 
 _Zen_stack_Trace = ["Zen_OF_FindDroneRouteData", _this] call Zen_StackAdd;
 private ["_pathArray", "_nameString", "_droneObj", "_prevFuel", "_speed", "_prevPos", "_result", "_nextPos", "_dist", "_nextFuel", "_droneClassData"];
@@ -39,9 +40,10 @@ _result = [];
 {
     _nextPos = _x;
     _dist = [_prevPos, _nextPos] call Zen_Find2dDistance;
-    _nextFuel = _prevFuel - _dist * FUEL_FRACTION_PER_METER;
+    // _nextFuel = _prevFuel - _dist * FUEL_FRACTION_PER_METER;
+    _nextFuel = _prevFuel - _dist / _speed * FUEL_FRACTION_PER_SEC;
 
-    _result pushBack [_dist, _dist / _speed, _nextFuel];
+    _result pushBack [round _dist, round (_dist / _speed), round (100 * _nextFuel), round (_nextFuel / FUEL_FRACTION_PER_SEC / 60.)];
 
     _prevPos = _x;
     _prevFuel = _nextFuel;

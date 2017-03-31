@@ -3,8 +3,9 @@
 #include "..\Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
 #include "..\Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
-#define FUEL_FRACTION_PER_METER (1. / 100000.)
-#define SENSOR_DAMAGE_PER_SCAN (1. / 10000.)
+// #define FUEL_FRACTION_PER_METER (1. / 100000.)
+#define FUEL_FRACTION_PER_SEC (1. / 60. / 60. / 1.)
+// #define SENSOR_DAMAGE_PER_SCAN (1. / 10000.)
 #define ALPHA_TO_NUMBER(A) (switch (toUpper A) do {case "A": {(0)}; case "B":{(1)}; case "C": {(2)};})
 
 if (isDedicated && isServer) exitWith {};
@@ -44,12 +45,14 @@ while {true} do {
 
                 _isRTB = _dataArray select 2;
 
-                _distance = (_dataArray select 1) distance2D _newPos;
+                _dt = time - (_dataArray select 4);
+                // _distance = (_dataArray select 1) distance2D _newPos;
                 _dataArray set [1, _newPos];
 
                 // Fuel warning and auto RTB
                 _oldFuel = _droneData select 3;
-                _newFuel = _oldFuel - _distance * FUEL_FRACTION_PER_METER;
+                // _newFuel = _oldFuel - _distance * FUEL_FRACTION_PER_METER;
+                _newFuel = _oldFuel - _dt * FUEL_FRACTION_PER_SEC;
                 // _dataArray set [3, _newFuel];
                 0 = [_drone, "", _newFuel] call Zen_OF_UpdateDrone;
 
@@ -64,9 +67,8 @@ while {true} do {
                     0 = [Zen_OF_DroneManagerData, (_indexes select 0)] call Zen_ArrayRemoveIndex;
                 } else {
                     // Scanning for fires and sensor health
-                    _oldHealth = _droneData select 2;
-                    _newHealth = _oldHealth - SENSOR_DAMAGE_PER_SCAN;
-                    0 = [_drone, _newHealth] call Zen_OF_UpdateDrone;
+                    // _newHealth = (_droneData select 2) - SENSOR_DAMAGE_PER_SCAN;
+                    // 0 = [_drone, _newHealth] call Zen_OF_UpdateDrone;
                     // _dataArray set [8, _newHealth];
 
                     _oldFires = _dataArray select 9;
@@ -104,7 +106,8 @@ while {true} do {
                             };
                         };
 
-                        if ((_newFuel < 0.3) || (_newHealth < 0.7)) then {
+                        // if ((_newFuel < 0.3) || (_newHealth < 0.7)) then {
+                        if (_newFuel < 0.3) then {
                             _dataArray set [2, true];
 
                             _nearest = [Zen_OF_RepairRefuel_Global, compile format["
@@ -119,7 +122,8 @@ while {true} do {
                             ", _newPos]] call Zen_ArrayFindExtremum;
 
                             player sideChat (_drone + " fuel/health level critical; RTB in progress.");
-                            ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " fuel/health level critical at " + str _newFuel + " " + str _newHealth + " ; RTB in progress to " + (_nearest select 0) + " at " + str (_nearest select 1) + ".")], call)
+                            // ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " fuel/fuel level critical at " + str _newFuel + " " + str _newHealth + " ; RTB in progress to " + (_nearest select 0) + " at " + str (_nearest select 1) + ".")], call)
+                            ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " fuel level critical at " + str _newFuel + " ; RTB in progress to " + (_nearest select 0) + " at " + str (_nearest select 1) + ".")], call)
 
                             terminate (_droneData select 4);
                             _droneData set [7, []];
@@ -147,7 +151,6 @@ while {true} do {
                     };
 
                     // zone violations
-                    _dt = time - (_dataArray select 4);
                     _dataArray set [4, time];
 
                     _zoneViolationOld = _dataArray select 5;

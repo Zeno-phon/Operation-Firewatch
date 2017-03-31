@@ -43,11 +43,9 @@ Zen_OF_FindDroneRoute
                     // add to the list of solutions (cutoff at X solutions)
         // sort by min overall distance
     diamond tunneling algorithm
-        choose angle and distance by Gaussian random (centered at half distance, and double Gaussian at +-45 deg)
-            draw a line from the destination at an angle and radius
-            draw another line to the starting point
-            add to the list of solutions with weight factor for distance through zones (cutoff at X solutions)
-        sort by min overall distance
+        same gaussian random paths ??
+        costs for each zone and no zone
+        sort by total cost
     stepped diamond algorithm
         to avoid a large (Width > dist), circular (width ~ depth) obstacle between start and end
         ray cast horizontally until vertical path is clear
@@ -69,6 +67,8 @@ Zen_OF_FindDroneRoute
     // random time/dist function detection
 
 Zen_OF_ManageDrones
+    // change fuel to function of time only
+    // remove sensor health
     // deplete fuel (as function of velocity/acceleration)
     // print fuel level alerts at 10% steps
     // if 30% fuel or 70% health, force RTB
@@ -159,7 +159,7 @@ Recalculate route button
             // ETA and fuel remaining for each waypoint
         heavy
             // 1 route
-            ETA, fuel remaining, time before refuel for final waypoint
+            // ETA, fuel remaining, time before refuel for final waypoint
 // Approve route button
 // RTB button
 // Refresh GUI button
@@ -172,16 +172,18 @@ Recalculate route button
 // always run tracking
     // integrate to Zen_OF_ManageDrones
 
+// remove sensor health
+
 show fire coord for DOA-H
 allow fire reporting from map
 
 drone overview
-    // textures
     // text fields
+    textures
     data formatting and updating
         refueling countdown timer
     duplicate for each drone
-    remove health/fuel bars
+    remove fuel bar
     sorting/repositions of cards
 
 // Zen_OF_DroneGUIListSelect
@@ -312,6 +314,7 @@ demographics GUI
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Drone camera automatic fire targeting for DOA-H
-2. Added: Drone camera GUI fire reporting
-3. Improved: Fires are now treated as points
+. Added: Time on station for DOA-H waypoints
+. Removed: Drone sensor health
+. Improved: Fuel consumption is now a function of time
+. Improved: Waypoint info printing format

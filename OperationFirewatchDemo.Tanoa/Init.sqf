@@ -132,7 +132,7 @@ _cam9 = ["new", []] call OO_CAMERA;
 // 0 - manual
 // 1 - DOA-L
 // 2 - DOA-H
-Zen_OF_User_Group_Index = 1;
+Zen_OF_User_Group_Index = 2;
 
 // Here we have the start of the log files
 // The second argument is which log file to print to, with the default being the generic A3Log
