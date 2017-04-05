@@ -29,8 +29,12 @@ Zen_OF_PermissionGUIRefresh = {
 };
 
 Zen_OF_PermissionGUIInvoke= {
+    call Zen_CloseDialog;
+    titleText ["Standby", "BLACK FADED", 1.];
+
     REFRESH_LISTS
     0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX + 0.4,safeZoneH - 1], false, true] call Zen_InvokeDialog;
+    titleText ["Standby", "BLACK FADED", .001];
 
     {
         _data = [_x] call Zen_OF_GetZoneData;
@@ -172,7 +176,14 @@ _buttonClose = ["Button",
     ["ActivationFunction", "Zen_OF_PermissionGUIClose"]
 ] call Zen_CreateControl;
 
+_buttonBack = ["Button",
+    ["Text", "Back"],
+    ["Position", [0, 6]],
+    ["Size", [8,2]],
+    ["ActivationFunction", "Zen_OF_DroneGUIInvoke"]
+] call Zen_CreateControl;
+
 Zen_OF_PermissionGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_PermissionGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_PermissionGUIDroneList, Zen_OF_PermissionGUIZoneList, _buttonRefresh, _buttonClose, _buttonRequestPermission];
+} forEach [_background, _map, Zen_OF_PermissionGUIDroneList, Zen_OF_PermissionGUIZoneList, _buttonRefresh, _buttonBack, _buttonRequestPermission];

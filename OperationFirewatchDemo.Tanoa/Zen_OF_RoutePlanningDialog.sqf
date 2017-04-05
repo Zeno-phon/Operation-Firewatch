@@ -21,6 +21,7 @@ Zen_OF_RouteGUIRefresh = {
 };
 
 Zen_OF_RouteGUIInvoke = {
+    titleText ["Standby", "BLACK FADED", 1.];
     _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, [[]], [], 0] call Zen_OF_UpdateDrone;
 
@@ -30,6 +31,7 @@ Zen_OF_RouteGUIInvoke = {
 
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has opened manual route planning GUI for " + Zen_OF_RouteGUICurrentDrone + "."], call)
     0 = [Zen_OF_RouteDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false, true] call Zen_InvokeDialog;
+    titleText ["Standby", "BLACK FADED", .001];
 };
 
 Zen_OF_RouteGUIInvokeAuto = {

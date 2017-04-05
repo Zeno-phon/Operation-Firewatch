@@ -143,7 +143,7 @@ Zen_OF_User_Group_Index = 2;
 [name player + " is a member of Group #" + str Zen_OF_User_Group_Index + "."] call A3log;
 
 #include "Zen_OF_ConsentDialog.sqf"
-titleText ["", "BLACK FADED", 0.001];
+titleText ["Standby", "BLACK FADED", 1.];
 
 /**  Throughout the code, I will make ample use of the preprocessor.  SQF's preprocessor is very similar to C/C++; it is a copy-paste tool that prevents repeating blocks of code without having to make a new function.  It can also be used to copy-paste values that cannot be passed to a function.  These lines will copy-paste the entire contents of the files into this file, making them part of the init.sqf; this is handy for organizing long definitions of functions and variables into separate files. */
 #include "Zen_OF_DroneDialog.sqf"
@@ -194,14 +194,14 @@ ZEN_FMW_MP_REAll("Zen_OF_ManageDrones", [], spawn)
     // };
 // };
 
-player sideChat "Player has been assigned 1 drone.";
+titleText ["", "BLACK FADED", 0.001];
+call Zen_OF_DroneGUIInvoke;
+
+// player sideChat "Player has been assigned 1 drone.";
 
 // Here I provide the user access to the drone and permissions GUI
-PC addAction ["Drone GUI", {call Zen_OF_DroneGUIInvoke}];
-PC addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
-
-player addAction ["Drone GUI", {call Zen_OF_DroneGUIInvoke}];
-player addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
+// player addAction ["Drone GUI", {call Zen_OF_DroneGUIInvoke}];
+// player addAction ["Permissions GUI", {call Zen_OF_PermissionGUIInvoke}];
 
 // A repair/refuel point is currently trivial
 // Once created, everything is handled automatically by the systems

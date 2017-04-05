@@ -305,16 +305,23 @@ demographics GUI
     sliders
 
 // user consent GUI
-    // need text
+    // new text
+    // multiple pages
     // format text
     // controls
         // decline to endMission
+
+// always show a dialog
+
+chat box
+    structured text
+    same control for all screens
+    remote update
 
 ////////////////////////////////////////////////
 // Changelog
 ////////////////////////////////////////////////
 
-. Added: Time on station for DOA-H waypoints
-. Removed: Drone sensor health
-. Improved: Fuel consumption is now a function of time
-. Improved: Waypoint info printing format
+1. Improved: Consent GUI now has multiple pages
+2. Improved: Updated consent GUI text
+3. Improved: User cannot exit GUIs (1 close button left for debug purposes)

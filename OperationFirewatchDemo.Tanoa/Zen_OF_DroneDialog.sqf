@@ -64,6 +64,8 @@ Zen_OF_DroneGUIRefresh = {
 };
 
 Zen_OF_DroneGUIInvoke= {
+    call Zen_CloseDialog;
+
     _list = [];
     _listData = [];
     {
@@ -528,9 +530,16 @@ Zen_OF_DroneGUIRefreshButton = ["Button",
 
 _buttonClose = ["Button",
     ["Text", "Close"],
-    ["Position", [0, 18]],
+    ["Position", [0, 20]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_CloseDialog"]
+] call Zen_CreateControl;
+
+_buttonPermissions = ["Button",
+    ["Text", "Permissions"],
+    ["Position", [0, 18]],
+    ["Size", [5,2]],
+    ["ActivationFunction", "Zen_OF_PermissionGUIInvoke"]
 ] call Zen_CreateControl;
 
 _background = ["Picture",
@@ -584,6 +593,6 @@ _statusText4 = ["Text",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonClose, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textFuel, _barFuelBackGround, _barFuel, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[_buttonRecalc, _buttonWaypointTypes]}; case 2: {[_buttonWaypointTypes]}; });
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonPermissions, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textFuel, _barFuelBackGround, _barFuel, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4, _buttonClose] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[_buttonRecalc, _buttonWaypointTypes]}; case 2: {[_buttonWaypointTypes]}; });
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;
