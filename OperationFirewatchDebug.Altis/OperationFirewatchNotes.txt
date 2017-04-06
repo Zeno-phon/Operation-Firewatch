@@ -177,13 +177,25 @@ Recalculate route button
 show fire coord for DOA-H
 allow fire reporting from map
 
+add message box
+
+drop list to drop-down menu
+
+Rename
+    'move' -> NAV
+    'confirm route' -> Execute
+    'stop' -> Cancel
+    'permissions' -> RQST
+        call permission GUI functions
+    remove other buttons
+
 drone overview
     // text fields
-    textures
+    // textures
+    // remove fuel bar
     data formatting and updating
         refueling countdown timer
     duplicate for each drone
-    remove fuel bar
     sorting/repositions of cards
 
 // Zen_OF_DroneGUIListSelect
@@ -222,6 +234,9 @@ drone overview
 // Zen_OF_PermissionGUIRequestPermission
 
 // flag zones on map
+
+eliminate list of zones
+use map clicks to pick zone
 
 ////////////////////////////////////////////////
 // Route planning GUI
@@ -271,6 +286,17 @@ Camera controls
         fixed texture method
         46 method
 
+rename
+    'back' -> Map View
+    'confirm' -> Execute
+    'False Alarm' -> Fls Alrm
+
+move center of cam
+drone selection drop-list
+status overview for selected drone (not all)
+align with vel vector
+add message box
+
 ////////////////////////////////////////////////
 // Global functions
 ////////////////////////////////////////////////
@@ -313,7 +339,7 @@ demographics GUI
 
 // always show a dialog
 
-chat box
+message box
     structured text
     same control for all screens
     remote update
@@ -322,6 +348,7 @@ chat box
 // Changelog
 ////////////////////////////////////////////////
 
-1. Improved: Consent GUI now has multiple pages
-2. Improved: Updated consent GUI text
-3. Improved: User cannot exit GUIs (1 close button left for debug purposes)
+1. Fixed: User could exit the consent dialog and camera dialog with the Esc key
+2. Improved: Timing of dialogs and 'standby' screens at mission start
+3. Improved: The default position of the drone's camera points forward
+4. Tweaked: Set the default user group to DOA-L

@@ -431,7 +431,10 @@ Zen_OF_DroneGUICamera = {
     _droneData = [_drone] call Zen_OF_GetDroneData;
     CHECK_FOR_DEAD
 
-    _center = getPosATL (_droneData select 1);
+    _offset = [10, 90 - (getDir (_droneData select 1)), 0];
+    _offset = ZEN_STD_Math_VectCylCart(_offset);
+
+    _center = (getPosATL (_droneData select 1)) vectorAdd _offset;
     _center set [2, 0];
     if (({(_x select 1)} count Zen_OF_Fires_Detected_Local == 0) || Zen_OF_User_Group_Index < 2) then {
         player sideChat (_drone + " has not detected any fires.");

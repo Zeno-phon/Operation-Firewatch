@@ -133,7 +133,7 @@ Zen_OF_ConsentDialog = [] call Zen_CreateDialog;
     0 = [Zen_OF_ConsentDialog, _x] call Zen_LinkControl;
 } forEach [_background, _buttonAccept, _buttonDecline, _consentText, _buttonPageNext, _buttonPagePrevious];
 
-0 = [Zen_OF_ConsentDialog, [0.025 * -5, 0.025 * -10], false, false] call Zen_InvokeDialog;
+0 = [Zen_OF_ConsentDialog, [0.025 * -5, 0.025 * -10], false, true] call Zen_InvokeDialog;
 
 waitUntil {
     (Zen_OF_ConsentGUIAccepted)

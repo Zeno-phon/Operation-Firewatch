@@ -25,7 +25,7 @@
 #define CAMERA_SLEW_ZOOM_STEP 0.025
 
 Zen_OF_CameraGUIInvoke = {
-    0 = [Zen_OF_CameraGUIDialog, [0, 0], false] call Zen_InvokeDialog;
+    0 = [Zen_OF_CameraGUIDialog, [0, 0], false, true] call Zen_InvokeDialog;
 
     player sideChat "Press Numpad 0 to exit camera view.";
     (findDisplay 76) displayAddEventHandler ["KeyDown", {
@@ -227,7 +227,7 @@ _closeButton = ["Button",
     ["Size", [9,2]],
     // ["FontSize", 20],
     ["ActivationFunction", "Zen_OF_CameraGUIClose"],
-    ["Text", "Close"]
+    ["Text", "Map View"]
 ] call Zen_CreateControl;
 
 Zen_OF_CameraGUICoordText = ["Text",
