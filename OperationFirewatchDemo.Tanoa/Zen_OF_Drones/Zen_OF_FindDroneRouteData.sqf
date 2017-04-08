@@ -31,7 +31,7 @@ if (count _pathArray == 0) exitWith {
     ZEN_FMW_Code_ErrorExitValue("Zen_OF_FindDroneRouteData", "Given drone does not exist or has no paths.", [])
 };
 
-_droneClassData = [_droneObj] call Zen_F_GetDroneClassData;
+_droneClassData = [_droneObj] call Zen_OF_GetDroneClassData;
 _speed = _droneClassData select 0;
 
 _prevPos = getPosATL _droneObj;

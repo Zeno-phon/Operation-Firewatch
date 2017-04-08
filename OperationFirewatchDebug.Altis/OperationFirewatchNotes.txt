@@ -148,16 +148,16 @@ Zen_OF_ManageDrones
 // Show drone button
 // Order stop button
 // Order move button
-Recalculate route button
+// Recalculate route button
     // distance, time, fuel remaining
     // measure average straight path nominal velocity
-    display
-        manual
+    // display
+        // manual
             // ETA for each waypoint
-        light
+        // light
             // 3 routes
             // ETA and fuel remaining for each waypoint
-        heavy
+        // heavy
             // 1 route
             // ETA, fuel remaining, time before refuel for final waypoint
 // Approve route button
@@ -177,9 +177,8 @@ Recalculate route button
 show fire coord for DOA-H
 allow fire reporting from map
 
-add message box
-
-drop list to drop-down menu
+// add message box
+drone drop list to drop-down menu
 
 Rename
     'move' -> NAV
@@ -340,15 +339,17 @@ demographics GUI
 // always show a dialog
 
 message box
-    structured text
-    same control for all screens
-    remote update
+    // structured text
+    // same control for all screens
+    // remote update
+    // mouse wheel scrolling
+    replace sideChats
+    format box
 
 ////////////////////////////////////////////////
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: User could exit the consent dialog and camera dialog with the Esc key
-2. Improved: Timing of dialogs and 'standby' screens at mission start
-3. Improved: The default position of the drone's camera points forward
-4. Tweaked: Set the default user group to DOA-L
+1. Fixed: Dialog refresh did not draw new controls
+2. Added: Dialog system now supports generic control EH assignment and linking
+3. Added: Message box logic (with sample text)

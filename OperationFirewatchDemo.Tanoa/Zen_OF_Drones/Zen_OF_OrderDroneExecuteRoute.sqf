@@ -18,7 +18,7 @@ _markers = _this select 2;
 
 _droneData = [_drone] call Zen_OF_GetDroneData;
 
-_droneClassData = [(_droneData select 1)] call Zen_F_GetDroneClassData;
+_droneClassData = [(_droneData select 1)] call Zen_OF_GetDroneClassData;
 _speed = _droneClassData select 0;
 _orbitRadius = _droneClassData select 1;
 _height = _droneClassData select 2;

@@ -29,6 +29,64 @@ Zen_F_GetDroneClassData = {
     ([_droneClassData, 1] call Zen_ArrayGetIndexedSlice)
 };
 
+Zen_OF_Message_Stack = [];
+Zen_OF_Message_Stack_Scroll_Index = 0;
+
+for "_i" from 1 to LINES_PER_BOX do {
+    Zen_OF_Message_Stack pushBack LINE_BREAK;
+};
+
+Zen_OF_PrintMessage = {
+    _rawString = _this select 0;
+    _rawArr = toArray _rawString;
+
+    _linesArrArr = [];
+    _i = 0;
+    while {_i <= (count _rawArr - CHAR_PER_LINE - 1)} do {
+        _linesArrArr pushBack ([_rawArr, _i, _i + CHAR_PER_LINE - 1] call Zen_ArrayGetIndexedSlice);
+        _i = _i + CHAR_PER_LINE;
+    };
+    _linesArrArr pushBack ([_rawArr, _i] call Zen_ArrayGetIndexedSlice);
+
+    _linesArrString = [];
+    {
+        _linesArrString pushBack (FONT_START + toString _x + LINE_BREAK + FONT_END);
+    } forEach _linesArrArr;
+
+    // player commandChat str _linesArrString;
+    Zen_OF_Message_Stack append _linesArrString;
+
+    #define GET_MESSAGE \
+    _messageStringArr = []; \
+    for "_i" from ((count Zen_OF_Message_Stack - LINES_PER_BOX) max 0) to (count Zen_OF_Message_Stack - 1) step 1 do { \
+        _messageStringArr pushBack (Zen_OF_Message_Stack select (_i - Zen_OF_Message_Stack_Scroll_Index)); \
+    }; \
+    _messageString = ""; \
+    { \
+        _messageString = _messageString + _x; \
+    } forEach _messageStringArr;
+
+    GET_MESSAGE
+    0 = [ZEN_OF_GUIMessageBox, ["Text", _messageString]] call Zen_UpdateControl;
+    [] call Zen_RefreshDialog;
+    if (true) exitWith {};
+};
+
+Zen_OF_ScrollMessage = {
+    // player commandChat str _this;
+    _scrollMag = (_this select 0) select 0;
+
+    if (_scrollMag > 0) then {
+        Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index + 1) min (count Zen_OF_Message_Stack - LINES_PER_BOX);
+    } else {
+        Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index - 1) max 0;
+    };
+
+    GET_MESSAGE
+    0 = [ZEN_OF_GUIMessageBox, ["Text", _messageString]] call Zen_UpdateControl;
+    [] call Zen_RefreshDialog;
+};
+
 if (!isServer) exitWith {};
 sleep 1;
 

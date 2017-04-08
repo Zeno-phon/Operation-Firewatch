@@ -24,7 +24,7 @@ _nameString = format ["Zen_OF_Drone_%1",([10] call Zen_StringGenerateRandom)];
 
 _h_orbit = scriptNull;
 if (ZEN_STD_OBJ_ATLPositionZ(_obj) > 5) then {
-    _droneClassData = [_obj] call Zen_F_GetDroneClassData;
+    _droneClassData = [_obj] call Zen_OF_GetDroneClassData;
     // _speed = _droneClassData select 0;
     _orbitRadius = _droneClassData select 1;
 

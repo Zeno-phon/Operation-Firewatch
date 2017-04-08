@@ -78,6 +78,10 @@ Zen_OF_ConsentGUIPagePrevious = {
     };
 };
 
+F_Test_Event = {
+    player commandChat str _this;
+};
+
 _background = ["Picture",
     ["Position", [-30, -10]],
     ["Size", [120,90]],
@@ -106,6 +110,7 @@ _consentText = ["StructuredText",
     ["Position", [0, 0]],
     ["Size", [40,54]],
     ["Data", 0],
+    // ["Event", [["MOUSEZCHANGED", "F_Test_Event"]]],
     ["Text", _pages select 0]
 ] call Zen_CreateControl;
 

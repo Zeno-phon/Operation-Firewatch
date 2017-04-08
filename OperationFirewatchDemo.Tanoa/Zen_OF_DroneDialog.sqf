@@ -398,7 +398,7 @@ Zen_OF_DroneGUIStop = {
         0 = [_drone, "", "", "", "", 0, [], [], 0] call Zen_OF_UpdateDrone;
     };
 
-    _droneClassData = [(_droneData select 1)] call Zen_F_GetDroneClassData;
+    _droneClassData = [(_droneData select 1)] call Zen_OF_GetDroneClassData;
     // _speed = _droneClassData select 0;
     _orbitRadius = _droneClassData select 1;
 
@@ -593,9 +593,16 @@ _statusText4 = ["Text",
     ["Text", "4"]
 ] call Zen_CreateControl;
 
+Zen_OF_GUIMessageBox = ["StructuredText",
+    ["Position", [0, -20]],
+    ["Size", [20, 20]],
+    ["Event", [["MOUSEZCHANGED", "Zen_OF_ScrollMessage"]]],
+    ["Text", ""]
+] call Zen_CreateControl;
+
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonPermissions, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textFuel, _barFuelBackGround, _barFuel, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4, _buttonClose] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[_buttonRecalc, _buttonWaypointTypes]}; case 2: {[_buttonWaypointTypes]}; });
+} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonPermissions, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textFuel, _barFuelBackGround, _barFuel, _buttonCancel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4, _buttonClose, Zen_OF_GUIMessageBox] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[_buttonRecalc, _buttonWaypointTypes]}; case 2: {[_buttonWaypointTypes]}; });
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;

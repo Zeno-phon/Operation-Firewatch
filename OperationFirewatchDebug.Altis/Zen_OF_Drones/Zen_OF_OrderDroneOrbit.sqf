@@ -25,7 +25,7 @@ for "_phi" from 0 to (360 - _dPhi) step _dPhi do {
     _orbitPoints pushBack ([_center, _radius, _phi] call Zen_ExtendVector);
 };
 
-_droneClassData = [(_droneData select 1)] call Zen_F_GetDroneClassData;
+_droneClassData = [(_droneData select 1)] call Zen_OF_GetDroneClassData;
 _speed = _droneClassData select 0;
 _height = _droneClassData select 2;
 

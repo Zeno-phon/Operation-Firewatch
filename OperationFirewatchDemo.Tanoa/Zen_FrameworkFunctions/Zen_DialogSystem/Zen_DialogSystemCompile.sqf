@@ -50,22 +50,29 @@ Zen_RefreshDialog = {
         _controlIDsToRepeat = [];
         _controlsToRepeat = [];
         _hashes = [];
+        _unchangedControls = [];
         {
+            _controlID = _x select 0;
+            _control = _x select 1;
             _oldHash = _x select 2;
 
-            if ((_x select 0) in _dialogControls) then {
-                _newHash = [_x select 0] call Zen_HashControlData;
+            if (_controlID in _dialogControls) then {
+                _newHash = [_controlID] call Zen_HashControlData;
                 if ((_newHash != "") && {_oldHash != _newHash}) then {
-                    _controlIDsToRepeat pushBack (_x select 0);
-                    _controlsToRepeat pushBack (_x select 1);
+                    _controlIDsToRepeat pushBack _controlID;
+                    _controlsToRepeat pushBack _control;
                     _hashes pushBack _newHash;
+                } else {
+                    _unchangedControls pushBack [_controlID, _control, _oldHash];
                 };
+
+                0 = [_dialogControls, _controlID] call Zen_ArrayRemoveValue;
             } else {
                 ctrlDelete (_x select 1);
             };
         } forEach Zen_Active_Dialog_Control_Data;
 
-        0 = [Zen_Active_Dialog, Zen_Active_Dialog_Position, false, false, _controlIDsToRepeat, _controlsToRepeat, _hashes, __time] spawn Zen_InvokeDialog;
+        0 = [Zen_Active_Dialog, Zen_Active_Dialog_Position, false, false, _controlIDsToRepeat, _controlsToRepeat, _hashes, _unchangedControls, _dialogControls, __time] spawn Zen_InvokeDialog;
     };
 
     if (true) exitWith {};

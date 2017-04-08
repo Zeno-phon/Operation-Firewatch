@@ -13,6 +13,7 @@ call compileFinal preprocessFileLineNumbers "Zen_OF_Fires\Zen_OF_FiresCompile.sq
 
 call compileFinal preprocessFileLineNumbers "oo_camera.sqf";
 
+// Zen_Debug_Arguments = false;
 titleText ["Standby", "BLACK FADED", 2.];
 enableSaving [false, false];
 
@@ -23,7 +24,7 @@ Zen_OF_Airfield_LandAt_Codes = [[[7137.6,7380.44,0.00143886], 0], [[2140.71,1335
 Zen_OF_Drone_Class_Data = [["b_uav_01_f", 16, 300, 100], ["b_uav_02_f", 105, 300, 400]];
 
 /**  This function encapsulates the process of retrieving the data in the above array.  This allows any function to obtain the parameters of the drone it's dealing with. */
-Zen_F_GetDroneClassData = {
+Zen_OF_GetDroneClassData = {
     private ["_droneObj", "_droneClassData"];
 
     // This is the actual in-game object, so that we can access it classname using typeOf
@@ -39,6 +40,70 @@ Zen_F_GetDroneClassData = {
     };
 
     ([_droneClassData, 1] call Zen_ArrayGetIndexedSlice)
+};
+
+#define LINES_PER_BOX 12
+#define CHAR_PER_LINE 26
+#define FONT_START "<t font='LucidaConsoleB'>"
+#define FONT_END "</t>"
+#define LINE_BREAK "<br/>"
+
+Zen_OF_Message_Stack = [];
+Zen_OF_Message_Stack_Scroll_Index = 0;
+
+for "_i" from 1 to LINES_PER_BOX do {
+    Zen_OF_Message_Stack pushBack LINE_BREAK;
+};
+
+Zen_OF_PrintMessage = {
+    _rawString = _this select 0;
+    _rawArr = toArray _rawString;
+
+    _linesArrArr = [];
+    _i = 0;
+    while {_i <= (count _rawArr - CHAR_PER_LINE - 1)} do {
+        _linesArrArr pushBack ([_rawArr, _i, _i + CHAR_PER_LINE - 1] call Zen_ArrayGetIndexedSlice);
+        _i = _i + CHAR_PER_LINE;
+    };
+    _linesArrArr pushBack ([_rawArr, _i] call Zen_ArrayGetIndexedSlice);
+
+    _linesArrString = [];
+    {
+        _linesArrString pushBack (FONT_START + toString _x + LINE_BREAK + FONT_END);
+    } forEach _linesArrArr;
+
+    // player commandChat str _linesArrString;
+    Zen_OF_Message_Stack append _linesArrString;
+
+    #define GET_MESSAGE \
+    _messageStringArr = []; \
+    for "_i" from ((count Zen_OF_Message_Stack - LINES_PER_BOX) max 0) to (count Zen_OF_Message_Stack - 1) step 1 do { \
+        _messageStringArr pushBack (Zen_OF_Message_Stack select (_i - Zen_OF_Message_Stack_Scroll_Index)); \
+    }; \
+    _messageString = ""; \
+    { \
+        _messageString = _messageString + _x; \
+    } forEach _messageStringArr;
+
+    GET_MESSAGE
+    0 = [Zen_OF_GUIMessageBox, ["Text", _messageString]] call Zen_UpdateControl;
+    [] call Zen_RefreshDialog;
+    if (true) exitWith {};
+};
+
+Zen_OF_ScrollMessage = {
+    // player commandChat str _this;
+    _scrollMag = (_this select 0) select 0;
+
+    if (_scrollMag > 0) then {
+        Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index + 1) min (count Zen_OF_Message_Stack - LINES_PER_BOX);
+    } else {
+        Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index - 1) max 0;
+    };
+
+    GET_MESSAGE
+    0 = [Zen_OF_GUIMessageBox, ["Text", _messageString]] call Zen_UpdateControl;
+    [] call Zen_RefreshDialog;
 };
 
 // This will make the markers invisible during the briefing
@@ -183,6 +248,11 @@ titleText ["Standby", "BLACK FADED", 10.];
 #include "Zen_OF_RoutePlanningDialog.sqf"
 #include "Zen_OF_CameraGUI.sqf"
 
+0 = ["Hello World 1"] call Zen_OF_PrintMessage;
+0 = ["Hello World 2"] call Zen_OF_PrintMessage;
+0 = ["The quick brown fox jumps over the lazy dog."] call Zen_OF_PrintMessage;
+0 = ["Scroll Me"] call Zen_OF_PrintMessage;
+
 // debug
 // 0 = ["Charlie_1", "test_EmptyObjectForFireBig"] call Zen_SpawnVehicle;
 
@@ -258,3 +328,4 @@ _rr = [player, 5] call Zen_OF_InvokeRepairRefuel;
         sleep 60*10;
     };
 };
+

@@ -6,8 +6,10 @@ disableSerialization;
 #include "..\Zen_FrameworkLibrary.sqf"
 #include "..\Zen_StandardLibrary.sqf"
 
+#define CONTROL_EHS ["MOUSEENTER", "MOUSEEXIT", "SETFOCUS", "KILLFOCUS", "MOUSEBUTTONDOWN", "MOUSEBUTTONUP", "MOUSEBUTTONDBLCLICK", "MOUSEMOVING", "MOUSEHOLDING", "MOUSEZCHANGED", "KEYDOWN", "KEYUP", "HTMLLINK", "MOUSEBUTTONCLICK"]
+
 _Zen_stack_Trace = ["Zen_InvokeDialog", _this] call Zen_StackAdd;
-private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc", "_mapPos", "_element", "_maxElement", "_controlIDsArray", "_hashes", "__time", "_mapTime"];
+private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc", "_mapPos", "_element", "_maxElement", "_controlIDsArray", "_hashes", "__time", "_mapTime", "_unchangedControls", "_newControls"];
 
 if !([_this, [["STRING"], ["ARRAY"], ["BOOL"]], [[], ["SCALAR"]], 1] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -26,11 +28,14 @@ if (count _this > 4) then {
     _controlIDsArray = _this select 4;
     _controlsArray = _this select 5;
     _hashes = _this select 6;
-    __time = _this select 7;
+    _unchangedControls = _this select 7;
+    _newControls = _this select 8;
+    __time = _this select 9;
     if (__time > 0) then {
         _mapTime = __time;
     };
 } else {
+    _newControls = [];
     _doRefresh = false;
     _controlIDsArray = [_dialogID] call Zen_GetDialogControls;
 };
@@ -58,6 +63,7 @@ if !(_doRefresh) then {
     };
 } else {
     _display = (findDisplay 76);
+    _Zen_Dialog_Controls_Local append _unchangedControls;
 };
 
 {
@@ -73,10 +79,7 @@ if !(_doRefresh) then {
             case "TEXT": {("RscText")};
             case "SLIDER": {("RscXSliderH")};
             case "PICTURE": {("RscPicture")};
-            // case "CHECKBOXES": {("RscCheckBox")};
-            // case "RADIOBUTTONS": {("RscToolboxButton")};
             case "TEXTFIELD": {("RscEdit")};
-            // case "BACKGROUND": {("RscBackground")};
             case "DROPLIST": {("RscCombo")};
             case "PROGRESSBAR": {("RscProgress")};
             case "MAP": {("RscMapControl")};
@@ -87,17 +90,26 @@ if !(_doRefresh) then {
         if (_controlInstanClass != "") then {
 
             _control = objNull;
-            if (_doRefresh) then {
+            if (_doRefresh && {_controlID in _controlIDsArray}) then {
                 _control = _controlsArray select _forEachIndex;
                 _Zen_Dialog_Controls_Local pushBack [_controlID, _control, _hashes select _forEachIndex];
             } else {
                 _control = _display ctrlCreate [_controlInstanClass, NEXT_IDC
                 _Zen_Dialog_Controls_Local pushBack [_controlID, _control, ([_controlID] call Zen_HashControlData)];
+
+                if (toUpper _controlType in ["SLIDER"]) then {
+                    _control sliderSetPosition 0;
+                    _control sliderSetSpeed [1, 5];
+                };
+
+                if (toUpper _controlType in ["PROGRESSBAR"]) then {
+                    _control progressSetPosition 0;
+                };
             };
 
             if ((toUpper _controlType) in ["LIST","DROPLIST"]) then {
                 _element = 0;
-                if (_doRefresh) then {
+                if (_doRefresh && {_controlID in _controlIDsArray}) then {
                     _element = lbCurSel _control;
                     lbClear _control;
                 };
@@ -112,17 +124,6 @@ if !(_doRefresh) then {
                 } forEach _controlBlocks;
 
                 _control lbSetCurSel (_element min _maxElement);
-            };
-
-            if !(_doRefresh) then {
-                if (toUpper _controlType in ["SLIDER"]) then {
-                    _control sliderSetPosition 0;
-                    _control sliderSetSpeed [1, 5];
-                };
-
-                if (toUpper _controlType in ["PROGRESSBAR"]) then {
-                    _control progressSetPosition 0;
-                };
             };
 
             {
@@ -151,7 +152,6 @@ if !(_doRefresh) then {
                     case "FONTSIZE": {
                         _control ctrlSetFontHeight _data / FONT_DIVISION;
                     };
-
                     case "FONTCOLOR": {
                         if ((toUpper _controlType) in ["LIST","DROPLIST"]) then {
                             for "_i" from 0 to (lbSize _control - 1) do {
@@ -180,6 +180,23 @@ if !(_doRefresh) then {
                             };
                         };
                     };
+
+                    case "EVENT": {
+                        {
+                            if (_doRefresh && {_controlID in _controlIDsArray}) then {
+                                _control ctrlRemoveAllEventHandlers _x;
+                            }
+                        } forEach CONTROL_EHS;
+
+                        {
+                            if (toUpper (_x select 0) in CONTROL_EHS) then {
+                                _control ctrlAddEventHandler [_x select 0, compile format ["
+                                        ['%1', 'Event', round %2, (if (count _this > 1) then {[([_this, 1] call Zen_ArrayGetIndexedSlice)]} else {[]})] spawn Zen_ExecuteEvent;
+                                ", _controlID, _forEachIndex]];
+                            };
+                        } forEach _data;
+                    };
+
                     case "MAPPOSITION": {
                         ctrlMapAnimClear _control;
                         _control ctrlMapAnimAdd [_mapTime, ctrlMapScale _control, ([_data] call Zen_ConvertToPosition)];
@@ -268,25 +285,25 @@ if !(_doRefresh) then {
             // _control ctrlCommit __time;
         };
     };
-} forEach _controlIDsArray;
+} forEach (_controlIDsArray + _newControls);
 
-if !(_doRefresh) then {
+// if !(_doRefresh) then {
     uiNamespace setVariable ["Zen_Dialog_Object_Local", [_dialogID, _Zen_Dialog_Controls_Local, _offset]];
-} else {
-    _oldLocalData = uiNamespace getVariable "Zen_Dialog_Object_Local";
-    _localToAdd = +(_oldLocalData select 1);
+// } else {
+    // _oldLocalData = uiNamespace getVariable "Zen_Dialog_Object_Local";
+    // _localToAdd = +(_oldLocalData select 1);
 
-    {
-        _refreshedControlID = _x select 0;
-        {
-            if ((_x select 0) == _refreshedControlID) exitWith {
-                0 = [_localToAdd, _forEachIndex] call Zen_ArrayRemoveIndex;
-            };
-        } forEach +_localToAdd;
-    } forEach _Zen_Dialog_Controls_Local;
+    // {
+        // _refreshedControlID = _x select 0;
+        // {
+            // if ((_x select 0) == _refreshedControlID) exitWith {
+                // 0 = [_localToAdd, _forEachIndex] call Zen_ArrayRemoveIndex;
+            // };
+        // } forEach +_localToAdd;
+    // } forEach _Zen_Dialog_Controls_Local;
 
-    uiNamespace setVariable ["Zen_Dialog_Object_Local", [_dialogID, _Zen_Dialog_Controls_Local + _localToAdd, _offset]];
-};
+    // uiNamespace setVariable ["Zen_Dialog_Object_Local", [_dialogID, _Zen_Dialog_Controls_Local + _localToAdd, _offset]];
+// };
 
 call Zen_StackRemove;
 if (true) exitWith {};
