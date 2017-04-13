@@ -178,15 +178,14 @@ show fire coord for DOA-H
 allow fire reporting from map
 
 // add message box
-drone drop list to drop-down menu
+// drone drop list to drop-down menu
+// remove cancel button
+// Rename
 
-Rename
-    'move' -> NAV
-    'confirm route' -> Execute
-    'stop' -> Cancel
-    'permissions' -> RQST
-        call permission GUI functions
-    remove other buttons
+permissions
+    remove gui
+    map clicks
+    call permission GUI functions
 
 drone overview
     // text fields
@@ -233,9 +232,6 @@ drone overview
 // Zen_OF_PermissionGUIRequestPermission
 
 // flag zones on map
-
-eliminate list of zones
-use map clicks to pick zone
 
 ////////////////////////////////////////////////
 // Route planning GUI
@@ -285,16 +281,12 @@ Camera controls
         fixed texture method
         46 method
 
-rename
-    'back' -> Map View
-    'confirm' -> Execute
-    'False Alarm' -> Fls Alrm
-
+// rename
+// add message box
 move center of cam
 drone selection drop-list
 status overview for selected drone (not all)
 align with vel vector
-add message box
 
 ////////////////////////////////////////////////
 // Global functions
@@ -350,6 +342,8 @@ message box
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Dialog refresh did not draw new controls
-2. Added: Dialog system now supports generic control EH assignment and linking
-3. Added: Message box logic (with sample text)
+1. Removed: The old 'Cancel' button (the 'Stop' button is now named 'Cancel')
+2. Improved: Zen_RefreshDialog now checks its arguments
+3. Improved: Drone list is now a drop-down list
+4. Improved: Renamed GUI buttons
+5. Improved: Set time interval for message box scrolling

@@ -36,7 +36,13 @@ Zen_CloseDialog = {
 
 Zen_RefreshDialog = {
     __time = 0;
-    ZEN_STD_Parse_GetArgumentDefault(__time, 0, 0)
+    if ((isNil "_this") && {typeName _this != "ARRAY" && {count _this > 0}}) then {
+        ZEN_STD_Parse_GetArgumentDefault(__time, 0, 0)
+    };
+
+    if !(typeName __time == "SCALAR") then {
+        __time = 0;
+    };
 
     disableSerialization;
     with uiNamespace do {

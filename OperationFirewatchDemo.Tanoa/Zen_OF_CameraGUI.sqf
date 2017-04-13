@@ -209,7 +209,7 @@ _reportButton = ["Button",
     ["Size", [9,2]],
     // ["FontSize", 20],
     ["ActivationFunction", "Zen_OF_CameraGUIReportFire"],
-    ["Text", "Report Fire"],
+    ["Text", "Execute"],
     ["LinksTo", [_coordEntryX, _coordEntryY]]
 ] call Zen_CreateControl;
 
@@ -218,7 +218,7 @@ _falseAlarmbutton = ["Button",
     ["Size", [9,2]],
     // ["FontSize", 20],
     ["ActivationFunction", "Zen_OF_CameraGUIReportFalse"],
-    ["Text", "Report False Alarm"],
+    ["Text", "Fls Alrm"],
     ["LinksTo", [_coordEntryX, _coordEntryY]]
 ] call Zen_CreateControl;
 
@@ -240,7 +240,7 @@ Zen_OF_CameraGUICoordText = ["Text",
 Zen_OF_CameraGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_CameraGUIDialog, _x] call Zen_LinkControl;
-} forEach [_crosshair, Zen_OF_CameraGUICoordText, _coordEntryX, _coordEntryY, _coordEntryComma, _reportButton, _falseAlarmbutton, _coordEntryText, _closeButton];
+} forEach [_crosshair, Zen_OF_CameraGUICoordText, _coordEntryX, _coordEntryY, _coordEntryComma, _reportButton, _falseAlarmbutton, _coordEntryText, _closeButton, Zen_OF_GUIMessageBox];
 
 // (findDisplay 46) displayAddEventHandler ["KeyDown", {
     // player commandChat str _this;

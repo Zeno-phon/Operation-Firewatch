@@ -44,6 +44,7 @@ Zen_OF_GetDroneClassData = {
 
 #define LINES_PER_BOX 12
 #define CHAR_PER_LINE 26
+#define SCROLL_INTERVAL 0.25
 #define FONT_START "<t font='LucidaConsoleB'>"
 #define FONT_END "</t>"
 #define LINE_BREAK "<br/>"
@@ -91,19 +92,22 @@ Zen_OF_PrintMessage = {
     if (true) exitWith {};
 };
 
+Zen_OF_LastScrollTime = 0.;
 Zen_OF_ScrollMessage = {
     // player commandChat str _this;
     _scrollMag = (_this select 0) select 0;
 
-    if (_scrollMag > 0) then {
-        Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index + 1) min (count Zen_OF_Message_Stack - LINES_PER_BOX);
-    } else {
-        Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index - 1) max 0;
-    };
+    if (Zen_OF_LastScrollTime + SCROLL_INTERVAL < time) then {
+        if (_scrollMag > 0) then {
+            Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index + 1) min (count Zen_OF_Message_Stack - LINES_PER_BOX);
+        } else {
+            Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index - 1) max 0;
+        };
 
-    GET_MESSAGE
-    0 = [Zen_OF_GUIMessageBox, ["Text", _messageString]] call Zen_UpdateControl;
-    [] call Zen_RefreshDialog;
+        GET_MESSAGE
+        0 = [Zen_OF_GUIMessageBox, ["Text", _messageString]] call Zen_UpdateControl;
+        [] call Zen_RefreshDialog;
+    };
 };
 
 // This will make the markers invisible during the briefing
