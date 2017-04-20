@@ -53,9 +53,10 @@ Zen_OF_ConsentGUIPageNext = {
 
         if (_page == PAGE_COUNT - 2) then {
             0 = [_buttonAccept, ["Data", true], ["FontColor", [255, 255, 255, 255]]] call Zen_UpdateControl;
+            0 = [0, [_text, _buttonAccept], "else"] call Zen_RefreshDialog;
+        } else {
+            0 = [0, [_text, _buttonAccept], "else"] call Zen_RefreshDialog;
         };
-
-        [] call Zen_RefreshDialog;
     };
 };
 
@@ -74,7 +75,7 @@ Zen_OF_ConsentGUIPagePrevious = {
 
     if (_page > 0) then {
         0 = [_text, ["Text", _pages select (_page - 1)], ["Data", _page - 1]] call Zen_UpdateControl;
-        [] call Zen_RefreshDialog;
+        0 = [0, [_text], "else"] call Zen_RefreshDialog;
     };
 };
 

@@ -2,8 +2,8 @@
 
 // Operation Firewatch Demo
 // For LT Eric S. Vorm, Indiana University
-// Version = Alpha
-// Tested with ArmA 3 1.66 Stable
+// Version = Beta
+// Tested with ArmA 3 1.68 Stable
 
 /**  Each system has its own compile script that complies all function, initializes all variables, and declares any extra helper functions it needs.  They are compiled and called directly here using compileFinal so that they cannot be compiled or called again. */
 call compileFinal preprocessFileLineNumbers "Zen_OF_Zones\Zen_OF_ZonesCompile.sqf";
@@ -16,6 +16,8 @@ call compileFinal preprocessFileLineNumbers "oo_camera.sqf";
 // Zen_Debug_Arguments = false;
 titleText ["Standby", "BLACK FADED", 2.];
 enableSaving [false, false];
+
+player setGroupId ["User"];
 
 // Airfield positions and landAt codes for Zen_OF_OrderDroneExecuteRoute to use
 Zen_OF_Airfield_LandAt_Codes = [[[7137.6,7380.44,0.00143886], 0], [[2140.71,13350.6,17.8909], 1], [[11610.1,3158.68,0.00149488], 2], [[2200.59,3543.36,0.00143909], 3], [[11845,13163.9,0.00143909], 4]];
@@ -43,14 +45,15 @@ Zen_OF_GetDroneClassData = {
 };
 
 #define LINES_PER_BOX 12
-#define CHAR_PER_LINE 26
-#define SCROLL_INTERVAL 0.25
+#define CHAR_PER_LINE 25
+#define SCROLL_INTERVAL 0.4
 #define FONT_START "<t font='LucidaConsoleB'>"
 #define FONT_END "</t>"
 #define LINE_BREAK "<br/>"
 
 Zen_OF_Message_Stack = [];
 Zen_OF_Message_Stack_Scroll_Index = 0;
+Zen_OF_LastScrollTime = 0.;
 
 for "_i" from 1 to LINES_PER_BOX do {
     Zen_OF_Message_Stack pushBack LINE_BREAK;
@@ -92,21 +95,21 @@ Zen_OF_PrintMessage = {
     if (true) exitWith {};
 };
 
-Zen_OF_LastScrollTime = 0.;
 Zen_OF_ScrollMessage = {
     // player commandChat str _this;
     _scrollMag = (_this select 0) select 0;
 
-    if (Zen_OF_LastScrollTime + SCROLL_INTERVAL < time) then {
-        if (_scrollMag > 0) then {
-            Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index + 1) min (count Zen_OF_Message_Stack - LINES_PER_BOX);
-        } else {
-            Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index - 1) max 0;
-        };
+    if (_scrollMag > 0) then {
+        Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index + 1) min (count Zen_OF_Message_Stack - LINES_PER_BOX);
+    } else {
+        Zen_OF_Message_Stack_Scroll_Index = (Zen_OF_Message_Stack_Scroll_Index - 1) max 0;
+    };
 
+    if (Zen_OF_LastScrollTime + SCROLL_INTERVAL < time) then {
         GET_MESSAGE
+        Zen_OF_LastScrollTime = time;
         0 = [Zen_OF_GUIMessageBox, ["Text", _messageString]] call Zen_UpdateControl;
-        [] call Zen_RefreshDialog;
+        0 = [0, [Zen_OF_GUIMessageBox], "Else"] call Zen_RefreshDialog;
     };
 };
 
@@ -220,12 +223,8 @@ _h_droneSpawn = [] spawn {
 
         for "_i" from 1 to _count do {
             _zone = [_type, [_prefix + str _i]] call Zen_OF_InvokeZone;
-
-            if (_type == "C") then {
-                0 = [_zone, 1/ZEN_STD_Math_MarkerArea((_prefix + str _i)), "O_APC_Tracked_02_AA_F"] call Zen_OF_SpawnZoneAAA;
-            };
         };
-    } forEach [["A", "ALPHA_", 6], ["B", "BRAVO_", 13], ["C", "CHARLIE_", 5]];
+    } forEach [["A", "CHARLIE_", 5], ["B", "BRAVO_", 13], ["C", "ALPHA_", 6]];
 
     /**  There is a variable for the player's knowledge of zones; this is not currently used. */
     {
@@ -252,10 +251,10 @@ titleText ["Standby", "BLACK FADED", 10.];
 #include "Zen_OF_RoutePlanningDialog.sqf"
 #include "Zen_OF_CameraGUI.sqf"
 
-0 = ["Hello World 1"] call Zen_OF_PrintMessage;
-0 = ["Hello World 2"] call Zen_OF_PrintMessage;
-0 = ["The quick brown fox jumps over the lazy dog."] call Zen_OF_PrintMessage;
-0 = ["Scroll Me"] call Zen_OF_PrintMessage;
+// 0 = ["Hello World 1"] call Zen_OF_PrintMessage;
+// 0 = ["Hello World 2"] call Zen_OF_PrintMessage;
+// 0 = ["The quick brown fox jumps over the lazy dog."] call Zen_OF_PrintMessage;
+// 0 = ["Scroll Me"] call Zen_OF_PrintMessage;
 
 // debug
 // 0 = ["Charlie_1", "test_EmptyObjectForFireBig"] call Zen_SpawnVehicle;
@@ -271,10 +270,9 @@ titleText ["Standby", "BLACK FADED", 10.];
 // };
 
 ZEN_STD_Code_WaitScript(_h_droneSpawn)
-titleText ["", "BLACK FADED", 0.001];
+titleText ["", "BLACK FADED", 0.01];
+// player commandChat "Start";
 call Zen_OF_DroneGUIInvoke;
-
-// player sideChat "Player has been assigned 1 drone.";
 
 // Here I provide the user access to the drone and permissions GUI
 // player addAction ["Drone GUI", {call Zen_OF_DroneGUIInvoke}];
@@ -284,6 +282,15 @@ call Zen_OF_DroneGUIInvoke;
 // Once created, everything is handled automatically by the systems
 // This may be changed to assist with the drones' landing procedures
 _rr = [player, 5] call Zen_OF_InvokeRepairRefuel;
+
+0 = [] spawn {
+    {
+        if ((_x select 1) == "C") then {
+            0 = [(_x select 0), pi * ((_x select 5) select 0) * ((_x select 5) select 1), "O_APC_Tracked_02_AA_F"] call Zen_OF_SpawnZoneAAA;
+        };
+    } forEach Zen_OF_Zones_Global;
+};
+
 
 // A test of the fire detection randomness
 // for "_i" from 0 to 10 do {

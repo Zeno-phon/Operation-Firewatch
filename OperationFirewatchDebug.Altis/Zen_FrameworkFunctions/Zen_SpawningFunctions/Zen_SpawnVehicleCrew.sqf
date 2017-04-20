@@ -149,7 +149,15 @@ if ((_configCrew == "") || {[_configCrew] call Zen_GetSide != _side}) then {
         };
     };
 } else {
-    FILL_CAR(_configCrew)
+    if (_vehicle isKindOf "StaticWeapon") then {
+        {
+            if (isNull (_vehicle turretUnit _x)) then {
+                _crewClasses pushBack _configCrew;
+            };
+        } forEach _vehicleTurrets;
+    } else {
+        FILL_CAR(_configCrew)
+    };
 };
 
 _crewGroup = [_vehicle, _crewClasses] call Zen_SpawnGroup;

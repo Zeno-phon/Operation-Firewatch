@@ -29,12 +29,12 @@ Zen_OF_PermissionGUIRefresh = {
 };
 
 Zen_OF_PermissionGUIInvoke= {
-    call Zen_CloseDialog;
-    titleText ["Standby", "BLACK FADED", 1.];
+    // call Zen_CloseDialog;
+    // titleText ["Standby", "BLACK FADED", 1.];
 
-    REFRESH_LISTS
-    0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX + 0.4,safeZoneH - 1], false, true] call Zen_InvokeDialog;
-    titleText ["Standby", "BLACK FADED", .001];
+    // REFRESH_LISTS
+    // 0 = [Zen_OF_PermissionGUIDialog, [safeZoneW - 1 + safeZoneX + 0.4,safeZoneH - 1], false, true] call Zen_InvokeDialog;
+    // titleText ["Standby", "BLACK FADED", .001];
 
     {
         _data = [_x] call Zen_OF_GetZoneData;
@@ -116,9 +116,12 @@ Zen_OF_PermissionGUIRequestPermission = {
     _zone = _this select 3;
     _zoneData = [_zone] call Zen_OF_GetZoneData;
 
-    0 = [_drone, "", "", "", "", 0, "", "", "", "", "", "", "", "", "", (_droneData select 16) + [_zone]] call Zen_OF_UpdateDrone;
-    player sideChat (_drone + " has been granted permission to cross " + _zone);
-    ZEN_FMW_MP_REServerOnly("A3log", [_drone + " at " + str getPosATL (_droneData select 1) + " has been granted permission to cross " + _zone + " at about " + str (_zoneData select 4) + " with radius " + str (_zoneData select 5)], call)
+    if !(_zone in (_droneData select 16)) then {
+        0 = [_drone, "", "", "", "", 0, "", "", "", "", "", "", "", "", "", (_droneData select 16) + [_zone]] call Zen_OF_UpdateDrone;
+    };
+
+    0 = [(_drone + " has been granted permission to land at " + _zone)] call Zen_OF_PrintMessage;
+    ZEN_FMW_MP_REServerOnly("A3log", [_drone + " at " + str getPosATL (_droneData select 1) + " has been granted permission to land at " + _zone + " at about " + str (_zoneData select 4) + " with radius " + str (_zoneData select 5)], call)
 
     {
         _data = [_x] call Zen_OF_GetZoneData;
@@ -134,7 +137,7 @@ Zen_OF_PermissionGUIRequestPermission = {
 };
 
 Zen_OF_PermissionGUIClose = {
-    call Zen_CloseDialog;
+    // call Zen_CloseDialog;
 
     {
         _data = [_x] call Zen_OF_GetZoneData;

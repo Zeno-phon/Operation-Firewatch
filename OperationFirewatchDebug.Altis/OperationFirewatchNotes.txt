@@ -148,15 +148,17 @@ Zen_OF_ManageDrones
 // Show drone button
 // Order stop button
 // Order move button
-// Recalculate route button
+Recalculate route button
+    remove button
     // distance, time, fuel remaining
     // measure average straight path nominal velocity
     // display
         // manual
             // ETA for each waypoint
-        // light
+        light
             // 3 routes
             // ETA and fuel remaining for each waypoint
+            show 3 routes as list items
         // heavy
             // 1 route
             // ETA, fuel remaining, time before refuel for final waypoint
@@ -182,10 +184,10 @@ allow fire reporting from map
 // remove cancel button
 // Rename
 
-permissions
-    remove gui
-    map clicks
-    call permission GUI functions
+// permissions
+    // remove gui
+    // map clicks
+    // call permission GUI functions
 
 drone overview
     // text fields
@@ -283,7 +285,7 @@ Camera controls
 
 // rename
 // add message box
-move center of cam
+// move center of cam
 drone selection drop-list
 status overview for selected drone (not all)
 align with vel vector
@@ -335,15 +337,15 @@ message box
     // same control for all screens
     // remote update
     // mouse wheel scrolling
-    replace sideChats
+    // replace sideChats
     format box
 
 ////////////////////////////////////////////////
 // Changelog
 ////////////////////////////////////////////////
 
-1. Removed: The old 'Cancel' button (the 'Stop' button is now named 'Cancel')
-2. Improved: Zen_RefreshDialog now checks its arguments
-3. Improved: Drone list is now a drop-down list
-4. Improved: Renamed GUI buttons
-5. Improved: Set time interval for message box scrolling
+1. Fixed: Alpha and Charlie zones were swapped on the map
+2. Improved: All sideChats have been replaced with message box calls
+3. Improved: Drone GUI RQST button now functions as intended
+4. Improved: Rearranged Camera GUI elements
+5. Improved: Optimized message box scrolling

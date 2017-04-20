@@ -20,7 +20,7 @@ if (typeName _class == "STRING") then {
     _obj = _class;
 };
 
-_nameString = format ["Zen_OF_Drone_%1",([10] call Zen_StringGenerateRandom)];
+_nameString = format ["Zen_OF_Drone_%1",([4, "Numeric"] call Zen_StringGenerateRandom)];
 
 _h_orbit = scriptNull;
 if (ZEN_STD_OBJ_ATLPositionZ(_obj) > 5) then {

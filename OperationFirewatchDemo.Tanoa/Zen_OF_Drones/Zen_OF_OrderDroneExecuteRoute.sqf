@@ -77,7 +77,7 @@ _droneObj = _droneData select 1;
         0 = [_drone, 1, 1] call Zen_OF_UpdateDrone;
         _droneObj setFuel 1;
 
-        player sideChat (_drone + " repair and refueling complete.");
+        0 = [(_drone + " repair and refueling complete.")] call Zen_OF_PrintMessage;
         ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " repair and refueling complete.")], call)
         0 = [_nearestRR, "", (([_nearestRR] call Zen_OF_GetRepairRefuelData) select 3) - 1] call Zen_OF_UpdateRepairRefuel;
 
@@ -97,7 +97,7 @@ if (toUpper (_waypointTypes select (count _path -1 )) != "LAND") then {
     0 = [_drone, "", "", "", "", 0, "", "", "", "", "", "", "", _h_orbit] call Zen_OF_UpdateDrone;
 };
 
-player sideChat ("Move order for " + _drone + " complete.");
+0 = [("Move order for " + _drone + " complete.")] call Zen_OF_PrintMessage;
 ZEN_FMW_MP_REServerOnly("A3log", ["Move order for " + _drone + " complete."], call)
 
 {

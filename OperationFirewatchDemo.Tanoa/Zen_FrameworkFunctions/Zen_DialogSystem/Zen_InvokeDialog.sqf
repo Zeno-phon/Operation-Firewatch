@@ -9,7 +9,7 @@ disableSerialization;
 #define CONTROL_EHS ["MOUSEENTER", "MOUSEEXIT", "SETFOCUS", "KILLFOCUS", "MOUSEBUTTONDOWN", "MOUSEBUTTONUP", "MOUSEBUTTONDBLCLICK", "MOUSEMOVING", "MOUSEHOLDING", "MOUSEZCHANGED", "KEYDOWN", "KEYUP", "HTMLLINK", "MOUSEBUTTONCLICK"]
 
 _Zen_stack_Trace = ["Zen_InvokeDialog", _this] call Zen_StackAdd;
-private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc", "_mapPos", "_element", "_maxElement", "_controlIDsArray", "_hashes", "__time", "_mapTime", "_unchangedControls", "_newControls"];
+private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc", "_mapPos", "_element", "_maxElement", "_controlIDsArray", "_hashes", "__time", "_mapTime", "_unchangedControls", "_newControls", "_controlsToRepeatData"];
 
 if !([_this, [["STRING"], ["ARRAY"], ["BOOL"]], [[], ["SCALAR"]], 1] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -25,12 +25,20 @@ __time = 0;
 _mapTime= 1;
 if (count _this > 4) then {
     _doRefresh = true;
-    _controlIDsArray = _this select 4;
-    _controlsArray = _this select 5;
-    _hashes = _this select 6;
-    _unchangedControls = _this select 7;
-    _newControls = _this select 8;
-    __time = _this select 9;
+    _controlsToRepeatData = _this select 4;
+
+    _controlIDsArray = [];
+    _controlsArray = [];
+    _hashes = [];
+    {
+        _controlIDsArray pushBack (_x select 0);
+        _controlsArray pushBack (_x select 1);
+        _hashes pushBack (_x select 2);
+    } forEach _controlsToRepeatData;
+
+    _unchangedControls = _this select 5;
+    _newControls = _this select 6;
+    __time = _this select 7;
     if (__time > 0) then {
         _mapTime = __time;
     };
@@ -69,6 +77,7 @@ if !(_doRefresh) then {
 {
     _controlID = _x;
     _controlData = [_controlID] call Zen_GetControlData;
+
     if (count _controlData > 0) then {
         _controlType = _controlData select 1;
         _controlBlocks = _controlData select 2;

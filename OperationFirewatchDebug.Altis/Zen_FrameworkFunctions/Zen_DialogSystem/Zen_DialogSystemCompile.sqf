@@ -21,6 +21,7 @@ Zen_ExecuteEvent = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunction
 Zen_InvokeDialog = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunctions\Zen_DialogSystem\Zen_InvokeDialog.sqf";
 Zen_GetControlData = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunctions\Zen_DialogSystem\Zen_GetControlData.sqf";
 Zen_GetDialogControls = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunctions\Zen_DialogSystem\Zen_GetDialogControls.sqf";
+Zen_RefreshDialog = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunctions\Zen_DialogSystem\Zen_RefreshDialog.sqf";
 Zen_RemoveControl = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunctions\Zen_DialogSystem\Zen_RemoveControl.sqf";
 Zen_RemoveDialog = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunctions\Zen_DialogSystem\Zen_RemoveDialog.sqf";
 Zen_UnlinkControl = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunctions\Zen_DialogSystem\Zen_UnlinkControl.sqf";
@@ -31,56 +32,6 @@ Zen_CloseDialog = {
     (findDisplay 76) displayRemoveAllEventHandlers "KeyDown";
     (findDisplay 76) closeDisplay 0;
     closeDialog 0;
-    if (true) exitWith {};
-};
-
-Zen_RefreshDialog = {
-    __time = 0;
-    if ((isNil "_this") && {typeName _this != "ARRAY" && {count _this > 0}}) then {
-        ZEN_STD_Parse_GetArgumentDefault(__time, 0, 0)
-    };
-
-    if !(typeName __time == "SCALAR") then {
-        __time = 0;
-    };
-
-    disableSerialization;
-    with uiNamespace do {
-        missionNamespace setVariable ["Zen_Active_Dialog", Zen_Dialog_Object_Local select 0];
-        missionNamespace setVariable ["Zen_Active_Dialog_Control_Data", +(Zen_Dialog_Object_Local select 1)];
-        missionNamespace setVariable ["Zen_Active_Dialog_Position", (Zen_Dialog_Object_Local select 2)];
-    };
-
-    if (Zen_Active_Dialog != "") then {
-        _dialogControls = [Zen_Active_Dialog] call Zen_GetDialogControls;
-        _controlIDsToRepeat = [];
-        _controlsToRepeat = [];
-        _hashes = [];
-        _unchangedControls = [];
-        {
-            _controlID = _x select 0;
-            _control = _x select 1;
-            _oldHash = _x select 2;
-
-            if (_controlID in _dialogControls) then {
-                _newHash = [_controlID] call Zen_HashControlData;
-                if ((_newHash != "") && {_oldHash != _newHash}) then {
-                    _controlIDsToRepeat pushBack _controlID;
-                    _controlsToRepeat pushBack _control;
-                    _hashes pushBack _newHash;
-                } else {
-                    _unchangedControls pushBack [_controlID, _control, _oldHash];
-                };
-
-                0 = [_dialogControls, _controlID] call Zen_ArrayRemoveValue;
-            } else {
-                ctrlDelete (_x select 1);
-            };
-        } forEach Zen_Active_Dialog_Control_Data;
-
-        0 = [Zen_Active_Dialog, Zen_Active_Dialog_Position, false, false, _controlIDsToRepeat, _controlsToRepeat, _hashes, _unchangedControls, _dialogControls, __time] spawn Zen_InvokeDialog;
-    };
-
     if (true) exitWith {};
 };
 

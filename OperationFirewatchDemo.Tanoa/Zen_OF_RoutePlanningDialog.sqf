@@ -15,7 +15,7 @@ Zen_OF_RouteGUIRefresh = {
         _listData pushBack _forEachIndex;
     } forEach ((_droneData select 7) select (_droneData select 9));
 
-    // player sideChat str _list;
+    // 0 = [str _list] call Zen_OF_PrintMessage;
     0 = [Zen_OF_RouteGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
     [] call Zen_RefreshDialog;
 };
@@ -50,17 +50,17 @@ Zen_OF_RouteGUIInvokeAuto = {
 
 Zen_OF_RouteGUIMove = {
     if (count _this == 0) exitWith {
-        player sideChat "There are no waypoints to modify.";
+        0 = ["There are no waypoints to modify."] call Zen_OF_PrintMessage;
     };
 
     _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
     if !(scriptDone (_droneData select 11)) exitWith {
-        player sideChat "Use the Cancel button before issuing another move order.";
+        0 = ["Use the Cancel button before issuing another move order."] call Zen_OF_PrintMessage;
     };
 
     _waypoint = _this select 0;
 
-    player sideChat "Click on the map to set the waypoint's position.";
+    0 = ["Click on the map to set the waypoint's position."] call Zen_OF_PrintMessage;
     _h_move = [_waypoint] spawn {
         _waypoint = _this select 0;
         _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
@@ -93,10 +93,10 @@ Zen_OF_RouteGUIMove = {
 Zen_OF_RouteGUINew = {
     _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
     if !(scriptDone (_droneData select 11)) exitWith {
-        player sideChat "Use the Cancel button before issuing another move order.";
+        0 = ["Use the Cancel button before issuing another move order."] call Zen_OF_PrintMessage;
     };
 
-    player sideChat "Click on the map to set the waypoint's position.";
+    0 = ["Click on the map to set the waypoint's position."] call Zen_OF_PrintMessage;
     _h_move = [] spawn {
         _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
         CHECK_FOR_DEAD
@@ -131,7 +131,7 @@ Zen_OF_RouteGUINew = {
 
 Zen_OF_RouteGUIDelete = {
     if (count _this == 0) exitWith {
-        player sideChat "There are no waypoints to modify.";
+        0 = ["There are no waypoints to modify."] call Zen_OF_PrintMessage;
     };
 
     _waypoint = _this select 0;
@@ -140,7 +140,7 @@ Zen_OF_RouteGUIDelete = {
 
     _path = (_droneData select 7) select 0;
     // if (count _path == 1) exitWith {
-        // player sideChat "Cannot delete final waypoint.";
+        // 0 = ["Cannot delete final waypoint."] call Zen_OF_PrintMessage;
     // };
 
     ZEN_FMW_MP_REServerOnly("A3log", [name player + " has deleted waypoint " + str _waypoint + " for " + Zen_OF_RouteGUICurrentDrone + "."], call)
@@ -171,7 +171,7 @@ Zen_OF_RouteGUICancel = {
     CHECK_FOR_DEAD
     terminate (_droneData select 11);
 
-    player sideChat (Zen_OF_RouteGUICurrentDrone + " is no longer waiting for destination.");
+    0 = [(Zen_OF_RouteGUICurrentDrone + " is no longer waiting for destination.")] call Zen_OF_PrintMessage;
     ZEN_FMW_MP_REServerOnly("A3log", [(Zen_OF_RouteGUICurrentDrone + " is no longer waiting for destination.")], call)
 };
 
@@ -206,7 +206,7 @@ Zen_OF_RouteGUIBack = {
 
 Zen_OF_RouteGUIWaypointList = {
     if (count _this < 2) exitWith {
-        player sideChat str "There are no waypoints to modify.";
+        0 = [str "There are no waypoints to modify."] call Zen_OF_PrintMessage;
     };
 
     _waypointType = _this select 0;

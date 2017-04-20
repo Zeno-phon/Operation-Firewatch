@@ -60,7 +60,7 @@ while {true} do {
                     // Drone death
                     0 = [_drone] call Zen_OF_DeleteDrone;
 
-                    player sideChat (_drone + " has run out of fuel and crashed.");
+                    0 = [(_drone + " has run out of fuel and crashed.")] call Zen_OF_PrintMessage;
                     ZEN_FMW_MP_REServerOnly("A3log", [_drone + " has run out of fuel and crashed; current data is " + str _dataArray], call)
 
                     _indexes = [Zen_OF_DroneManagerData, _drone, 0] call Zen_ArrayGetNestedIndex;
@@ -81,11 +81,11 @@ while {true} do {
                                 (_oldFires select _forEachIndex) set [1, (_x select 1)];
                                 _mkr = (_oldFires select _forEachIndex) select 2;
                                 _mkr setMarkerPos (_x select 1);
-                                player sideChat (_drone + " has updated the position of a fire at about " + str (_x select 1) + ".");
+                                0 = [(_drone + " has updated the position of a fire at about " + str (_x select 1) + ".")] call Zen_OF_PrintMessage;
                                 ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has updated the position of fire " + (_x select 0) + " at about " + str (_x select 1) + ".")], call)
                             };
                         } else {
-                            player sideChat (_drone + " has detected a new fire at about " + str (_x select 1) + ".");
+                            0 = [(_drone + " has detected a new fire at about " + str (_x select 1) + ".")] call Zen_OF_PrintMessage;
                             ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has detected new fire " + (_x select 0) + " at about " + str (_x select 1) + ".")], call)
 
                             if !(([(_x select 0), false] in Zen_OF_Fires_Detected_Local) || ([(_x select 0), true] in Zen_OF_Fires_Detected_Local)) then {
@@ -101,7 +101,7 @@ while {true} do {
                     if !(_isRTB) then {
                         for "_i" from 2 to 9 do {
                             if (_oldFuel > _i/10 && _newFuel < _i/10) exitWith {
-                                player sideChat (_drone + " fuel level at " + str _newFuel);
+                                0 = [(_drone + " fuel level at " + str _newFuel)] call Zen_OF_PrintMessage;
                                 ZEN_FMW_MP_REServerOnly("A3log", [_drone + " fuel level at " + str _newFuel], call)
                             };
                         };
@@ -121,7 +121,7 @@ while {true} do {
                                 })
                             ", _newPos]] call Zen_ArrayFindExtremum;
 
-                            player sideChat (_drone + " fuel/health level critical; RTB in progress.");
+                            0 = [(_drone + " fuel/health level critical; RTB in progress.")] call Zen_OF_PrintMessage;
                             // ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " fuel/fuel level critical at " + str _newFuel + " " + str _newHealth + " ; RTB in progress to " + (_nearest select 0) + " at " + str (_nearest select 1) + ".")], call)
                             ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " fuel level critical at " + str _newFuel + " ; RTB in progress to " + (_nearest select 0) + " at " + str (_nearest select 1) + ".")], call)
 
@@ -168,7 +168,7 @@ while {true} do {
                             if (_isIn) then {
                                 if !(_x in (_droneData select 16)) then {
                                     _zoneViolationNew set [ALPHA_TO_NUMBER(_type), true];
-                                    player sideChat (_drone + " has tresspassed in zone " + (_x select 0) + " of type " + _type);
+                                    0 = [(_drone + " has tresspassed in zone " + (_x select 0) + " of type " + _type)] call Zen_OF_PrintMessage;
                                     ZEN_FMW_MP_REServerOnly("A3log", [(_drone + " has trespassed into zone " + (_x select 0) + " of type " + _type + " at " + str _newPos)], call)
 
                                     _x set [6, true];
@@ -241,7 +241,7 @@ while {true} do {
                 // Drone death
                 0 = [_drone] call Zen_OF_DeleteDrone;
 
-                player sideChat (_drone + " has been destroyed by AAA.");
+                0 = [(_drone + " has been destroyed by AAA.")] call Zen_OF_PrintMessage;
                 ZEN_FMW_MP_REServerOnly("A3log", [_drone + " has been destroyed by AAA; current data is " + str _dataArray], call)
 
                 _indexes = [Zen_OF_DroneManagerData, _drone, 0] call Zen_ArrayGetNestedIndex;
