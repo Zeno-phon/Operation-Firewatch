@@ -44,11 +44,11 @@ Zen_OF_GetDroneClassData = {
     ([_droneClassData, 1] call Zen_ArrayGetIndexedSlice)
 };
 
-#define LINES_PER_BOX 12
-#define CHAR_PER_LINE 25
+#define LINES_PER_BOX 9
+#define CHAR_PER_LINE 37
 #define SCROLL_INTERVAL 0.4
-#define FONT_START "<t font='LucidaConsoleB'>"
-#define FONT_END "</t>"
+#define FONT_START "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>"
+#define FONT_END "</t></t></t>"
 #define LINE_BREAK "<br/>"
 
 Zen_OF_Message_Stack = [];
@@ -56,7 +56,7 @@ Zen_OF_Message_Stack_Scroll_Index = 0;
 Zen_OF_LastScrollTime = 0.;
 
 for "_i" from 1 to LINES_PER_BOX do {
-    Zen_OF_Message_Stack pushBack LINE_BREAK;
+    Zen_OF_Message_Stack pushBack (FONT_START + LINE_BREAK + FONT_END);
 };
 
 Zen_OF_PrintMessage = {
@@ -286,7 +286,7 @@ _rr = [player, 5] call Zen_OF_InvokeRepairRefuel;
 0 = [] spawn {
     {
         if ((_x select 1) == "C") then {
-            0 = [(_x select 0), pi * ((_x select 5) select 0) * ((_x select 5) select 1), "O_APC_Tracked_02_AA_F"] call Zen_OF_SpawnZoneAAA;
+            0 = [(_x select 0), 1./(pi * ((_x select 5) select 0) * ((_x select 5) select 1)), "O_APC_Tracked_02_AA_F"] call Zen_OF_SpawnZoneAAA;
         };
     } forEach Zen_OF_Zones_Global;
 };

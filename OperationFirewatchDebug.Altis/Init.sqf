@@ -29,11 +29,11 @@ Zen_F_GetDroneClassData = {
     ([_droneClassData, 1] call Zen_ArrayGetIndexedSlice)
 };
 
-#define LINES_PER_BOX 12
-#define CHAR_PER_LINE 25
+#define LINES_PER_BOX 9
+#define CHAR_PER_LINE 37
 #define SCROLL_INTERVAL 0.4
-#define FONT_START "<t font='LucidaConsoleB'>"
-#define FONT_END "</t>"
+#define FONT_START "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>"
+#define FONT_END "</t></t></t>"
 #define LINE_BREAK "<br/>"
 
 Zen_OF_Message_Stack = [];
@@ -41,7 +41,7 @@ Zen_OF_Message_Stack_Scroll_Index = 0;
 Zen_OF_LastScrollTime = 0.;
 
 for "_i" from 1 to LINES_PER_BOX do {
-    Zen_OF_Message_Stack pushBack LINE_BREAK;
+    Zen_OF_Message_Stack pushBack (FONT_START + LINE_BREAK + FONT_END);
 };
 
 Zen_OF_PrintMessage = {

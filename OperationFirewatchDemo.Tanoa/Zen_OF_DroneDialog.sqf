@@ -24,6 +24,28 @@
 #define PARSE_WAYPOINT_INFO_L(A) (format["ETA: %1 s; Fuel: %2 %3", A select 1, (A select 2), "%"])
 #define PARSE_WAYPOINT_INFO_H(A) (format["ETA: %1 s; Fuel: %2 %3; Time On Station: %4 min", A select 1, (A select 2), "%", (A select 3)])
 
+_center = [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1, 0];
+_navUL = [1.21843,0.464647, 0];
+_navLR = [1.37,0.55, 0];
+_camUL = [1.38366,0.464647, 0];
+_camLR = [1.54,0.55, 0];
+_rqstUL = [1.55303,0.464647, 0];
+_rqstLR = [1.705,0.55, 0];
+_cancelUL = [1.46843,0.973064, 0];
+_cancelLR = [1.7,1.04, 0];
+_textUL = [1.2197,1.045, 0];
+_textLR = [1.7,1.38, 0];
+_exeUL = [1.2197,0.973064, 0];
+_exeLR = [1.44697,1.02525, 0];
+_droneUL = [1.49,0.390572, 0];
+_droneLR = [1.71,0.45, 0];
+
+_centerCard = [1.21717,-0.208754, 0];
+_fuelRemUL = [1.4798,-0.119529, 0];
+_runwayUL = [1.61237,-0.122896, 0];
+_timeUL = [1.46212,-0.10101, 0];
+_activityUL = [1.34596,-0.0488216, 0];
+
 ZEN_OF_DroneDialog_Camera = "camera" camCreate [0,0,0];
 ZEN_OF_DroneDialog_Camera camSetFovRange [0.01, 1];
 
@@ -47,7 +69,7 @@ Zen_OF_DroneGUIRefresh = {
         CHECK_FOR_DEAD
 
         // 0 = [_bars select 0, ["Progress", (_droneData select 2) * 100]] call Zen_UpdateControl;
-        0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
+        // 0 = [_bars select 1, ["Progress", (_droneData select 3) * 100]] call Zen_UpdateControl;
         0 = [_bars select 3, ["MapPosition", (getPosATL (_droneData select 1)) vectorAdd [random 5, 0, 0]]] call Zen_UpdateControl;
 
         if (Zen_OF_User_Group_Index == 2) then {
@@ -75,9 +97,9 @@ Zen_OF_DroneGUIInvoke= {
 
     Zen_OF_RouteGUICurrentDrone = _listData select 0;
     0 = [Zen_OF_DroneGUIList, ["List", _list], ["ListData", _listData]] call Zen_UpdateControl;
-    0 = [Zen_OF_GUIMessageBox, ["Position", [0, -22]]] call Zen_UpdateControl;
+    0 = [Zen_OF_GUIMessageBox, ["Position", ([([1.2197,1.04377, 0] vectorDiff [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1, 0]) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)]] call Zen_UpdateControl;
 
-    0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false, true] call Zen_InvokeDialog;
+    0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false, false] call Zen_InvokeDialog;
     0 = [Zen_OF_DroneGUIRefreshButton, "ActivationFunction"] spawn Zen_ExecuteEvent;
 };
 
@@ -194,8 +216,8 @@ _barFuelBackGround = ["PROGRESSBAR",
 Zen_OF_DroneGUIList = ["DropList",
     ["List", []],
     ["ListData", []],
-    ["Position", [5, 0]],
-    ["Size", [15,2]],
+    ["Position", ([(_droneUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([(_droneLR vectorDiff _droneUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
     ["SelectionFunction", "Zen_OF_DroneGUIListSelect"],
     ["Data", [_barHealth, _barFuel, _textTimer, _map]]
 ] call Zen_CreateControl;
@@ -518,73 +540,74 @@ Zen_OF_DroneGUIRQST = {
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, "", "", "", "", _h_event] call Zen_OF_UpdateDrone;
 };
 
+
 _buttonCamera = ["Button",
     ["Text", "Camera"],
-    ["Position", [0, 0]],
-    ["Size", [5,2]],
+    ["Position", ([(_camUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([(_camLR vectorDiff _camUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
     ["ActivationFunction", "Zen_OF_DroneGUICamera"],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
 _buttonMove = ["Button",
     ["Text", "NAV"],
-    ["Position", [0, 2]],
-    ["Size", [5,2]],
+    ["Position", ([(_navUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([(_navLR vectorDiff _navUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
     ["ActivationFunction", "Zen_OF_DroneGUIMove"],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
-_buttonWaypointTypes = ["Button",
-    ["Text", "Waypoint Types"],
-    ["Position", [0, 4]],
-    ["Size", [5,2]],
-    ["ActivationFunction", "Zen_OF_DroneGUIWaypointTypes"],
-    ["LinksTo", [Zen_OF_DroneGUIList]]
-] call Zen_CreateControl;
+// _buttonWaypointTypes = ["Button",
+    // ["Text", "Waypoint Types"],
+    // ["Position", [0, 4]],
+    // ["Size", [5,2]],
+    // ["ActivationFunction", "Zen_OF_DroneGUIWaypointTypes"],
+    // ["LinksTo", [Zen_OF_DroneGUIList]]
+// ] call Zen_CreateControl;
 
 _buttonApprove = ["Button",
     ["Text", "Execute"],
-    ["Position", [0, 6]],
-    ["Size", [5,2]],
+    ["Position", ([(_exeUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([(_exeLR vectorDiff _exeUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
     ["ActivationFunction", "Zen_OF_DroneGUIApprove"],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
-_buttonRecalc= ["Button",
-    ["Text", "Recalc"],
-    ["Position", [0, 8]],
-    ["Size", [5,2]],
-    ["ActivationFunction", "Zen_OF_DroneGUIRecalc"],
-    ["LinksTo", [Zen_OF_DroneGUIList]]
-] call Zen_CreateControl;
+// _buttonRecalc= ["Button",
+    // ["Text", "Recalc"],
+    // ["Position", [0, 8]],
+    // ["Size", [5,2]],
+    // ["ActivationFunction", "Zen_OF_DroneGUIRecalc"],
+    // ["LinksTo", [Zen_OF_DroneGUIList]]
+// ] call Zen_CreateControl;
 
-_buttonFire = ["Button",
-    ["Text", "Report Fire"],
-    ["Position", [0, 10]],
-    ["Size", [5,2]],
+// _buttonFire = ["Button",
+    // ["Text", "Report Fire"],
+    // ["Position", [0, 10]],
+    // ["Size", [5,2]],
     // ["LinksTo", [Zen_OF_DroneGUIList]],
-    ["ActivationFunction", "Zen_OF_DroneGUIReportFire"]
-] call Zen_CreateControl;
+    // ["ActivationFunction", "Zen_OF_DroneGUIReportFire"]
+// ] call Zen_CreateControl;
 
 _buttonStop = ["Button",
     ["Text", "Cancel"],
-    ["Position", [0, 12]],
-    ["Size", [5,2]],
+    ["Position", ([(_cancelUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([(_cancelLR vectorDiff _cancelUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
     ["ActivationFunction", "Zen_OF_DroneGUIStop"],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
-_buttonCancel = ["Button",
-    ["Text", "Cancel"],
-    ["Position", [0, 14]],
-    ["Size", [5,2]],
-    ["LinksTo", [Zen_OF_DroneGUIList]],
-    ["ActivationFunction", "Zen_OF_DroneGUICancel"]
-] call Zen_CreateControl;
+// _buttonCancel = ["Button",
+    // ["Text", "Cancel"],
+    // ["Position", [0, 14]],
+    // ["Size", [5,2]],
+    // ["LinksTo", [Zen_OF_DroneGUIList]],
+    // ["ActivationFunction", "Zen_OF_DroneGUICancel"]
+// ] call Zen_CreateControl;
 
 Zen_OF_DroneGUIRefreshButton = ["Button",
     ["Text", "Refresh"],
-    ["Position", [0, 16]],
+    ["Position", [-5, 16]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_OF_DroneGUIRefresh"],
     ["Data", [_barHealth, _barFuel, _textTimer, _map]],
@@ -593,15 +616,15 @@ Zen_OF_DroneGUIRefreshButton = ["Button",
 
 _buttonClose = ["Button",
     ["Text", "Close"],
-    ["Position", [0, 20]],
+    ["Position", [-5, 20]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_CloseDialog"]
 ] call Zen_CreateControl;
 
 _buttonPermissions = ["Button",
     ["Text", "RQST"],
-    ["Position", [0, 18]],
-    ["Size", [5,2]],
+    ["Position", ([(_rqstUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([(_rqstLR vectorDiff _rqstUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
     ["ActivationFunction", "Zen_OF_DroneGUIRQST"]
 ] call Zen_CreateControl;
 
@@ -612,50 +635,15 @@ _background = ["Picture",
 ] call Zen_CreateControl;
 
 _statusPicture = ["Picture",
-    ["Position", [0, -49]],
-    ["Size", [20,9]],
-    ["Picture", "images\Drone_Status_Fixed.paa"]
-] call Zen_CreateControl;
-
-_statusText = ["Text",
-    ["Position", [11.4, -46.1]],
-    ["Size", [5,2]],
-    ["FontColor", [0, 255, 0, 255]],
-    ["Text", "000"]
-] call Zen_CreateControl;
-
-_statusText1 = ["Text",
-    ["Position", [8.4, -44.55]],
-    ["Size", [5,2]],
-    ["FontColor", [0, 255, 0, 255]],
-    ["Text", "111"]
-] call Zen_CreateControl;
-
-_statusText2 = ["Text",
-    ["Position", [11.9, -42.5]],
-    ["Size", [5,2]],
-    ["FontColor", [0, 255, 0, 255]],
-    ["Text", "222"]
-] call Zen_CreateControl;
-
-_statusText3 = ["Text",
-    ["Position", [3.7, -42.55]],
-    ["Size", [5,2]],
-    ["FontColor", [0, 255, 0, 255]],
-    ["Text", "333"]
-] call Zen_CreateControl;
-
-_statusText4 = ["Text",
-    ["Position", [15.1, -48.2]],
-    ["Size", [5,2]],
-    ["FontSize", 23],
-    ["FontColor", [0, 255, 0, 255]],
-    ["Text", "4"]
+    ["Position", [0, -49.25]],
+    ["Size", [20,73]],
+    // ["Angle", [-90, 0.5, 0.5]],
+    ["Picture", "images\Status_Overlay_Full.paa"]
 ] call Zen_CreateControl;
 
 Zen_OF_GUIMessageBox = ["StructuredText",
-    ["Position", [0, -22]],
-    ["Size", [20, 20]],
+    ["Position", ([(_textUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([(_textLR vectorDiff _textUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
     ["Event", [["MOUSEZCHANGED", "Zen_OF_ScrollMessage"]]],
     ["Text", ""]
 ] call Zen_CreateControl;
@@ -663,6 +651,14 @@ Zen_OF_GUIMessageBox = ["StructuredText",
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, Zen_OF_DroneGUIList, _buttonApprove, _buttonPermissions, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _textFuel, _barFuelBackGround, _barFuel, _textTimer, _statusPicture, _statusText, _statusText1, _statusText2, _statusText3, _statusText4, _buttonClose, Zen_OF_GUIMessageBox] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[_buttonRecalc]}; case 2: {[]}; });
+} forEach [_background, _map, _statusPicture, Zen_OF_DroneGUIList, _buttonApprove, _buttonPermissions, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _buttonClose, Zen_OF_GUIMessageBox] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[]}; case 2: {[]}; });
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;
+
+// 0 = [] spawn {
+    // while {true} do {
+        // sleep 2;
+        // player commandChat str getMousePosition;
+        // copyToClipboard str getMousePosition
+    // };
+// };
