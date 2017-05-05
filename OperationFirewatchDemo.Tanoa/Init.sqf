@@ -29,7 +29,7 @@ Zen_OF_Drone_Class_Data = [["b_uav_01_f", 16, 300, 100], ["b_uav_02_f", 105, 300
 Zen_OF_GetDroneClassData = {
     private ["_droneObj", "_droneClassData"];
 
-    // This is the actual in-game object, so that we can access it classname using typeOf
+    // This is the actual in-game object, so that we can access its classname using typeOf
     _droneObj = _this select 0;
 
     // Zen_ArrayGetNestedValue is a generic array search function in the framework

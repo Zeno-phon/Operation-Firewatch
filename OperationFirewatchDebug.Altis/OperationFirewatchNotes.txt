@@ -31,10 +31,16 @@ Zen_OF_OrderDroneExecuteRoute
 Zen_OF_FindDroneRoute
     // get end point from user
     // use line-ellipse intersection as heuristic
-    confine to within the map
-    account for start or end being inside zone
-    account for zone permissions
-    diamond algorithm
+    // confine to within the map
+    // account for zone permissions
+    // account for start or end being inside zone
+    // Line snapping
+        // quantize points on line
+        // check from start along each point of next line
+        // step backwards from 2 points ahead
+    failure rate
+        // _F_CheckCollision returns true with random chance ?
+    // diamond algorithm
         // choose angle and distance by Gaussian random (centered at half distance, and double Gaussian at +-45 deg)
             // draw a line from the destination at an angle and radius
             // if that line does not intersect a zone (use heuristic circle)
@@ -42,6 +48,10 @@ Zen_OF_FindDroneRoute
                 // if that line does not intersect a zone
                     // add to the list of solutions (cutoff at X solutions)
         // sort by min overall distance
+    // splitting diamond algorithm
+        // split the corner of the diamond into a straight line
+    // Recursive diamond
+        // split the corner of the diamond into another diamond
     diamond tunneling algorithm
         same gaussian random paths ??
         costs for each zone and no zone
@@ -50,18 +60,10 @@ Zen_OF_FindDroneRoute
         to avoid a large (Width > dist), circular (width ~ depth) obstacle between start and end
         ray cast horizontally until vertical path is clear
         use this distance to draw diamond
-    // splitting diamond algorithm
-        // split the corner of the diamond into a straight line
-    Recursive diamond
-        split the corner of the diamond into another diamond
     Ringed diamond
         choose an open ring along a circle with radius at fraction of distance
         apply diamond to reach area, keeping only 1 solution
         repeat at random angles until within 1 circle radius of destination
-    Line snapping
-        quantize points on line
-        check from start along each point of next line
-        step backwards from 2 points ahead
 
 // Zen_OF_FindFire
     // random time/dist function detection
@@ -352,7 +354,10 @@ message box
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Too many AAA units spawned
-2. Removed: Old drone dialog controls
-3. Added: drone dialog background texture
-4. Improved: Repositioned all drone dialog controls
+1. Added: Recursive pathfinding algorithm
+2. Added: Pathfinding failure rate coefficient per filtered zone (i.e. a zone which can have a collision)
+3. Improved: Pathfinding now culls paths across midpoints
+4. Improved: Pathfinding no longer generates waypoints off the map
+5. Improved: Pathfinding now ignores zones for which the drone has permission
+6. Improved: Pathfinding now handles the start or end being inside a zone
+7. Tweaked: Pathfinding number of attempts for each algorithm type
