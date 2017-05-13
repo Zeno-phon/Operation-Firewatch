@@ -48,7 +48,7 @@ if (_findRoads) then {
     #define CALC_POS \
         _mpos = [0,0,0]; \
         if (typeName _movecenter == "STRING") then { \
-            _mpos = [_movecenter, 0,_positionFilterArgs, 1, [_roadIndex, 2*(((getMarkerSize _movecenter) select 0) max ((getMarkerSize _movecenter) select 1))], _limitAnglesSet] call Zen_FindGroundPosition; \
+            _mpos = [_movecenter, 0, _positionFilterArgs, 1, [_roadIndex, 2*(((getMarkerSize _movecenter) select 0) max ((getMarkerSize _movecenter) select 1))], _limitAnglesSet] call Zen_FindGroundPosition; \
         } else { \
             _mpos = [_movecenter, [0, _positionFilterArgs], [], 1, [_roadIndex, 2 * _positionFilterArgs], _limitAnglesSet] call Zen_FindGroundPosition; \
         };

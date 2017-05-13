@@ -3,6 +3,13 @@
 // #include "Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
 // #include "Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
+#define STR_NAV_EMPTY "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>No Route Programmed<br/>___________________<br/> </t></t></t>"
+#define STR_NAV_PROMPT "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>No Route Programmed<br/>___________________<br/> <br/>Select destination by clicking on the map.</t></t></t>"
+#define STR_NAV_LIST "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Select Route Below<br/>__________________</t></t></t>"
+#define STR_NAV_CONFRIM(G, M, S) ("<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Current Route<br/>_____________<br/> <br/>Enroute to " + (G) + "<br/>Time to Target: " + str round (M) + ":" + str round (S) +"</t></t></t>")
+#define STR_RQST_PROMPT "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Request Landing<br/>_______________<br/> <br/>Click on the airfield at which you would like to request landing.</t></t></t>"
+#define STR_RQST_CONFIRMED "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Request Landing<br/>_______________<br/> <br/>You have requested landing.</t></t></t>"
+
 #define DRONE_AUTO_CONFIRM_TIMER 60
 
 #define CHECK_FOR_RTB \
@@ -39,6 +46,9 @@ _exeUL = [1.2197,0.973064, 0];
 _exeLR = [1.44697,1.02525, 0];
 _droneUL = [1.49,0.390572, 0];
 _droneLR = [1.71,0.45, 0];
+_timerUL = [1.23,0.90, 0];
+_waypointMFDUL = [1.21843, 0.57, 0];
+_waypointMFDLR = [1.7, 0.96, 0];
 
 _centerCard = [1.21717,-0.208754, 0];
 _fuelRemUL = [1.4798,-0.119529, 0];
@@ -75,7 +85,7 @@ Zen_OF_DroneGUIRefresh = {
         if (Zen_OF_User_Group_Index == 2) then {
             _timer = _droneData select 13;
             if (((_timer > 0) && (time - _timer < DRONE_AUTO_CONFIRM_TIMER)) && {(scriptDone (_droneData select 4)) && (scriptDone (_droneData select 11))}) then {
-                0 = [_bars select 2, ["Text", "Auto-Confirming Orders in: " + str round (_timer - time + 60) + " seconds"]] call Zen_UpdateControl;
+                0 = [_bars select 2, ["Text", "Auto-Confirming Orders in: " + str round (_timer - time + DRONE_AUTO_CONFIRM_TIMER) + " seconds"]] call Zen_UpdateControl;
             } else {
                 0 = [_bars select 2, ["Text", ""]] call Zen_UpdateControl;
             };
@@ -101,6 +111,8 @@ Zen_OF_DroneGUIInvoke= {
 
     0 = [Zen_OF_DroneGUIDialog, [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1], false, false] call Zen_InvokeDialog;
     0 = [Zen_OF_DroneGUIRefreshButton, "ActivationFunction"] spawn Zen_ExecuteEvent;
+
+    Zen_OF_DroneGUIRefreshThread = [] spawn Zen_OF_DroneGUIRefreshManager;
 };
 
 Zen_OF_DroneGUIListSelect = {
@@ -167,12 +179,6 @@ _map = ["Map",
     ["Size", [78,74]]
 ] call Zen_CreateControl;
 
-_textTimer = ["Text",
-    ["Text", ""],
-    ["Position", [5, 16]],
-    ["Size", [15,2]]
-] call Zen_CreateControl;
-
 _textHealth = ["Text",
     ["Text", "Health"],
     ["Position", [5, 12]],
@@ -213,15 +219,6 @@ _barFuelBackGround = ["PROGRESSBAR",
     ["Size", [10,2]]
 ] call Zen_CreateControl;
 
-Zen_OF_DroneGUIList = ["DropList",
-    ["List", []],
-    ["ListData", []],
-    ["Position", ([(_droneUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
-    ["Size", ([(_droneLR vectorDiff _droneUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
-    ["SelectionFunction", "Zen_OF_DroneGUIListSelect"],
-    ["Data", [_barHealth, _barFuel, _textTimer, _map]]
-] call Zen_CreateControl;
-
 Zen_OF_DroneGUIShow = {
     _drone = _this select 1;
     _droneData = [_drone] call Zen_OF_GetDroneData;
@@ -258,9 +255,9 @@ Zen_OF_DroneGUIMove = {
 
     // player groupChat str _droneData;
 
-    if !(scriptDone (_droneData select 11)) exitWith {
-        0 = ["Use the Cancel button before issuing another move order."] call Zen_OF_PrintMessage;
-    };
+    // if !(scriptDone (_droneData select 11)) exitWith {
+        // 0 = ["Use the Cancel button before issuing another move order."] call Zen_OF_PrintMessage;
+    // };
 
     if !(scriptDone (_droneData select 4)) exitWith {
         0 = [(_drone + " is carrying out a previous move order; use the stop button.")] call Zen_OF_PrintMessage;
@@ -269,10 +266,13 @@ Zen_OF_DroneGUIMove = {
     if (Zen_OF_User_Group_Index == 0) exitWith {
         Zen_OF_RouteGUICurrentDrone = _drone;
         call Zen_CloseDialog;
+        terminate Zen_OF_DroneGUIRefreshThread;
         [_drone] call Zen_OF_RouteGUIInvoke;
     };
 
     0 = ["Click on the map to order the drone to Move."] call Zen_OF_PrintMessage;
+    0 = [Zen_OF_DroneGUIWaypointMFDText, ["Text", STR_NAV_PROMPT]] call Zen_UpdateControl;
+    0 = [0, [Zen_OF_DroneGUIWaypointMFDText], "Else"] call Zen_RefreshDialog;
     _h_event = [_drone, _droneData] spawn {
         _drone = _this select 0;
         _droneData = _this select 1;
@@ -301,6 +301,17 @@ Zen_OF_DroneGUIMove = {
         0 = [_drone, "", "", "", "", 0, _paths, _markers, 0, "", "", "", "", "", ["MOVE", "MOVE", "MOVE", "MOVE"]] call Zen_OF_UpdateDrone;
         _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
 
+        if (Zen_OF_User_Group_Index == 1) then {
+            // Route Option A<br/>
+            // Total Time: <MIN>:<SEC><br/>
+            // Total Fuel Remaining: <FUEL%>
+            0 = [Zen_OF_DroneGUIWaypointMFDList, ["List", ["A", "B", "C"]]] call Zen_UpdateControl;
+            0 = [Zen_OF_DroneGUIDialog, Zen_OF_DroneGUIWaypointMFDList] call Zen_LinkControl;
+
+            0 = [Zen_OF_DroneGUIWaypointMFDText, ["Text", STR_NAV_LIST]] call Zen_UpdateControl;
+            0 = [0, [Zen_OF_DroneGUIWaypointMFDText], []] call Zen_RefreshDialog;
+        };
+
         if (Zen_OF_User_Group_Index == 2) then {
             terminate (_droneData select 12);
             _h_wait = [_drone, _paths] spawn {
@@ -327,9 +338,9 @@ Zen_OF_DroneGUIWaypointTypes = {
     CHECK_FOR_DEAD
     CHECK_FOR_RTB
 
-    if !(scriptDone (_droneData select 11)) exitWith {
-        0 = ["Use the Cancel button before issuing another move order."] call Zen_OF_PrintMessage;
-    };
+    // if !(scriptDone (_droneData select 11)) exitWith {
+        // 0 = ["Use the Cancel button before issuing another move order."] call Zen_OF_PrintMessage;
+    // };
 
     if !(scriptDone (_droneData select 4)) exitWith {
         0 = [(_drone + " is carrying out a previous move order; use the stop button.")] call Zen_OF_PrintMessage;
@@ -337,6 +348,7 @@ Zen_OF_DroneGUIWaypointTypes = {
 
     Zen_OF_RouteGUICurrentDrone = _drone;
     call Zen_CloseDialog;
+    terminate Zen_OF_DroneGUIRefreshThread;
     [_drone] call Zen_OF_RouteGUIInvokeAuto;
 };
 
@@ -355,6 +367,11 @@ Zen_OF_DroneGUIApprove = {
     _pathIndex = _droneData select 9;
     // _RTBArgs = _droneData select 10;
 
+    if (Zen_OF_User_Group_Index == 1) then {
+        0 = [Zen_OF_DroneGUIDialog, Zen_OF_DroneGUIWaypointMFDList] call Zen_UnlinkControl;
+        0 = [0] call Zen_RefreshDialog;
+    };
+
     if (count _paths == 0) then {
         0 = [(_drone + " has no destination.")] call Zen_OF_PrintMessage;
     } else {
@@ -368,11 +385,12 @@ Zen_OF_DroneGUIApprove = {
 };
 
 Zen_OF_DroneGUIRecalc = {
-    if (Zen_OF_User_Group_Index == 0) exitWith {
-        player commandChat str "Recalc has no function for manual group.";
-    };
+    // if (Zen_OF_User_Group_Index == 0) exitWith {
+        // player commandChat str "Recalc has no function for manual group.";
+    // };
 
-    _drone = _this select 1;
+    _pathIndex = _this select 0;
+    _drone = _this select 2;
     _droneData = [_drone] call Zen_OF_GetDroneData;
     CHECK_FOR_DEAD
     CHECK_FOR_RTB
@@ -383,28 +401,28 @@ Zen_OF_DroneGUIRecalc = {
 
     _paths = _droneData select 7;
     _markers = _droneData select 8;
-    _pathIndex = _droneData select 9;
-
-    {
-        deleteMarker _x;
-    } forEach _markers;
 
     if (count _paths == 0) then {
         0 = [(_drone + " has no destination.")] call Zen_OF_PrintMessage;
     } else {
-        if ((_pathIndex + 1) == count _paths) then {
-            ZEN_FMW_MP_REServerOnly("A3log", [name player + " has rejected path of " + _drone + " through " + str (_paths select _pathIndex) + ", but there are no new solutions to show."], call)
-            0 = ["No more computed path solutions, returning to first solution."] call Zen_OF_PrintMessage;
+        if (_pathIndex >= count _paths) then {
+            ZEN_FMW_MP_REServerOnly("A3log", [name player + " has selected the path of " + _drone + " that does not exist."], call)
+            0 = ["That path has not been computed."] call Zen_OF_PrintMessage;
 
-            0 = [_drone, "", "", "", "", 0, "", _markers, 0] call Zen_OF_UpdateDrone;
-            _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
+            // _pathIndex = _droneData select 9;
+            // 0 = [_drone, "", "", "", "", 0, "", _markers, 0] call Zen_OF_UpdateDrone;
+            // _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
         } else {
-            ZEN_FMW_MP_REServerOnly("A3log", [name player + " has rejected path of " + _drone + " through " + str (_paths select _pathIndex) + "."], call)
+            ZEN_FMW_MP_REServerOnly("A3log", [name player + " has selected the path of " + _drone + " through " + str (_paths select _pathIndex) + "."], call)
             0 = [("Drawing next path; click the approve button to confirm the path of " + _drone + ".")] call Zen_OF_PrintMessage;
-            _pathIndex = _pathIndex + 1;
+
+            {
+                deleteMarker _x;
+            } forEach _markers;
 
             0 = [_drone, "", "", "", "", 0, "", _markers, _pathIndex] call Zen_OF_UpdateDrone;
             _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
+            0 = [_drone, "", "", "", "", 0, "", _markers, _pathIndex] call Zen_OF_UpdateDrone;
         };
     };
 };
@@ -481,11 +499,14 @@ Zen_OF_DroneGUICamera = {
     ZEN_OF_DroneDialog_Camera attachTo [(_droneData select 1), [0, 0, -1.25]];
 
     call Zen_CloseDialog;
+    terminate Zen_OF_DroneGUIRefreshThread;
     [] call Zen_OF_CameraGUIInvoke;
 };
 
 Zen_OF_DroneGUIRQST = {
     0 = ["Click on the zone for which you want to request permission for " + Zen_OF_RouteGUICurrentDrone] call Zen_OF_PrintMessage;
+    0 = [Zen_OF_DroneGUIWaypointMFDText, ["Text", STR_RQST_PROMPT]] call Zen_UpdateControl;
+    0 = [0, [Zen_OF_DroneGUIWaypointMFDText], "Else"] call Zen_RefreshDialog;
 
     _h_event = [] spawn {
         Zen_OF_DroneMovePos = 0;
@@ -512,6 +533,9 @@ Zen_OF_DroneGUIRQST = {
         0 = [(Zen_OF_RouteGUICurrentDrone + " requested landing at " + (_nearestZone select 0))] call Zen_OF_PrintMessage;
         0 = [((_nearestZone select 0) + " " + Zen_OF_RouteGUICurrentDrone + " approved to land at "+ (_nearestZone select 0))] call Zen_OF_PrintMessage;
         ZEN_FMW_MP_REServerOnly("A3log", [Zen_OF_RouteGUICurrentDrone + " at " + str getPosATL (_droneData select 1) + " has been granted permission to land at " + (_nearestZone select 0) + " at about " + str (_zoneData select 4) + " with radius " + str (_zoneData select 5)], call)
+
+        0 = [Zen_OF_DroneGUIWaypointMFDText, ["Text", STR_RQST_CONFIRMED]] call Zen_UpdateControl;
+        0 = [0, [Zen_OF_DroneGUIWaypointMFDText], "Else"] call Zen_RefreshDialog;
 
         terminate (_droneData select 4);
         _droneData set [7, []];
@@ -540,6 +564,21 @@ Zen_OF_DroneGUIRQST = {
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, "", "", "", "", _h_event] call Zen_OF_UpdateDrone;
 };
 
+Zen_OF_DroneGUITimer = ["Text",
+    ["Text", ""],
+    ["FontColor", [0, 0, 0, 255]],
+    ["Position", ([(_timerUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", [15,2]]
+] call Zen_CreateControl;
+
+Zen_OF_DroneGUIList = ["DropList",
+    ["List", []],
+    ["ListData", []],
+    ["Position", ([(_droneUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([(_droneLR vectorDiff _droneUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["SelectionFunction", "Zen_OF_DroneGUIListSelect"],
+    ["Data", [_barHealth, _barFuel, Zen_OF_DroneGUITimer, _map]]
+] call Zen_CreateControl;
 
 _buttonCamera = ["Button",
     ["Text", "Camera"],
@@ -610,7 +649,7 @@ Zen_OF_DroneGUIRefreshButton = ["Button",
     ["Position", [-5, 16]],
     ["Size", [5,2]],
     ["ActivationFunction", "Zen_OF_DroneGUIRefresh"],
-    ["Data", [_barHealth, _barFuel, _textTimer, _map]],
+    ["Data", [_barHealth, _barFuel, Zen_OF_DroneGUITimer, _map]],
     ["LinksTo", [Zen_OF_DroneGUIList]]
 ] call Zen_CreateControl;
 
@@ -648,10 +687,26 @@ Zen_OF_GUIMessageBox = ["StructuredText",
     ["Text", ""]
 ] call Zen_CreateControl;
 
+Zen_OF_DroneGUIWaypointMFDText = ["StructuredText",
+    ["Position", ([(_waypointMFDUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([(_waypointMFDLR vectorDiff _waypointMFDUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Text", STR_NAV_EMPTY]
+] call Zen_CreateControl;
+
+Zen_OF_DroneGUIWaypointMFDList = ["List",
+    ["Position", ([((_waypointMFDUL vectorDiff _center) vectorMultiply 40) vectorAdd [0, 3, 0], 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([((_waypointMFDLR vectorDiff _waypointMFDUL) vectorMultiply 40) vectorAdd [0, -9, 0], 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["ListData", [0, 1, 2]],
+    // ["ForegroundColor", [255, 255, 255, 0]],
+    ["SelectionFunction", "Zen_OF_DroneGUIRecalc"],
+    ["LinksTo", [Zen_OF_DroneGUIList]],
+    ["List", []]
+] call Zen_CreateControl;
+
 Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 {
     0 = [Zen_OF_DroneGUIDialog, _x] call Zen_LinkControl;
-} forEach [_background, _map, _statusPicture, Zen_OF_DroneGUIList, _buttonApprove, _buttonPermissions, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _buttonClose, Zen_OF_GUIMessageBox] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[]}; case 2: {[]}; });
+} forEach [_background, _map, _statusPicture, Zen_OF_DroneGUIList, _buttonApprove, _buttonPermissions, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _buttonClose, Zen_OF_DroneGUITimer, Zen_OF_GUIMessageBox, Zen_OF_DroneGUIWaypointMFDText] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[]}; case 2: {[]}; });
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;
 
@@ -662,3 +717,37 @@ Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
         // copyToClipboard str getMousePosition
     // };
 // };
+
+Zen_OF_DroneGUIRefreshManager = {
+    while {true} do {
+        _droneData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_GetDroneData;
+
+        // For drone status cards
+        // TODO
+
+        // For waypoint MFD current route text
+        if !(scriptDone (_droneData select 4)) then {
+            _path = (_droneData select 7) select (_droneData select 9);
+            _pathData = [Zen_OF_RouteGUICurrentDrone] call Zen_OF_FindDroneRouteData;
+
+            _lastWaypoint = ZEN_STD_Array_LastElement(_path);
+            _timeS = round ((ZEN_STD_Array_LastElement(_pathData)) select 1);
+
+            0 = [Zen_OF_DroneGUIWaypointMFDText, ["Text", STR_NAV_CONFRIM(mapGridPosition _lastWaypoint, floor _timeS / 60, _timeS % 60)]] call Zen_UpdateControl;
+            // 0 = [0, [Zen_OF_DroneGUIWaypointMFDText], "Else"] call Zen_RefreshDialog;
+        };
+
+        // DOA-H auto-confirm timer
+        if (Zen_OF_User_Group_Index == 2) then {
+            _timer = _droneData select 13;
+            if (((_timer > 0) && (time - _timer < DRONE_AUTO_CONFIRM_TIMER)) && {(scriptDone (_droneData select 4)) && (scriptDone (_droneData select 11))}) then {
+                0 = [Zen_OF_DroneGUITimer, ["Text", "Auto-Confirming Orders in: " + str round (_timer - time + DRONE_AUTO_CONFIRM_TIMER) + " seconds"]] call Zen_UpdateControl;
+            } else {
+                0 = [Zen_OF_DroneGUITimer, ["Text", "test 2"]] call Zen_UpdateControl;
+            };
+        };
+
+        0 = [0, [Zen_OF_DroneGUIWaypointMFDText, Zen_OF_DroneGUITimer], "else"] call Zen_RefreshDialog;
+        sleep 0.9;
+    };
+};

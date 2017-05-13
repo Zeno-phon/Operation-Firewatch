@@ -191,18 +191,19 @@ allow fire reporting from map
     // call permission GUI functions
 
 waypoint mfd
-    confirm timer
-    show 3 routes as list items
-    copy map waypoint data
-    show ETA while enroute
-    show 'waiting' message when no route
+    // confirm timer
+    // show 3 routes as list items
+    // copy map waypoint data
+    // show ETA while enroute
+    // show 'waiting' message when no route
+    list waypoint data
 
 drone overview
     // text fields
     // textures
     // remove fuel bar
     data formatting and updating
-        refueling countdown timer
+        refuelling countdown timer
     duplicate for each drone
     sorting/repositions of cards
 
@@ -354,10 +355,7 @@ message box
 // Changelog
 ////////////////////////////////////////////////
 
-1. Added: Recursive pathfinding algorithm
-2. Added: Pathfinding failure rate coefficient per filtered zone (i.e. a zone which can have a collision)
-3. Improved: Pathfinding now culls paths across midpoints
-4. Improved: Pathfinding no longer generates waypoints off the map
-5. Improved: Pathfinding now ignores zones for which the drone has permission
-6. Improved: Pathfinding now handles the start or end being inside a zone
-7. Tweaked: Pathfinding number of attempts for each algorithm type
+1. Fixed: Drone GUI auto-confirm route timer
+2. Added: Drone GUI waypoint MFD text for all phases
+3. Added: Drone GUI route selection list
+4. Improved: Drone GUI now automatically refreshes itself

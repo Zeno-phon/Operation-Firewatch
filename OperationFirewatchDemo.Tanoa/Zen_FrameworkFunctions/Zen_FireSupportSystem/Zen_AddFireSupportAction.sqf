@@ -48,9 +48,8 @@ if ((count Zen_Fire_Support_Action_Array_Global) == 0) then {
 
     if (Zen_AddFireSupportAction_Action_ID == "") then {
         Zen_AddFireSupportAction_Action_ID = ["<t color='#990000'>Fire Support</t>", "Zen_AddFireSupportAction_ShowDialog_MP", [], [1, false, true, "", "((player == _this) && {(({player in (_x select 1)} count Zen_Fire_Support_Action_Array_Global) > 0)})"]] call Zen_CreateAction;
+        0 = [Zen_AddFireSupportAction_Action_ID, allUnits] call Zen_InvokeAction;
     };
-
-    0 = [Zen_AddFireSupportAction_Action_ID, allUnits] call Zen_InvokeAction;
 };
 
 _nameString = format ["Zen_fire_support_action_global_%1",([10] call Zen_StringGenerateRandom)];
