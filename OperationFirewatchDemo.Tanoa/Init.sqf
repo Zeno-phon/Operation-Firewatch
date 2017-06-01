@@ -38,7 +38,7 @@ Zen_OF_GetDroneClassData = {
 
     // We check if there was any values to find
     if (count _droneClassData == 0) exitWith {
-        ZEN_FMW_Code_ErrorExitValue("Zen_OF_FindDroneRouteData", "Given drone is of unknown type.", [])
+        ZEN_FMW_Code_ErrorExitValue("Zen_OF_GetDroneClassData", "Given drone is of unknown type.", [])
     };
 
     ([_droneClassData, 1] call Zen_ArrayGetIndexedSlice)

@@ -68,7 +68,7 @@ Zen_OF_FindDroneRoute
 // Zen_OF_FindFire
     // random time/dist function detection
 
-Zen_OF_ManageDrones
+// Zen_OF_ManageDrones
     // change fuel to function of time only
     // remove sensor health
     // deplete fuel (as function of velocity/acceleration)
@@ -82,7 +82,6 @@ Zen_OF_ManageDrones
         // count in->in event as 1 timescale
         // count out->in and in->out event as 0.5 timescale
         // Spawn AAA in C zone
-            ?? cache AAA when drones leaves or is killed
         // account for zone permissions
     // scan for fires
         // only spam update fire location when it actually moves
@@ -206,6 +205,11 @@ drone overview
         refuelling countdown timer
     duplicate for each drone
     sorting/repositions of cards
+
+auto-refresh
+    drone cards
+    update waypoint ETA
+    different ETA text for RQST
 
 // Zen_OF_DroneGUIListSelect
 // Zen_OF_DroneGUIRefresh
@@ -355,7 +359,6 @@ message box
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Drone GUI auto-confirm route timer
-2. Added: Drone GUI waypoint MFD text for all phases
-3. Added: Drone GUI route selection list
-4. Improved: Drone GUI now automatically refreshes itself
+1. Fixed: RQST route did not display in the waypoint MFD
+2. Fixed: Waypoint list did not disappear after executing route
+3. Tweaked: Route list box size

@@ -10,6 +10,7 @@ Zen_Control_Classes_Global = [];
 Zen_Active_Dialog_Control_Data = [];
 Zen_Active_Dialog = "";
 Zen_Active_Dialog_Position = [0,0];
+Zen_Active_Dialog_Current_IDC = 7600;
 uiNamespace setVariable ["Zen_Dialog_Object_Local", ["", [], [0,0]]];
 
 Zen_LinkControl = compileFinal preprocessFileLineNumbers "Zen_FrameworkFunctions\Zen_DialogSystem\Zen_LinkControl.sqf";

@@ -27,7 +27,7 @@ _pathArray = [];
     };
 } forEach Zen_OF_Drones_Local;
 
-if (count _pathArray == 0) exitWith {
+if (isNil "_pathArray" or {(count _pathArray == 0)}) exitWith {
     ZEN_FMW_Code_ErrorExitValue("Zen_OF_FindDroneRouteData", "Given drone does not exist or has no paths.", [])
 };
 

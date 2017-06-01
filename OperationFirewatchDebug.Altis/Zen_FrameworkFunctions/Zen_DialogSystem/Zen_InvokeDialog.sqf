@@ -9,7 +9,7 @@ disableSerialization;
 #define CONTROL_EHS ["MOUSEENTER", "MOUSEEXIT", "SETFOCUS", "KILLFOCUS", "MOUSEBUTTONDOWN", "MOUSEBUTTONUP", "MOUSEBUTTONDBLCLICK", "MOUSEMOVING", "MOUSEHOLDING", "MOUSEZCHANGED", "KEYDOWN", "KEYUP", "HTMLLINK", "MOUSEBUTTONCLICK"]
 
 _Zen_stack_Trace = ["Zen_InvokeDialog", _this] call Zen_StackAdd;
-private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_idcCur", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc", "_mapPos", "_element", "_maxElement", "_controlIDsArray", "_hashes", "__time", "_mapTime", "_unchangedControls", "_newControls", "_controlsToRepeatData"];
+private ["_dialogID", "_controlsArray", "_Zen_Dialog_Controls_Local", "_display", "_controlData", "_controlType", "_controlBlocks", "_controlInstanClass", "_control", "_blockID", "_data", "_doRefresh", "_allowActions", "_offset", "_disableEsc", "_mapPos", "_element", "_maxElement", "_controlIDsArray", "_hashes", "__time", "_mapTime", "_unchangedControls", "_newControls", "_controlsToRepeatData"];
 
 if !([_this, [["STRING"], ["ARRAY"], ["BOOL"]], [[], ["SCALAR"]], 1] call Zen_CheckArguments) exitWith {
     call Zen_StackRemove;
@@ -49,8 +49,7 @@ if (count _this > 4) then {
 };
 
 _Zen_Dialog_Controls_Local = [];
-_idcCur = 7600;
-#define NEXT_IDC _idcCur]; _idcCur = _idcCur + 1;
+#define NEXT_IDC Zen_Active_Dialog_Current_IDC]; Zen_Active_Dialog_Current_IDC = Zen_Active_Dialog_Current_IDC + 1;
 #define GRID_DIVISION 0.025
 #define COLOR_STEP 255
 #define FONT_DIVISION 300
@@ -59,6 +58,7 @@ if !(_doRefresh) then {
     (findDisplay 76) closeDisplay 0;
     closeDialog 0;
 
+    Zen_Active_Dialog_Current_IDC = 7600;
     _display = (findDisplay 46) createDisplay "Zen_Dialog";
     if !(_allowActions) then {
         createDialog "Zen_Dialog";

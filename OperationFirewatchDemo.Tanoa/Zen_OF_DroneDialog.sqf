@@ -5,7 +5,7 @@
 
 #define STR_NAV_EMPTY "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>No Route Programmed<br/>___________________<br/> </t></t></t>"
 #define STR_NAV_PROMPT "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>No Route Programmed<br/>___________________<br/> <br/>Select destination by clicking on the map.</t></t></t>"
-#define STR_NAV_LIST "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Select Route Below<br/>__________________</t></t></t>"
+#define STR_NAV_LIST "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Select Route Below<br/>__________________<br/><br/>A<br/>B<br/>C</t></t></t>"
 #define STR_NAV_CONFRIM(G, M, S) ("<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Current Route<br/>_____________<br/> <br/>Enroute to " + (G) + "<br/>Time to Target: " + str round (M) + ":" + str round (S) +"</t></t></t>")
 #define STR_RQST_PROMPT "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Request Landing<br/>_______________<br/> <br/>Click on the airfield at which you would like to request landing.</t></t></t>"
 #define STR_RQST_CONFIRMED "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Request Landing<br/>_______________<br/> <br/>You have requested landing.</t></t></t>"
@@ -368,6 +368,7 @@ Zen_OF_DroneGUIApprove = {
     // _RTBArgs = _droneData select 10;
 
     if (Zen_OF_User_Group_Index == 1) then {
+        player commandChat "Unlink";
         0 = [Zen_OF_DroneGUIDialog, Zen_OF_DroneGUIWaypointMFDList] call Zen_UnlinkControl;
         0 = [0] call Zen_RefreshDialog;
     };
@@ -420,9 +421,9 @@ Zen_OF_DroneGUIRecalc = {
                 deleteMarker _x;
             } forEach _markers;
 
-            0 = [_drone, "", "", "", "", 0, "", _markers, _pathIndex] call Zen_OF_UpdateDrone;
+            0 = [_drone, "", "", "", "", 0, "", "", _pathIndex] call Zen_OF_UpdateDrone;
             _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
-            0 = [_drone, "", "", "", "", 0, "", _markers, _pathIndex] call Zen_OF_UpdateDrone;
+            0 = [_drone, "", "", "", "", 0, "", _markers] call Zen_OF_UpdateDrone;
         };
     };
 };
@@ -558,7 +559,7 @@ Zen_OF_DroneGUIRQST = {
 
         0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, "", "", "", "", "", "", "", "", ["MOVE", "LAND"]] call Zen_OF_UpdateDrone;
         _h_move = [Zen_OF_RouteGUICurrentDrone, [getPosATL (_droneData select 1), (_nearestRR select 1)], []] spawn Zen_OF_OrderDroneExecuteRoute;
-        0 = [Zen_OF_RouteGUICurrentDrone, "", "", _h_move] call Zen_OF_UpdateDrone;
+        0 = [Zen_OF_RouteGUICurrentDrone, "", "", _h_move, "", 0, [[getPosATL (_droneData select 1), (_nearestRR select 1)]], [], 0] call Zen_OF_UpdateDrone;
     };
 
     0 = [Zen_OF_RouteGUICurrentDrone, "", "", "", "", 0, "", "", "", "", _h_event] call Zen_OF_UpdateDrone;
@@ -664,6 +665,7 @@ _buttonPermissions = ["Button",
     ["Text", "RQST"],
     ["Position", ([(_rqstUL vectorDiff _center) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
     ["Size", ([(_rqstLR vectorDiff _rqstUL) vectorMultiply 40, 0, 1] call Zen_ArrayGetIndexedSlice)],
+    // ["Transparency", 1],
     ["ActivationFunction", "Zen_OF_DroneGUIRQST"]
 ] call Zen_CreateControl;
 
@@ -695,9 +697,10 @@ Zen_OF_DroneGUIWaypointMFDText = ["StructuredText",
 
 Zen_OF_DroneGUIWaypointMFDList = ["List",
     ["Position", ([((_waypointMFDUL vectorDiff _center) vectorMultiply 40) vectorAdd [0, 3, 0], 0, 1] call Zen_ArrayGetIndexedSlice)],
-    ["Size", ([((_waypointMFDLR vectorDiff _waypointMFDUL) vectorMultiply 40) vectorAdd [0, -9, 0], 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([((_waypointMFDLR vectorDiff _waypointMFDUL) vectorMultiply 40) vectorAdd [0, -11, 0], 0, 1] call Zen_ArrayGetIndexedSlice)],
     ["ListData", [0, 1, 2]],
     // ["ForegroundColor", [255, 255, 255, 0]],
+    // ["Transparency", 1],
     ["SelectionFunction", "Zen_OF_DroneGUIRecalc"],
     ["LinksTo", [Zen_OF_DroneGUIList]],
     ["List", []]
@@ -710,11 +713,13 @@ Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;
 
+player sideChat str Zen_OF_DroneGUIWaypointMFDList;
+
 // 0 = [] spawn {
     // while {true} do {
         // sleep 2;
         // player commandChat str getMousePosition;
-        // copyToClipboard str getMousePosition
+        // copyToClipboard str getMousePosition;
     // };
 // };
 
