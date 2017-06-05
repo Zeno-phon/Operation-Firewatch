@@ -8,7 +8,8 @@
 // 82     83 156
 
 #define CAMERA_OFFSET_X 0.
-#define CAMERA_OFFSET_Y -(safeZoneY + (-safeZoneY + safeZoneH) / 3)
+// #define CAMERA_OFFSET_Y -(safeZoneY + (-safeZoneY + safeZoneH) / 3)
+#define CAMERA_OFFSET_Y 0
 
 #define CAMERA_UP 72
 #define CAMERA_DOWN 80
@@ -24,11 +25,11 @@
 #define CAMERA_EXIT 82
 
 #define CAMERA_SLEW_TIME 0.1
-#define CAMERA_SLEW_FRACTION 15
-#define CAMERA_SLEW_ZOOM_STEP 0.025
+#define CAMERA_SLEW_ANGLE 10
+#define CAMERA_SLEW_ZOOM_STEP 0.05
 
 Zen_OF_CameraGUIInvoke = {
-    0 = [Zen_OF_GUIMessageBox, ["Position", [-25, 45]]] call Zen_UpdateControl;
+    0 = [Zen_OF_GUIMessageBox, ["Position", [-25, 35]]] call Zen_UpdateControl;
     0 = [Zen_OF_CameraGUIDialog, [0 + CAMERA_OFFSET_X, 0 + CAMERA_OFFSET_Y], false, true] call Zen_InvokeDialog;
 
     0 = ["Press Numpad 0 to exit camera view."] call Zen_OF_PrintMessage;
@@ -57,26 +58,30 @@ Zen_OF_CameraGUIInvoke = {
         0 = ["Press the Numpad arrow keys to move camera."] call Zen_OF_PrintMessage;
         Zen_OF_CameraGUILastEvent = 0;
         Zen_OF_CameraGUIFOV = 0.7;
-        #define CAMERA_PAN(X, Y, K) \
+        #define CAMERA_PAN(PHI, THETA, K) \
         (findDisplay 76) displayAddEventHandler ["KeyDown", { \
             0 = _this spawn { \
                 if ((time > Zen_OF_CameraGUILastEvent + CAMERA_SLEW_TIME) && {((_this select 1) == K)}) then { \
                     Zen_OF_CameraGUILastEvent = time; \
-                    ZEN_OF_DroneDialog_Camera camSetTarget (screenToWorld [0.5 X, 0.5 Y]); \
-                    ZEN_OF_DroneDialog_Camera camCommit CAMERA_SLEW_TIME; \
+                    _oldPos = (getPosATL Zen_OF_CameraGUITgtObj) vectorDiff (getPosATL ZEN_OF_DroneDialog_Camera); \
+                    _oldPos = ZEN_STD_Math_VectCartPolar(_oldPos); \
+                    _newPos = [10^7, (_oldPos select 1) + PHI, (_oldPos select 2) + THETA]; \
+                    Zen_OF_CameraGUITgtObj setPosATL ([ZEN_OF_DroneDialog_Camera, ZEN_STD_Math_VectPolarCyl(_newPos)] call Zen_ExtendVector); \
+                    ZEN_OF_DroneDialog_Camera camSetTarget (getPosATL Zen_OF_CameraGUITgtObj); \
+                    ZEN_OF_DroneDialog_Camera camCommit CAMERA_SLEW_TIME*1.3; \
                 }; \
             }; \
             (false) \
         }];
 
-        CAMERA_PAN(                                       , - safeZoneH / 2 / CAMERA_SLEW_FRACTION, CAMERA_UP)
-        CAMERA_PAN(                                       , + safeZoneH / 2 / CAMERA_SLEW_FRACTION, CAMERA_DOWN)
-        CAMERA_PAN( - safeZoneW / 2 / CAMERA_SLEW_FRACTION,                                       , CAMERA_LEFT)
-        CAMERA_PAN( + safeZoneW / 2 / CAMERA_SLEW_FRACTION,                                       , CAMERA_RIGHT)
-        CAMERA_PAN( - safeZoneW / 2 / CAMERA_SLEW_FRACTION, - safeZoneH / 2 / CAMERA_SLEW_FRACTION, CAMERA_UP_LEFT)
-        CAMERA_PAN( + safeZoneW / 2 / CAMERA_SLEW_FRACTION, - safeZoneH / 2 / CAMERA_SLEW_FRACTION, CAMERA_UP_RIGHT)
-        CAMERA_PAN( - safeZoneW / 2 / CAMERA_SLEW_FRACTION, + safeZoneH / 2 / CAMERA_SLEW_FRACTION, CAMERA_DOWN_LEFT)
-        CAMERA_PAN( + safeZoneW / 2 / CAMERA_SLEW_FRACTION, + safeZoneH / 2 / CAMERA_SLEW_FRACTION, CAMERA_DOWN_RIGHT)
+        CAMERA_PAN(                                      0, -CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV, CAMERA_UP)
+        CAMERA_PAN(                                      0,  CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV, CAMERA_DOWN)
+        CAMERA_PAN(  CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV,                                      0, CAMERA_LEFT)
+        CAMERA_PAN( -CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV,                                      0, CAMERA_RIGHT)
+        CAMERA_PAN(  CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV, -CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV, CAMERA_UP_LEFT)
+        CAMERA_PAN( -CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV, -CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV, CAMERA_UP_RIGHT)
+        CAMERA_PAN(  CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV,  CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV, CAMERA_DOWN_LEFT)
+        CAMERA_PAN( -CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV,  CAMERA_SLEW_ANGLE*Zen_OF_CameraGUIFOV, CAMERA_DOWN_RIGHT)
 
         0 = ["Press the Numpad + and - keys to zoom camera."] call Zen_OF_PrintMessage;
         #define CAMERA_ZOOM(S, C, K) \
@@ -87,21 +92,23 @@ Zen_OF_CameraGUIInvoke = {
                     if (Zen_OF_CameraGUIFOV C) then { \
                         ZEN_OF_DroneDialog_Camera camSetFov (Zen_OF_CameraGUIFOV S CAMERA_SLEW_ZOOM_STEP); \
                         Zen_OF_CameraGUIFOV = Zen_OF_CameraGUIFOV S CAMERA_SLEW_ZOOM_STEP; \
-                        ZEN_OF_DroneDialog_Camera camCommit CAMERA_SLEW_TIME; \
+                        ZEN_OF_DroneDialog_Camera camCommit CAMERA_SLEW_TIME*1.4; \
                     }; \
                 }; \
             }; \
             (false) \
         }];
 
-        CAMERA_ZOOM(-, > 0.02, CAMERA_ZOOM_IN)
-        CAMERA_ZOOM(+, < .99, CAMERA_ZOOM_OUT)
+        CAMERA_ZOOM(-, > 0.02 + CAMERA_SLEW_ZOOM_STEP, CAMERA_ZOOM_IN)
+        CAMERA_ZOOM(+, < 1. - CAMERA_SLEW_ZOOM_STEP, CAMERA_ZOOM_OUT)
     };
 };
 
 Zen_OF_CameraGUICoord = {
     _coords = screenToWorld [0.5 + CAMERA_OFFSET_X, 0.5 + CAMERA_OFFSET_Y];
     0 = [Zen_OF_CameraGUICoordText, ["Text", (str round (_coords select 0) + ", " + str round (_coords select 1))]] call Zen_UpdateControl;
+    ZEN_OF_DroneDialog_Camera camSetTarget _coords;
+    ZEN_OF_DroneDialog_Camera camCommit CAMERA_SLEW_TIME*2.;
     [] call Zen_RefreshDialog;
 };
 
@@ -181,35 +188,35 @@ _crosshair = ["Text",
 ] call Zen_CreateControl;
 
 _coordEntryX = ["TextField",
-    ["Position", [16, 60]],
+    ["Position", [16, 40]],
     ["Size", [4,2]]
     // ["FontSize", 20],
     // ["Text", ""]
 ] call Zen_CreateControl;
 
 _coordEntryY = ["TextField",
-    ["Position", [21, 60]],
+    ["Position", [21, 40]],
     ["Size", [4,2]]
     // ["FontSize", 20],
     // ["Text", ""]
 ] call Zen_CreateControl;
 
 _coordEntryComma = ["Text",
-    ["Position", [20, 60]],
+    ["Position", [20, 40]],
     ["Size", [1,2]],
     // ["FontSize", 20],
     ["Text", ","]
 ] call Zen_CreateControl;
 
 _coordEntryText = ["Text",
-    ["Position", [9, 60]],
+    ["Position", [9, 40]],
     ["Size", [7,2]],
     // ["FontSize", 20],
     ["Text", "Enter Coordinates: "]
 ] call Zen_CreateControl;
 
 _reportButton = ["Button",
-    ["Position", [26, 60]],
+    ["Position", [26, 40]],
     ["Size", [9,2]],
     // ["FontSize", 20],
     ["ActivationFunction", "Zen_OF_CameraGUIReportFire"],
@@ -218,7 +225,7 @@ _reportButton = ["Button",
 ] call Zen_CreateControl;
 
 _falseAlarmbutton = ["Button",
-    ["Position", [26, 62]],
+    ["Position", [26, 42]],
     ["Size", [9,2]],
     // ["FontSize", 20],
     ["ActivationFunction", "Zen_OF_CameraGUIReportFalse"],
@@ -227,7 +234,7 @@ _falseAlarmbutton = ["Button",
 ] call Zen_CreateControl;
 
 _closeButton = ["Button",
-    ["Position", [26, 64]],
+    ["Position", [26, 44]],
     ["Size", [9,2]],
     // ["FontSize", 20],
     ["ActivationFunction", "Zen_OF_CameraGUIClose"],
@@ -235,7 +242,7 @@ _closeButton = ["Button",
 ] call Zen_CreateControl;
 
 Zen_OF_CameraGUICoordText = ["Text",
-    ["Position", [17, 62]],
+    ["Position", [17, 42]],
     ["Size", [6,2]],
     // ["FontSize", 20],
     ["Text", ""]

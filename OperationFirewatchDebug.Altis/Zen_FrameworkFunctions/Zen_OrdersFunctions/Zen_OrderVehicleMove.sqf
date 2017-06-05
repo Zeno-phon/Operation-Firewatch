@@ -56,6 +56,10 @@ if (_vehicle isKindOf "AIR") then {
     _vehicleDriver disableAI "FSM";
     _vehicleDriver disableAI "Target";
     _vehicleDriver disableAI "AutoTarget";
+    _vehicleDriver disableAI "SUPPRESSION";
+    _vehicleDriver disableAI "COVER";
+    _vehicleDriver disableAI "AUTOCOMBAT";
+    _vehicleDriver disableAI "AIMINGERROR";
 };
 
 _completionDistance = 25;

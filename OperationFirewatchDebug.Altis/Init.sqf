@@ -40,9 +40,9 @@ Zen_OF_Message_Stack = [];
 Zen_OF_Message_Stack_Scroll_Index = 0;
 Zen_OF_LastScrollTime = 0.;
 
-for "_i" from 1 to LINES_PER_BOX do {
-    Zen_OF_Message_Stack pushBack (FONT_START + LINE_BREAK + FONT_END);
-};
+// for "_i" from 1 to LINES_PER_BOX do {
+    // Zen_OF_Message_Stack pushBack (FONT_START + LINE_BREAK + FONT_END);
+// };
 
 Zen_OF_PrintMessage = {
     _rawString = _this select 0;

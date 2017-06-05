@@ -54,10 +54,14 @@ ZEN_STD_OBJ_AnimateDoors(_heli, 0)
 _heliDriver disableAI "FSM";
 _heliDriver disableAI "Target";
 _heliDriver disableAI "AutoTarget";
+_heliDriver disableAI "SUPPRESSION";
+_heliDriver disableAI "COVER";
+_heliDriver disableAI "AUTOCOMBAT";
+_heliDriver disableAI "AIMINGERROR";
 
 (group _heliDriver) setCurrentWaypoint ((group _heliDriver) addWaypoint [_heliCorrectLandPos, -1]);
 (group _heliDriver) move _heliCorrectLandPos;
-(_heliDriver) doMove _heliCorrectLandPos;
+// (_heliDriver) doMove _heliCorrectLandPos;
 
 _heliGrp setBehaviour "careless";
 _heliGrp setCombatMode "green";

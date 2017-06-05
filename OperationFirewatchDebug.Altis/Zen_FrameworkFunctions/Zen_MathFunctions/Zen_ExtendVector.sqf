@@ -16,9 +16,9 @@ if !([_this, [["VOID"], ["SCALAR", "ARRAY"], ["SCALAR", "STRING"], ["STRING"], [
 _center = [(_this select 0)] call Zen_ConvertToPosition;
 
 if ((typeName (_this select 1)) == "ARRAY") then {
-    _dist = (_this select 1) select 2;
-    _phi = (_this select 1) select 2;
-    _height = (_this select 1) select 2;
+    _dist = (_this select 1) select 0;
+    _phi = (_this select 1) select 1;
+    _height = (_center select 2) + ((_this select 1) select 2);
 
     _angleType = "trig";
 } else {

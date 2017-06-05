@@ -196,6 +196,7 @@ waypoint mfd
     // show ETA while enroute
     // show 'waiting' message when no route
     list waypoint data
+    remove map marker text data
 
 drone overview
     // text fields
@@ -359,6 +360,10 @@ message box
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: RQST route did not display in the waypoint MFD
-2. Fixed: Waypoint list did not disappear after executing route
-3. Tweaked: Route list box size
+1. Fixed: Camera cannot look above terrain
+2. Improved: Camera panning uses a new method
+3. Improved: Camera coordinate button now locks onto the terrain
+4. Improved: Camera panning and zooming are smoother
+5. Improved: Camera zoom limits are better enforced
+6. Improved: Message box text is better aligned
+7. Tweaked: Drone is now a rotary wing drone

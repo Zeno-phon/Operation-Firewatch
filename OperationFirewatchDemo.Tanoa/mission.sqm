@@ -8,7 +8,7 @@ class EditorData
 	toggles=1025;
 	class ItemIDProvider
 	{
-		nextID=744;
+		nextID=745;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=322;
+		nextID=331;
 	};
 	class Camera
 	{
-		pos[]={2229.7961,104.70241,13328.046};
-		dir[]={-0.86201572,-0.50104171,0.077392355};
-		up[]={-0.49904865,0.8654173,0.044805154};
-		aside[]={0.089424536,1.3315002e-007,0.99603951};
+		pos[]={2223.9221,171.77971,13298.371};
+		dir[]={0.76166546,-0.30926514,-0.56957948};
+		up[]={0.24774803,0.95095539,-0.18526931};
+		aside[]={-0.59893018,1.285458e-006,-0.800919};
 	};
 };
 binarizationWanted=0;
@@ -647,7 +647,7 @@ class Mission
 				class Item0
 				{
 					dataType="Marker";
-					position[]={2563.9199,5.4902629e+017,11985.998};
+					position[]={2394.7322,5.4902629e+017,11962.837};
 					name="CHARLIE_1";
 					markerType="ELLIPSE";
 					type="ellipse";
@@ -2180,21 +2180,45 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2155.1592,13.596397,13358.624};
+						position[]={2155.1587,13.596468,13358.624};
 						angles[]={0,2.5045474,0};
 					};
 					side="West";
 					flags=6;
 					class Attributes
 					{
+						name="Drone_Rotary_01";
 					};
 					id=526;
 					type="B_UAV_01_F";
-					atlOffset=-0.004070282;
+					atlOffset=-0.0039997101;
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="ammoBox";
+							expression="[_this,_value] call bis_fnc_initAmmoBox;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="[[[[],[]],[[],[]],[[],[]],[[],[]]],true]";
+								};
+							};
+						};
+						nAttributes=1;
+					};
 				};
 			};
 			id=172;
-			atlOffset=-0.004070282;
+			atlOffset=-0.004034996;
 		};
 		class Item7
 		{
@@ -3689,32 +3713,36 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2155.1594,13.451439,13358.674};
+						position[]={2155.1589,13.447439,13358.674};
 						angles[]={0,2.5045474,0};
 					};
 					side="West";
 					flags=6;
 					class Attributes
 					{
+						name="Drone_Rotary_01D";
 					};
 					id=524;
 					type="B_UAV_AI";
+					atlOffset=-0.0039997101;
 				};
 				class Item1
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2155.1594,13.451439,13358.674};
+						position[]={2155.1589,13.447439,13358.674};
 						angles[]={0,2.5045474,0};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
+						name="Drone_Rotary_01G";
 					};
 					id=525;
 					type="B_UAV_AI";
+					atlOffset=-0.0039997101;
 				};
 			};
 			class Attributes
@@ -3753,7 +3781,7 @@ class Mission
 				};
 			};
 			id=523;
-			atlOffset=-0.004070282;
+			atlOffset=-0.0039997101;
 		};
 		class Item20
 		{

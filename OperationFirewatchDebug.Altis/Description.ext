@@ -6,7 +6,6 @@ class CfgNotifications {
 class CfgDebriefing {
     class EndConsentDecline {
         title = "Consent Terms Declined.";
-        // subtitle = "Good Job";
         description = "You have not accepted the experiment participation consent agreement.";
     };
 };

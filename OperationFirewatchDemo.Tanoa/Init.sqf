@@ -44,8 +44,8 @@ Zen_OF_GetDroneClassData = {
     ([_droneClassData, 1] call Zen_ArrayGetIndexedSlice)
 };
 
-#define LINES_PER_BOX 9
-#define CHAR_PER_LINE 37
+#define LINES_PER_BOX 11
+#define CHAR_PER_LINE 36
 #define SCROLL_INTERVAL 0.4
 #define FONT_START "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>"
 #define FONT_END "</t></t></t>"
@@ -55,9 +55,9 @@ Zen_OF_Message_Stack = [];
 Zen_OF_Message_Stack_Scroll_Index = 0;
 Zen_OF_LastScrollTime = 0.;
 
-for "_i" from 1 to LINES_PER_BOX do {
-    Zen_OF_Message_Stack pushBack (FONT_START + LINE_BREAK + FONT_END);
-};
+// for "_i" from 1 to LINES_PER_BOX do {
+    // Zen_OF_Message_Stack pushBack (FONT_START + LINE_BREAK + FONT_END);
+// };
 
 Zen_OF_PrintMessage = {
     _rawString = _this select 0;
@@ -231,8 +231,8 @@ _h_droneSpawn = [] spawn {
         Zen_OF_Zone_Knowledge_Local pushBack (_x select 0);
     } forEach Zen_OF_Zones_Global;
 
-    /**  Here the first drone is created.  In this usage we give an existing object, Drone_Fixed_01, so the spawn point (player) isn't used.  We can also give the classname of a new vehicle to spawn.  Zen_OF_InvokeDrone always creates a drone (i.e. the data of the drone; the abstract drone object) local to the client that it was run on.  In SP this doesn't matter, but in MP Zen_OF_InvokeDrone must be run on the correct client's machine. */
-    _drone = [player, Drone_Fixed_01] call Zen_OF_InvokeDrone;
+    /**  Here the first drone is created.  In this usage we give an existing object, Drone_Rotary_01, so the spawn point (player) isn't used.  We can also give the classname of a new vehicle to spawn.  Zen_OF_InvokeDrone always creates a drone (i.e. the data of the drone; the abstract drone object) local to the client that it was run on.  In SP this doesn't matter, but in MP Zen_OF_InvokeDrone must be run on the correct client's machine. */
+    _drone = [player, Drone_Rotary_01] call Zen_OF_InvokeDrone;
 
     // The drone manager is started on all machines
     // It will wait for drones to be created and automatically manage their fuel, fire scanning, etc.

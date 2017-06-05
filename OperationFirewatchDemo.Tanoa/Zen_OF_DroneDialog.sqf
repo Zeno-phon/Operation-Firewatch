@@ -57,7 +57,10 @@ _timeUL = [1.46212,-0.10101, 0];
 _activityUL = [1.34596,-0.0488216, 0];
 
 ZEN_OF_DroneDialog_Camera = "camera" camCreate [0,0,0];
-ZEN_OF_DroneDialog_Camera camSetFovRange [0.01, 1];
+ZEN_OF_DroneDialog_Camera camSetFovRange [0.02, 1];
+Zen_OF_CameraGUITgtObj = [[0,0,0], "land_wrench_f"] call Zen_SpawnVehicle;
+Zen_OF_CameraGUITgtObj allowDamage false;
+Zen_OF_CameraGUITgtObj hideObjectGlobal true;
 
 Zen_OF_DroneGUIRefresh = {
     _list = [];
@@ -491,13 +494,22 @@ Zen_OF_DroneGUICamera = {
     };
 
     ZEN_OF_DroneDialog_Camera cameraEffect ["internal","back"];
-    ZEN_OF_DroneDialog_Camera camSetTarget _center;
     ZEN_OF_DroneDialog_Camera camSetRelPos ((getPosATL (_droneData select 1)) vectorDiff _center);
-    ZEN_OF_DroneDialog_Camera camCommit 0;
     showCinemaBorder false;
 
     detach ZEN_OF_DroneDialog_Camera;
-    ZEN_OF_DroneDialog_Camera attachTo [(_droneData select 1), [0, 0, -1.25]];
+    ZEN_OF_DroneDialog_Camera attachTo [(_droneData select 1), [0, 0, -1.]];
+
+    _center = [_center] call Zen_ConvertToPosition;
+    _camPos = (_center) vectorDiff (getPosATL ZEN_OF_DroneDialog_Camera);
+    _camPos = ZEN_STD_Math_VectCartPolar(_camPos);
+    _camPos set [0, 5];
+    _camPos = ZEN_STD_Math_VectPolarCart(_camPos);
+    _camPos = _camPos vectorAdd (getPosATL ZEN_OF_DroneDialog_Camera);
+
+    Zen_OF_CameraGUITgtObj setPosATL _camPos;
+    ZEN_OF_DroneDialog_Camera camSetTarget (getPosATL Zen_OF_CameraGUITgtObj);
+    ZEN_OF_DroneDialog_Camera camCommit 0;
 
     call Zen_CloseDialog;
     terminate Zen_OF_DroneGUIRefreshThread;
