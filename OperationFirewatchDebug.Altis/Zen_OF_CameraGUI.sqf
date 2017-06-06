@@ -30,7 +30,7 @@
 
 Zen_OF_CameraGUIInvoke = {
     0 = [Zen_OF_GUIMessageBox, ["Position", [-25, 35]]] call Zen_UpdateControl;
-    0 = [Zen_OF_CameraGUIDialog, [0 + CAMERA_OFFSET_X, 0 + CAMERA_OFFSET_Y], false, true] call Zen_InvokeDialog;
+    0 = [Zen_OF_CameraGUIDialog, [0 + CAMERA_OFFSET_X, 0 + CAMERA_OFFSET_Y], true, true] call Zen_InvokeDialog;
 
     0 = ["Press Numpad 0 to exit camera view."] call Zen_OF_PrintMessage;
     (findDisplay 76) displayAddEventHandler ["KeyDown", {
@@ -53,6 +53,16 @@ Zen_OF_CameraGUIInvoke = {
 
         (false)
     }];
+
+    0 = [] spawn {
+        while {true} do {
+            sleep 1;
+            _axis = inputAction "HeliCyclicBack";
+            if (_axis > 0) then {
+                player groupChat ("HeliCyclicBack: " + str _axis);
+            };
+        };
+    };
 
     if (Zen_OF_User_Group_Index < 2) then {
         0 = ["Press the Numpad arrow keys to move camera."] call Zen_OF_PrintMessage;

@@ -294,8 +294,7 @@ Camera controls
     // panning/zoom for manual
     pointer vector to target for doa-l
     joystick inputAction
-        fixed texture method
-        46 method
+        test with controller
 
 // rename
 // add message box
