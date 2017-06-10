@@ -82,8 +82,6 @@ if (Zen_Active_Dialog != "") then {
 
             0 = [_dialogControls, _controlID] call Zen_ArrayRemoveValue;
         } else {
-            player commandChat str _controlID;
-            player commandChat str _control;
             ctrlDelete _control;
         };
     } forEach Zen_Active_Dialog_Control_Data;

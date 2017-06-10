@@ -3,12 +3,12 @@
 // #include "Zen_FrameworkFunctions\Zen_StandardLibrary.sqf"
 // #include "Zen_FrameworkFunctions\Zen_FrameworkLibrary.sqf"
 
-#define STR_NAV_EMPTY "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>No Route Programmed<br/>___________________<br/> </t></t></t>"
-#define STR_NAV_PROMPT "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>No Route Programmed<br/>___________________<br/> <br/>Select destination by clicking on the map.</t></t></t>"
-#define STR_NAV_LIST "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Select Route Below<br/>__________________<br/><br/>A<br/>B<br/>C</t></t></t>"
-#define STR_NAV_CONFRIM(G, M, S) ("<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Current Route<br/>_____________<br/> <br/>Enroute to " + (G) + "<br/>Time to Target: " + str round (M) + ":" + str round (S) +"</t></t></t>")
-#define STR_RQST_PROMPT "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Request Landing<br/>_______________<br/> <br/>Click on the airfield at which you would like to request landing.</t></t></t>"
-#define STR_RQST_CONFIRMED "<t size='0.74'><t color='#000000'><t font='LucidaConsoleB'>Request Landing<br/>_______________<br/> <br/>You have requested landing.</t></t></t>"
+#define STR_NAV_EMPTY "<t size='0.98'><t color='#000000'><t font='LucidaConsoleB'>No Route Programmed<br/>___________________<br/> </t></t></t>"
+#define STR_NAV_PROMPT "<t size='0.98'><t color='#000000'><t font='LucidaConsoleB'>No Route Programmed<br/>___________________<br/> <br/>Select destination by clicking on the map.</t></t></t>"
+#define STR_NAV_LIST(A, B, C) "<t size='0.98'><t color='#000000'><t font='LucidaConsoleB'>Select Route Below<br/>__________________<br/><br/>Route Option A<br/>" + (A) + "<br/>Route Option B<br/>" + (B) + "<br/>Route Option C<br/>" + (C) + "</t></t></t>"
+#define STR_NAV_CONFRIM(G, M, S) ("<t size='0.98'><t color='#000000'><t font='LucidaConsoleB'>Current Route<br/>_____________<br/> <br/>Enroute to " + (G) + "<br/>Time to Target: " + str round (M) + ":" + str round (S) +"</t></t></t>")
+#define STR_RQST_PROMPT "<t size='0.98'><t color='#000000'><t font='LucidaConsoleB'>Request Landing<br/>_______________<br/> <br/>Click on the airfield at which you would like to request landing.</t></t></t>"
+#define STR_RQST_CONFIRMED "<t size='0.98'><t color='#000000'><t font='LucidaConsoleB'>Request Landing<br/>_______________<br/> <br/>You have requested landing.</t></t></t>"
 
 #define DRONE_AUTO_CONFIRM_TIMER 60
 
@@ -28,8 +28,9 @@
         0 = [(_drone + " is dead.")] call Zen_OF_PrintMessage; \
     };
 
+#define PARSE_WAYPOINT_INFO_M(A) ("ETA: " + str round ((A) select 1) + " s")
 #define PARSE_WAYPOINT_INFO_L(A) (format["ETA: %1 s; Fuel: %2 %3", A select 1, (A select 2), "%"])
-#define PARSE_WAYPOINT_INFO_H(A) (format["ETA: %1 s; Fuel: %2 %3; Time On Station: %4 min", A select 1, (A select 2), "%", (A select 3)])
+#define PARSE_WAYPOINT_INFO_H(A) (format["ETA: %1 s; Fuel: %2 %3;<br/>Time On Station: %4 min", A select 1, (A select 2), "%", (A select 3)])
 
 _center = [safeZoneW - 1 + safeZoneX + 0.5,safeZoneH - 1, 0];
 _navUL = [1.21843,0.464647, 0];
@@ -55,6 +56,8 @@ _fuelRemUL = [1.4798,-0.119529, 0];
 _runwayUL = [1.61237,-0.122896, 0];
 _timeUL = [1.46212,-0.10101, 0];
 _activityUL = [1.34596,-0.0488216, 0];
+
+Zen_OF_DroneGUIEventInProgress = false;
 
 ZEN_OF_DroneDialog_Camera = "camera" camCreate [0,0,0];
 ZEN_OF_DroneDialog_Camera camSetFovRange [0.02, 1];
@@ -145,13 +148,16 @@ Zen_OF_DroneGUIDrawPath = {
 
     switch (Zen_OF_User_Group_Index) do {
         case 0:{
-            _markers pushBack ([_path select 0, "ETA: " + str round ((_pathData select 0) select 1) + " s"] call Zen_SpawnMarker);
+            // _markers pushBack ([_path select 0, PARSE_WAYPOINT_INFO_M(_pathData select 0)] call Zen_SpawnMarker);
+            _markers pushBack ([_path select 0] call Zen_SpawnMarker);
         };
         case 1: {
-            _markers pushBack ([_path select 0, PARSE_WAYPOINT_INFO_L(_pathData select 0)] call Zen_SpawnMarker);
+            // _markers pushBack ([_path select 0, PARSE_WAYPOINT_INFO_L(_pathData select 0)] call Zen_SpawnMarker);
+            _markers pushBack ([_path select 0] call Zen_SpawnMarker);
         };
         case 2: {
-            _markers pushBack ([_path select 0, PARSE_WAYPOINT_INFO_H(_pathData select 0)] call Zen_SpawnMarker);
+            // _markers pushBack ([_path select 0, PARSE_WAYPOINT_INFO_H(_pathData select 0)] call Zen_SpawnMarker);
+            _markers pushBack ([_path select 0] call Zen_SpawnMarker);
         };
     };
 
@@ -162,13 +168,16 @@ Zen_OF_DroneGUIDrawPath = {
 
         switch (Zen_OF_User_Group_Index) do {
             case 0:{
-                _markers pushBack ([_path select (_i + 1), "ETA: " + str round ((_pathData select (_i + 1)) select 1) + " s"] call Zen_SpawnMarker);
+                // _markers pushBack ([_path select (_i + 1), PARSE_WAYPOINT_INFO_M(_pathData select (_i + 1))] call Zen_SpawnMarker);
+                _markers pushBack ([_path select (_i + 1)] call Zen_SpawnMarker);
             };
             case 1: {
-                _markers pushBack ([_path select (_i + 1), PARSE_WAYPOINT_INFO_L(_pathData select (_i + 1))] call Zen_SpawnMarker);
+                // _markers pushBack ([_path select (_i + 1), PARSE_WAYPOINT_INFO_L(_pathData select (_i + 1))] call Zen_SpawnMarker);
+                _markers pushBack ([_path select (_i + 1)] call Zen_SpawnMarker);
             };
             case 2: {
-                _markers pushBack ([_path select (_i + 1), PARSE_WAYPOINT_INFO_H(_pathData select (_i + 1))] call Zen_SpawnMarker);
+                // _markers pushBack ([_path select (_i + 1), PARSE_WAYPOINT_INFO_H(_pathData select (_i + 1))] call Zen_SpawnMarker);
+                _markers pushBack ([_path select (_i + 1)] call Zen_SpawnMarker);
             };
         };
     };
@@ -308,10 +317,31 @@ Zen_OF_DroneGUIMove = {
             // Route Option A<br/>
             // Total Time: <MIN>:<SEC><br/>
             // Total Fuel Remaining: <FUEL%>
-            0 = [Zen_OF_DroneGUIWaypointMFDList, ["List", ["A", "B", "C"]]] call Zen_UpdateControl;
             0 = [Zen_OF_DroneGUIDialog, Zen_OF_DroneGUIWaypointMFDList] call Zen_LinkControl;
 
-            0 = [Zen_OF_DroneGUIWaypointMFDText, ["Text", STR_NAV_LIST]] call Zen_UpdateControl;
+            _pathsLastData = [];
+            for "_i" from 0 to 2 do {
+                _pathData = [_drone, _i, false] call Zen_OF_FindDroneRouteData;
+                if (count _pathData == 0) then {
+                    _pathsLastData pushBack "No Path";
+                } else {
+                    _pathData = ZEN_STD_Array_LastElement(_pathData);
+
+                    switch (Zen_OF_User_Group_Index) do {
+                        case 0:{
+                            _pathsLastData pushBack PARSE_WAYPOINT_INFO_M(_pathData);
+                        };
+                        case 1: {
+                            _pathsLastData pushBack PARSE_WAYPOINT_INFO_L(_pathData);
+                        };
+                        case 2: {
+                            _pathsLastData pushBack PARSE_WAYPOINT_INFO_H(_pathData);
+                        };
+                    };
+                };
+            };
+
+            0 = [Zen_OF_DroneGUIWaypointMFDText, ["Text", STR_NAV_LIST(_pathsLastData select 0, _pathsLastData select 1, _pathsLastData select 2)]] call Zen_UpdateControl;
             0 = [0, [Zen_OF_DroneGUIWaypointMFDText], []] call Zen_RefreshDialog;
         };
 
@@ -371,7 +401,6 @@ Zen_OF_DroneGUIApprove = {
     // _RTBArgs = _droneData select 10;
 
     if (Zen_OF_User_Group_Index == 1) then {
-        player commandChat "Unlink";
         0 = [Zen_OF_DroneGUIDialog, Zen_OF_DroneGUIWaypointMFDList] call Zen_UnlinkControl;
         0 = [0] call Zen_RefreshDialog;
     };
@@ -392,6 +421,8 @@ Zen_OF_DroneGUIRecalc = {
     // if (Zen_OF_User_Group_Index == 0) exitWith {
         // player commandChat str "Recalc has no function for manual group.";
     // };
+
+    if (count _this < 2) exitWith {};
 
     _pathIndex = _this select 0;
     _drone = _this select 2;
@@ -417,6 +448,15 @@ Zen_OF_DroneGUIRecalc = {
             // 0 = [_drone, "", "", "", "", 0, "", _markers, 0] call Zen_OF_UpdateDrone;
             // _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
         } else {
+            waitUntil {
+                !(Zen_OF_DroneGUIEventInProgress)
+            };
+
+            Zen_OF_DroneGUIEventInProgress = true;
+
+            _droneData = [_drone] call Zen_OF_GetDroneData;
+            _markers = _droneData select 8;
+
             ZEN_FMW_MP_REServerOnly("A3log", [name player + " has selected the path of " + _drone + " through " + str (_paths select _pathIndex) + "."], call)
             0 = [("Drawing next path; click the approve button to confirm the path of " + _drone + ".")] call Zen_OF_PrintMessage;
 
@@ -427,6 +467,7 @@ Zen_OF_DroneGUIRecalc = {
             0 = [_drone, "", "", "", "", 0, "", "", _pathIndex] call Zen_OF_UpdateDrone;
             _markers = [_drone] call Zen_OF_DroneGUIDrawPath;
             0 = [_drone, "", "", "", "", 0, "", _markers] call Zen_OF_UpdateDrone;
+            Zen_OF_DroneGUIEventInProgress = false;
         };
     };
 };
@@ -708,11 +749,13 @@ Zen_OF_DroneGUIWaypointMFDText = ["StructuredText",
 ] call Zen_CreateControl;
 
 Zen_OF_DroneGUIWaypointMFDList = ["List",
-    ["Position", ([((_waypointMFDUL vectorDiff _center) vectorMultiply 40) vectorAdd [0, 3, 0], 0, 1] call Zen_ArrayGetIndexedSlice)],
-    ["Size", ([((_waypointMFDLR vectorDiff _waypointMFDUL) vectorMultiply 40) vectorAdd [0, -11, 0], 0, 1] call Zen_ArrayGetIndexedSlice)],
-    ["ListData", [0, 1, 2]],
+    ["Position", ([((_waypointMFDUL vectorDiff _center) vectorMultiply 40) vectorAdd [0, 4.5, 0], 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["Size", ([((_waypointMFDLR vectorDiff _waypointMFDUL) vectorMultiply 40) vectorAdd [0, -6, 0], 0, 1] call Zen_ArrayGetIndexedSlice)],
+    ["ListData", [0, 0, 1, 1, 2, 2]],
+    ["List", ["", "", "", "", "", ""]],
     // ["ForegroundColor", [255, 255, 255, 0]],
-    // ["Transparency", 1],
+    // ["FontSize", 20],
+    ["Transparency", 0.8],
     ["SelectionFunction", "Zen_OF_DroneGUIRecalc"],
     ["LinksTo", [Zen_OF_DroneGUIList]],
     ["List", []]
@@ -724,8 +767,6 @@ Zen_OF_DroneGUIDialog = [] call Zen_CreateDialog;
 } forEach [_background, _map, _statusPicture, Zen_OF_DroneGUIList, _buttonApprove, _buttonPermissions, _buttonCamera, _buttonMove, Zen_OF_DroneGUIRefreshButton, _buttonStop, _buttonClose, Zen_OF_DroneGUITimer, Zen_OF_GUIMessageBox, Zen_OF_DroneGUIWaypointMFDText] + (switch (Zen_OF_User_Group_Index) do { case 0: {[]}; case 1: {[]}; case 2: {[]}; });
 
 0 = ["Zen_OF_DroneGUIMove", "onMapSingleClick", {Zen_OF_DroneMovePos = _pos}, []] call BIS_fnc_addStackedEventHandler;
-
-player sideChat str Zen_OF_DroneGUIWaypointMFDList;
 
 // 0 = [] spawn {
     // while {true} do {

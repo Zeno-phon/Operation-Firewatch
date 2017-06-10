@@ -195,13 +195,15 @@ waypoint mfd
     // copy map waypoint data
     // show ETA while enroute
     // show 'waiting' message when no route
-    list waypoint data
-    remove map marker text data
+    // list waypoint data
+    // remove map marker text data
+    show all three routes at once
 
 drone overview
     // text fields
     // textures
     // remove fuel bar
+    struct text
     data formatting and updating
         refuelling countdown timer
     duplicate for each drone
@@ -359,10 +361,7 @@ message box
 // Changelog
 ////////////////////////////////////////////////
 
-1. Fixed: Camera cannot look above terrain
-2. Improved: Camera panning uses a new method
-3. Improved: Camera coordinate button now locks onto the terrain
-4. Improved: Camera panning and zooming are smoother
-5. Improved: Camera zoom limits are better enforced
-6. Improved: Message box text is better aligned
-7. Tweaked: Drone is now a rotary wing drone
+1. Fixed: Rapidly changing route selection resulted in map markers failing to delete
+2. Removed: Map waypoint information text
+3. Added: Route information text
+4. Improved: Aligned route selection list with text

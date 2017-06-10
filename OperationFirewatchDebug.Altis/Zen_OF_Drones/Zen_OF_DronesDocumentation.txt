@@ -20,6 +20,7 @@ Computes path information for the current route of (1).  Returns
 as many nested arrays as there are waypoints.
 Usage : Call
 Params: 1. String, drone id
+ (opt.) 2. Scalar, the index of the path, (default: Current Path)
 Return: Array
             1. Array
                 1. Scalar, distance between two points
